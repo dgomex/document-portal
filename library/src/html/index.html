@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= include_('html/styles') ?>
+  </head>
+  <body>
+    <main class="card">
+      <h1 id="title"></h1>
+
+      <!-- Step 1: email -->
+      <form id="emailStep" class="step" novalidate hidden>
+        <p data-t="login.intro"></p>
+        <label for="email" data-t="login.email"></label>
+        <input id="email" type="email" autocomplete="email" inputmode="email" required>
+        <!-- Honeypot: hidden from people, filled by bots -->
+        <div class="hp" aria-hidden="true">
+          <label for="website">Website</label>
+          <input id="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <button id="send" type="submit" data-t="login.send"></button>
+      </form>
+
+      <!-- Step 2: code -->
+      <form id="codeStep" class="step" novalidate hidden>
+        <p id="sentTo" data-t="login.sent"></p>
+        <label for="code" data-t="login.code"></label>
+        <input id="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" required>
+        <button id="verify" type="submit" data-t="login.verify"></button>
+        <p class="links">
+          <button id="resend" type="button" class="link" data-t="login.resend"></button><br>
+          <button id="otherEmail" type="button" class="link" data-t="login.otherEmail"></button>
+        </p>
+      </form>
+
+      <!-- Step 3: signed in: pick case, add files, send -->
+      <section id="homeStep" class="step" hidden>
+        <p class="row"><span id="hello"></span> <button id="logout" type="button" class="link" data-t="home.logout"></button></p>
+        <p id="noCases" data-t="home.noCases" hidden></p>
+
+        <form id="uploadForm" novalidate hidden>
+          <label for="caseSelect" data-t="upload.case"></label>
+          <p id="caseOnly" class="case-only" hidden></p>
+          <select id="caseSelect" hidden></select>
+
+          <span class="label" data-t="upload.files"></span>
+          <div id="drop" class="drop">
+            <input id="files" type="file" multiple class="visually-hidden"
+                   accept="application/pdf,image/jpeg,image/png,image/heic,image/heif,.pdf,.jpg,.jpeg,.png,.heic,.heif">
+            <label for="files" class="button secondary" data-t="upload.pick"></label>
+            <span class="muted drop-hint" data-t="upload.drop"></span>
+            <p class="muted small" id="typesHint"></p>
+          </div>
+          <ul id="queue" class="queue"></ul>
+
+          <label for="note"><span data-t="upload.note"></span> <span class="muted small" data-t="setup.optional"></span></label>
+          <textarea id="note" rows="2" maxlength="500"></textarea>
+
+          <button id="sendFiles" type="submit" disabled></button>
+        </form>
+
+        <div id="doneBox" hidden>
+          <p id="doneText" class="ok"></p>
+          <button id="more" type="button" data-t="upload.more"></button>
+        </div>
+      </section>
+
+      <p id="status" role="status" aria-live="polite"></p>
+      <p><button id="lang" type="button" class="link"></button></p>
+    </main>
+    <script>
+      const BOOT = <?!= boot ?>;
+      const RESEND_SECONDS = 60;
+      let lang = BOOT.lang;
+      let step = 'emailStep';
+      let email = '';
+      let token = null;   // in memory only: a reload means a new login
+      let me = null;
+      let resendAt = 0;
+
+      const $ = (id) => document.getElementById(id);
+      const t = (key, p) => ((BOOT.strings[lang] || {})[key] || BOOT.strings.pt[key] || key)
+        .replace(/\{(\w+)\}/g, (m, k) => (p && p[k] !== undefined ? p[k] : m));
+
+      function call(action, data) {
+        return new Promise((resolve) => {
+          google.script.run
+            .withSuccessHandler(resolve)
+            .withFailureHandler(() => resolve({ ok: false, error: 'generic' }))
+            .api(action, data);
+        });
+      }
+
+      function status(text, bad) {
+        $('status').textContent = text || '';
+        $('status').className = bad ? 'bad' : '';
+      }
+
+      function busy(button, key) {
+        button.disabled = !!key;
+        button.textContent = t(key || button.dataset.t);
+      }
+
+      function show(id) {
+        step = id;
+        document.querySelectorAll('.step').forEach((el) => { el.hidden = el.id !== id; });
+        const focus = { emailStep: 'email', codeStep: 'code' }[id];
+        if (focus) $(focus).focus();
+      }
+
+      // ---------- upload ----------
+      const MAX_BYTES = BOOT.maxFileMb * 1048576;
+      const EXT = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', heic: 'image/heic', heif: 'image/heif' };
+      let queue = [];      // { key, file, mime, status, pct, error }
+      let batchId = newBatchId();
+      let sending = false;
+
+      function newBatchId() {
+        const a = new Uint8Array(15);
+        crypto.getRandomValues(a);
+        return Array.from(a, (b) => 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[b % 62]).join('');
+      }
+
+      function mimeOf(file) {
+        if (BOOT.allowedTypes.includes(file.type)) return file.type;
+        const m = /\.([a-z0-9]+)$/i.exec(file.name);
+        return m ? EXT[m[1].toLowerCase()] || '' : '';
+      }
+
+      function sizeText(n) {
+        return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
+      }
+
+      function selectedCase() {
+        return me.cases.length === 1 ? me.cases[0].id : $('caseSelect').value;
+      }
+
+      function addFiles(list) {
+        Array.from(list).forEach((file) => {
+          const mime = mimeOf(file);
+          const item = { key: Math.random().toString(36).slice(2), file, mime, status: 'waiting', pct: 0, error: '' };
+          if (!mime) Object.assign(item, { status: 'invalid', error: t('upload.badType') });
+          else if (!file.size) Object.assign(item, { status: 'invalid', error: t('upload.empty') });
+          else if (file.size > MAX_BYTES) Object.assign(item, { status: 'invalid', error: t('upload.tooBig', { mb: BOOT.maxFileMb }) });
+          queue.push(item);
+        });
+        $('files').value = '';
+        renderQueue();
+      }
+
+      function renderQueue() {
+        const ul = $('queue');
+        ul.textContent = '';
+        queue.forEach((item) => {
+          const li = document.createElement('li');
+          li.className = 'item ' + item.status;
+          const name = document.createElement('span');
+          name.className = 'name';
+          name.textContent = item.file.name;
+          const meta = document.createElement('span');
+          meta.className = 'meta';
+          meta.textContent = sizeText(item.file.size) + ' · ' + ({
+            waiting: t('upload.waiting'), uploading: t('upload.progress', { pct: item.pct }), checking: t('upload.checking'),
+            done: t('upload.done'), failed: t('upload.failed') + (item.error ? ': ' + item.error : ''), invalid: item.error,
+          })[item.status];
+          const bar = document.createElement('progress');
+          bar.max = 100;
+          bar.value = item.status === 'done' ? 100 : item.pct;
+          bar.hidden = !['uploading', 'checking', 'done'].includes(item.status);
+          li.append(name, meta, bar);
+          if (!sending && ['waiting', 'invalid', 'failed'].includes(item.status)) {
+            if (item.status === 'failed' && item.retryable) {
+              const retry = document.createElement('button');
+              retry.type = 'button';
+              retry.className = 'link';
+              retry.textContent = t('upload.retry');
+              retry.onclick = () => { item.status = 'waiting'; item.error = ''; item.pct = 0; sendAll(); };
+              li.append(retry, document.createTextNode(' '));
+            }
+            const rm = document.createElement('button');
+            rm.type = 'button';
+            rm.className = 'link';
+            rm.textContent = t('upload.remove');
+            rm.onclick = () => { queue = queue.filter((q) => q !== item); renderQueue(); };
+            li.append(rm);
+          }
+          ul.appendChild(li);
+        });
+        const n = queue.filter((q) => q.status === 'waiting').length;
+        $('sendFiles').textContent = n === 1 ? t('upload.sendOne') : t('upload.send', { count: n });
+        $('sendFiles').disabled = sending || !n || !selectedCase();
+        $('files').disabled = sending;
+        $('caseSelect').disabled = sending;
+      }
+
+      function renderHome() {
+        $('hello').textContent = t('home.hello', { name: me.name });
+        const has = me.cases.length > 0;
+        $('noCases').hidden = has;
+        $('uploadForm').hidden = !has || !$('doneBox').hidden;
+        if (!has) return;
+        $('typesHint').textContent = t('upload.hint', { mb: BOOT.maxFileMb });
+        const label = (c) => c.name + (c.reference ? ' (' + c.reference + ')' : '');
+        $('caseOnly').hidden = me.cases.length !== 1;
+        $('caseSelect').hidden = me.cases.length === 1;
+        if (me.cases.length === 1) {
+          $('caseOnly').textContent = label(me.cases[0]);
+          $('caseSelect').textContent = '';
+        } else {
+          const keep = $('caseSelect').value;
+          $('caseSelect').textContent = '';
+          const ph = new Option(t('upload.chooseCase'), '');
+          ph.disabled = true;
+          $('caseSelect').append(ph, ...me.cases.map((c) => new Option(label(c), c.id)));
+          $('caseSelect').value = keep && me.cases.some((c) => c.id === keep) ? keep : '';
+        }
+        renderQueue();
+      }
+
+      /** One PUT of bytes [start, start+blob.size) to the Drive session. */
+      function put(uri, blob, start, total, onProgress) {
+        return new Promise((resolve) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('PUT', uri);
+          xhr.setRequestHeader('Content-Range', blob
+            ? 'bytes ' + start + '-' + (start + blob.size - 1) + '/' + total
+            : 'bytes */' + total);
+          if (onProgress) xhr.upload.onprogress = (e) => onProgress(e.loaded);
+          xhr.onload = () => resolve({ status: xhr.status, range: xhr.getResponseHeader('Range'), body: xhr.responseText });
+          xhr.onerror = xhr.ontimeout = () => resolve({ status: 0 });
+          xhr.send(blob || null);
+        });
+      }
+
+      const nextOffset = (range) => (range ? Number(range.split('-')[1]) + 1 : 0);
+      const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+
+      /** Chunked upload with resume. Returns the Drive file ID. */
+      async function sendToDrive(item, uri, chunk) {
+        const size = item.file.size;
+        let offset = 0;
+        let tries = 0;
+        for (;;) {
+          const end = Math.min(offset + chunk, size);
+          const r = await put(uri, item.file.slice(offset, end), offset, size, (loaded) => {
+            item.pct = Math.min(99, Math.floor(((offset + loaded) / size) * 100));
+            renderQueue();
+          });
+          if (r.status === 200 || r.status === 201) return JSON.parse(r.body).id;
+          if (r.status === 308) { offset = nextOffset(r.range); tries = 0; continue; }
+          if (r.status === 404 || r.status === 410 || (r.status >= 400 && r.status < 500 && r.status !== 408 && r.status !== 429)) {
+            throw new Error('drive ' + r.status);
+          }
+          // Network drop or Drive hiccup: wait, ask Drive how much it has, carry on from there.
+          if (++tries > 6) throw new Error('network');
+          await pause(Math.min(30000, 1000 * 2 ** tries));
+          const q = await put(uri, null, 0, size);
+          if (q.status === 200 || q.status === 201) return JSON.parse(q.body).id;
+          if (q.status === 308) offset = nextOffset(q.range);
+        }
+      }
+
+      async function uploadOne(item, caseId, note) {
+        item.status = 'uploading';
+        item.pct = 0;
+        renderQueue();
+        const s = await call('startUpload', {
+          token, caseId, batchId, name: item.file.name, mimeType: item.mime, size: item.file.size, origin: location.origin,
+        });
+        if (!s.ok) return s;
+        let fileId;
+        try {
+          fileId = await sendToDrive(item, s.data.uri, s.data.chunkBytes);
+        } catch (e) {
+          return { ok: false, error: 'generic', retryable: true };
+        }
+        item.status = 'checking';
+        renderQueue();
+        return call('finishUpload', { token, uploadId: s.data.uploadId, fileId, note });
+      }
+
+      async function sendAll() {
+        const caseId = selectedCase();
+        if (!caseId || sending) return;
+        sending = true;
+        status('');
+        const note = $('note').value;
+        for (const item of queue.filter((q) => q.status === 'waiting')) {
+          const res = await uploadOne(item, caseId, note);
+          if (res.ok) {
+            item.status = 'done';
+          } else if (res.error === 'session') {
+            sending = false;
+            return expired();
+          } else {
+            item.status = 'failed';
+            item.retryable = !!res.retryable || res.error === 'generic';
+            item.error = t('error.' + res.error);
+          }
+          renderQueue();
+        }
+        sending = false;
+        const done = queue.filter((q) => q.status === 'done' && !q.notified);
+        if (done.length) {
+          const fin = await call('finishBatch', { token, batchId });
+          if (!fin.ok && fin.error === 'session') return expired();
+          done.forEach((q) => { q.notified = true; });
+        }
+        renderQueue();
+        if (queue.some((q) => q.status === 'failed')) return status(t('upload.someFailed'), true);
+        if (done.length) {
+          const c = me.cases.find((k) => k.id === caseId);
+          const n = queue.filter((q) => q.status === 'done').length;
+          $('doneText').textContent = n === 1
+            ? t('upload.allDoneOne', { caseName: c ? c.name : '' })
+            : t('upload.allDone', { count: n, caseName: c ? c.name : '' });
+          $('uploadForm').hidden = true;
+          $('doneBox').hidden = false;
+        }
+      }
+
+      /** Nothing from one client may survive into the next login on the same page. */
+      function clearClient() {
+        token = null;
+        me = null;
+        queue = [];
+        $('caseSelect').textContent = '';
+        $('caseOnly').textContent = '';
+        $('hello').textContent = '';
+        $('note').value = '';
+        $('queue').textContent = '';
+        $('doneBox').hidden = true;
+      }
+
+      function expired() {
+        clearClient();
+        show('emailStep');
+        status(t('home.expired'), true);
+      }
+
+      $('files').onchange = () => addFiles($('files').files);
+      $('caseSelect').onchange = renderQueue;
+      $('uploadForm').onsubmit = (ev) => { ev.preventDefault(); sendAll(); };
+      $('more').onclick = () => {
+        queue = [];
+        batchId = newBatchId();
+        $('note').value = '';
+        $('doneBox').hidden = true;
+        $('uploadForm').hidden = false;
+        renderQueue();
+      };
+      ['dragenter', 'dragover'].forEach((type) => $('drop').addEventListener(type, (e) => {
+        e.preventDefault();
+        $('drop').classList.add('over');
+      }));
+      ['dragleave', 'drop'].forEach((type) => $('drop').addEventListener(type, () => $('drop').classList.remove('over')));
+      $('drop').addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (!sending && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+      });
+      window.addEventListener('beforeunload', (e) => {
+        if (sending) { e.preventDefault(); e.returnValue = t('upload.leave'); }
+      });
+
+      function render() {
+        document.documentElement.lang = lang;
+        $('title').textContent = BOOT.firmName || t('app.title');
+        document.querySelectorAll('[data-t]').forEach((el) => { if (!el.disabled) el.textContent = t(el.dataset.t); });
+        $('lang').textContent = t('lang.switch');
+        if (me) renderHome();
+      }
+
+      async function requestCode() {
+        const res = await call('requestCode', { email, website: $('website').value });
+        resendAt = Date.now() + RESEND_SECONDS * 1000;
+        return res;
+      }
+
+      $('emailStep').onsubmit = async (ev) => {
+        ev.preventDefault();
+        status('');
+        const value = $('email').value.trim();
+        if (!$('email').checkValidity() || !value) return status(t('login.err.email'), true);
+        email = value;
+        busy($('send'), 'login.sending');
+        const res = await requestCode();
+        busy($('send'));
+        if (!res.ok) return status(t(res.details ? 'login.err.email' : 'error.' + res.error), true);
+        $('code').value = '';
+        show('codeStep');
+      };
+
+      $('codeStep').onsubmit = async (ev) => {
+        ev.preventDefault();
+        status('');
+        const code = $('code').value.replace(/\s+/g, '');
+        if (!/^\d{6}$/.test(code)) return status(t('error.badCode'), true);
+        busy($('verify'), 'login.verifying');
+        const res = await call('verifyCode', { email, code });
+        busy($('verify'));
+        if (!res.ok) {
+          $('code').select();
+          return status(t('error.' + res.error), true);
+        }
+        token = res.data.token;
+        me = res.data.me;
+        queue = [];
+        batchId = newBatchId();
+        $('doneBox').hidden = true;
+        renderHome();
+        show('homeStep');
+      };
+
+      $('code').oninput = () => {
+        $('code').value = $('code').value.replace(/\D/g, '').slice(0, 6);
+        if ($('code').value.length === 6) $('codeStep').requestSubmit();
+      };
+
+      $('resend').onclick = async () => {
+        const wait = Math.ceil((resendAt - Date.now()) / 1000);
+        if (wait > 0) return status(t('login.resendWait', { seconds: wait }));
+        status(t('login.sending'));
+        const res = await requestCode();
+        status(res.ok ? t('login.sent') : t('error.' + res.error), !res.ok);
+      };
+
+      $('otherEmail').onclick = () => { status(''); show('emailStep'); };
+
+      $('logout').onclick = async () => {
+        const old = token;
+        if (sending) return;
+        clearClient();
+        show('emailStep');
+        await call('logout', { token: old });
+      };
+
+      $('lang').onclick = () => { lang = lang === 'pt' ? 'en' : 'pt'; render(); };
+
+      render();
+      if (!BOOT.ready) {
+        status(t('app.notReady'));
+      } else {
+        show('emailStep');
+      }
+    </script>
+  </body>
+</html>

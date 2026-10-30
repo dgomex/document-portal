@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body { margin: 0; padding: 12px; font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1d2433; }
+      label { display: block; margin: 12px 0 4px; font-weight: 600; }
+      .hint { font-weight: 400; color: #5b6475; font-size: 12px; }
+      input, select { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #c9ced8; border-radius: 6px; font: inherit; }
+      .err { color: #b3261e; font-size: 12px; min-height: 0; }
+      button { margin-top: 16px; width: 100%; min-height: 40px; border: 0; border-radius: 6px; background: #1f4e8c; color: #fff; font: inherit; cursor: pointer; }
+      button:disabled { opacity: .6; cursor: default; }
+      #result { margin-top: 12px; padding: 8px; border-radius: 6px; display: none; word-break: break-all; }
+      #result.ok { display: block; background: #e7f4ea; }
+      #result.bad { display: block; background: #fbe9e7; }
+    </style>
+  </head>
+  <body>
+    <form id="form" novalidate>
+      <label for="firm_name" data-t="setup.firmName"></label>
+      <input id="firm_name" name="firm_name" maxlength="120" required>
+      <div class="err" data-err="firm_name"></div>
+
+      <label for="notification_email" data-t="setup.notificationEmail"></label>
+      <input id="notification_email" name="notification_email" type="email" required>
+      <div class="err" data-err="notification_email"></div>
+
+      <label for="send_as_alias"><span data-t="setup.alias"></span> <span class="hint" data-t="setup.optional"></span></label>
+      <input id="send_as_alias" name="send_as_alias" type="email">
+      <div class="err" data-err="send_as_alias"></div>
+
+      <label for="default_language" data-t="setup.language"></label>
+      <select id="default_language" name="default_language">
+        <option value="pt">Português</option>
+        <option value="en">English</option>
+      </select>
+
+      <label for="logo"><span data-t="setup.logo"></span> <span class="hint" data-t="setup.logoHint"></span></label>
+      <input id="logo" type="file" accept="image/png,image/jpeg">
+      <div class="hint" id="logoState"></div>
+      <div class="err" data-err="logo"></div>
+
+      <label for="privacy_contact" data-t="setup.privacyContact"></label>
+      <input id="privacy_contact" name="privacy_contact" maxlength="200">
+      <div class="err" data-err="privacy_contact"></div>
+
+      <label for="privacy_policy_url"><span data-t="setup.privacyUrl"></span> <span class="hint" data-t="setup.optional"></span></label>
+      <input id="privacy_policy_url" name="privacy_policy_url" type="url" placeholder="https://">
+      <div class="err" data-err="privacy_policy_url"></div>
+
+      <label for="max_file_mb" data-t="setup.maxMb"></label>
+      <input id="max_file_mb" name="max_file_mb" type="number" min="1" max="100" step="1">
+      <div class="err" data-err="max_file_mb"></div>
+
+      <label for="portal_url"><span data-t="setup.portalUrl"></span> <span class="hint" data-t="setup.portalUrlHint"></span></label>
+      <input id="portal_url" name="portal_url" type="url" placeholder="https://script.google.com/macros/s/…/exec">
+      <div class="err" data-err="portal_url"></div>
+
+      <button id="save" type="submit" data-t="setup.save"></button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+      const BOOT = <?!= boot ?>;
+      const S = BOOT.strings;
+      const t = (key, p) => (S[key] || key).replace(/\{(\w+)\}/g, (m, k) => (p && p[k] !== undefined ? p[k] : m));
+      const $ = (id) => document.getElementById(id);
+
+      document.querySelectorAll('[data-t]').forEach((el) => { el.textContent = t(el.dataset.t); });
+      Object.keys(BOOT.state).forEach((k) => { if ($(k) && typeof BOOT.state[k] === 'string') $(k).value = BOOT.state[k]; });
+      $('logoState').textContent = BOOT.state.hasLogo ? t('setup.logoSaved') : '';
+
+      function readLogo() {
+        const file = $('logo').files[0];
+        if (!file) return Promise.resolve(null);
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve({ name: file.name, mimeType: file.type, base64: String(reader.result).split(',')[1] });
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function show(ok, html) {
+        $('result').className = ok ? 'ok' : 'bad';
+        $('result').innerHTML = html;
+      }
+
+      $('form').onsubmit = async (ev) => {
+        ev.preventDefault();
+        document.querySelectorAll('[data-err]').forEach((el) => { el.textContent = ''; });
+        $('save').disabled = true;
+        $('save').textContent = t('setup.saving');
+        const form = Object.fromEntries(new FormData($('form')).entries());
+        try {
+          form.logo = await readLogo();
+        } catch (e) {
+          form.logo = null;
+        }
+        google.script.run
+          .withSuccessHandler((res) => {
+            $('save').disabled = false;
+            $('save').textContent = t('setup.save');
+            if (res.ok) {
+              const url = res.data.portalUrl;
+              const link = (href) => '<a href="' + encodeURI(href) + '" target="_blank" rel="noopener">' + t('setup.open') + '</a>';
+              show(true, t('setup.saved') + '<br>' +
+                link('https://drive.google.com/drive/folders/' + res.data.rootFolderId) + ' ' + t('setup.rootFolder') + '<br>' +
+                (url ? link(url) + ' ' + t('setup.portal') : t('setup.deployNext')));
+              $('portal_url').value = url || '';
+              if (form.logo) $('logoState').textContent = t('setup.logoSaved');
+              return;
+            }
+            const fields = (res.details && res.details.fields) || {};
+            Object.keys(fields).forEach((k) => {
+              const el = document.querySelector('[data-err="' + k + '"]');
+              if (el) el.textContent = t(fields[k]);
+            });
+            const detail = !Object.keys(fields).length && res.message ? '<br><small>' + res.message.replace(/[&<>]/g, (c) => '&#' + c.charCodeAt(0) + ';') + '</small>' : '';
+            show(false, t(Object.keys(fields).length ? 'setup.fixFields' : 'error.' + res.error) + detail);
+          })
+          .withFailureHandler((err) => {
+            $('save').disabled = false;
+            $('save').textContent = t('setup.save');
+            show(false, t('error.generic'));
+            console.error(err);
+          })
+          .admin('saveSetup', form);
+      };
+    </script>
+  </body>
+</html>

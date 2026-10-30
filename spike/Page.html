@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body { font: 15px/1.4 system-ui, sans-serif; margin: 16px; max-width: 640px; }
+      fieldset { margin-bottom: 16px; }
+      button { font-size: 15px; padding: 8px 14px; }
+      progress { width: 100%; height: 18px; }
+      pre { background: #f4f4f4; padding: 8px; white-space: pre-wrap; word-break: break-all; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>Portal spike</h1>
+
+    <fieldset>
+      <legend>(e) Container spreadsheet access</legend>
+      <button id="sheetBtn">Check</button>
+    </fieldset>
+
+    <fieldset>
+      <legend>(a) Resumable upload, direct to Drive</legend>
+      <p><input type="file" id="file" accept="application/pdf,image/jpeg,image/png,image/heic,image/heif,.heic,.heif"></p>
+      <p><label><input type="checkbox" id="sendOrigin" checked> Send browser Origin on session init</label></p>
+      <p><label>Chunk size (MiB, multiple of 0.25): <input id="chunk" type="number" value="8" step="0.25" min="0.25" style="width:5em"></label></p>
+      <button id="upBtn">Upload</button>
+      <p><progress id="bar" value="0" max="1"></progress></p>
+    </fieldset>
+
+    <pre id="log"></pre>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const log = (...a) => { $('log').textContent += a.map((x) => typeof x === 'string' ? x : JSON.stringify(x, null, 1)).join(' ') + '\n'; };
+      const run = (fn, ...args) => new Promise((ok, ko) => google.script.run.withSuccessHandler(ok).withFailureHandler(ko)[fn](...args));
+
+      log('origin:', location.origin);
+
+      $('sheetBtn').onclick = async () => {
+        try { log('sheet:', await run('spikeCheckSheet')); } catch (e) { log('sheet ERROR', String(e)); }
+      };
+
+      // HEIC often arrives with an empty type from the file picker; infer from extension.
+      function mimeOf(f) {
+        if (f.type) return f.type;
+        const ext = (f.name.split('.').pop() || '').toLowerCase();
+        return { heic: 'image/heic', heif: 'image/heif', pdf: 'application/pdf' }[ext] || '';
+      }
+
+      function putChunk(uri, blob, start, total) {
+        return new Promise((resolve) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('PUT', uri);
+          xhr.setRequestHeader('Content-Range', `bytes ${start}-${start + blob.size - 1}/${total}`);
+          xhr.upload.onprogress = (ev) => { $('bar').value = (start + ev.loaded) / total; };
+          xhr.onload = () => resolve({ status: xhr.status, range: safeHeader(xhr, 'Range'), body: xhr.responseText });
+          xhr.onerror = () => resolve({ status: xhr.status, error: 'network/CORS error' });
+          xhr.send(blob);
+        });
+      }
+      function safeHeader(xhr, h) { try { return xhr.getResponseHeader(h); } catch (e) { return 'unreadable'; } }
+
+      $('upBtn').onclick = async () => {
+        const f = $('file').files[0];
+        if (!f) return log('pick a file first');
+        const chunk = Math.round(parseFloat($('chunk').value) * 4) * 256 * 1024;
+        const t0 = Date.now();
+        try {
+          const init = await run('spikeInitUpload', {
+            name: f.name, mimeType: mimeOf(f), size: f.size,
+            origin: location.origin, sendOrigin: $('sendOrigin').checked,
+          });
+          log('session created, originSent =', init.originSent, '| uri length', init.uri.length);
+
+          let offset = 0, last;
+          while (offset < f.size) {
+            const end = Math.min(offset + chunk, f.size);
+            last = await putChunk(init.uri, f.slice(offset, end), offset, f.size);
+            log(`chunk ${offset}-${end - 1}: status ${last.status}, Range ${last.range}${last.error ? ', ' + last.error : ''}`);
+            if (last.status === 308) {
+              // Prefer server-confirmed offset; fall back to our own if the header is not exposed.
+              const m = last.range && /bytes=0-(\d+)/.exec(last.range);
+              offset = m ? parseInt(m[1], 10) + 1 : end;
+            } else if (last.status === 200 || last.status === 201) {
+              offset = end;
+            } else {
+              throw new Error('upload stopped: ' + JSON.stringify(last));
+            }
+          }
+          const file = JSON.parse(last.body);
+          log(`uploaded in ${((Date.now() - t0) / 1000).toFixed(1)} s, id ${file.id}`);
+          log('finalize:', await run('spikeFinalize', file.id));
+        } catch (e) {
+          log('UPLOAD ERROR', String(e));
+        }
+      };
+    </script>
+  </body>
+</html>
