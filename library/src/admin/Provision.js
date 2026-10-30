@@ -77,8 +77,13 @@ const Provision = (function () {
       try {
         ensureFolder_(job, table, r, Sanitize.folderName(r.name, r.client_id), job.rootId);
         const done = { provision_status: Config.PROVISION.ACTIVE, provision_error: '' };
-        if (r.activeBlank) {
-          done.active = true;  // a new row with the checkbox left empty; an explicit FALSE stays
+        // An untouched checkbox reads FALSE, exactly like an unticked one, so
+        // "left empty" is told apart by who wrote the row: no created_by means
+        // typed by hand, and a hand-typed new client is meant to be active.
+        // The seed and the Claude skill set created_by, and their FALSE stays.
+        const handTyped = !String(r.created_by || '').trim();
+        if (!r.active && (r.activeBlank || handTyped)) {
+          done.active = true;
           r.active = true;
         }
         fillAudit_(job, r, done);

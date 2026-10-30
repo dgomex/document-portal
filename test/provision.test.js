@@ -66,17 +66,20 @@ test('running again creates nothing new', () => {
   expect(lib.Provision.hasWork(ss)).toBe(false);
 });
 
-test('rows typed by hand get IDs, active=TRUE and open status; explicit FALSE is kept', () => {
+test('rows typed by hand get IDs, active=TRUE and open status; FALSE from the seed or skill is kept', () => {
   const ss = sheet({
     clients: [
       { name: 'Bruno Mendes', email: 'bruno@x.pt' },
-      { name: 'Diogo Santos', email: 'diogo@x.pt', active: false },
+      // An untouched checkbox cell reads FALSE in Sheets: hand-typed rows look like this one.
+      { name: 'Eva Lopes', email: 'eva@x.pt', active: false },
+      { name: 'Diogo Santos', email: 'diogo@x.pt', active: false, created_by: 'seed' },
     ],
   });
   lib.Provision.run(ctx(ss), { drive: fakeDrive() });
-  const [bruno, diogo] = clientRows(ss);
+  const [bruno, eva, diogo] = clientRows(ss);
   expect(lib.Ids.isValid(bruno.client_id, 'CL')).toBe(true);
   expect(bruno).toMatchObject({ active: true, provision_status: 'ACTIVE' });
+  expect(eva).toMatchObject({ active: true, provision_status: 'ACTIVE', created_by: 'sheet' });
   expect(diogo).toMatchObject({ active: false, provision_status: 'ACTIVE' });
 
   ss.getSheetByName('Cases').appendRow(row(Config.SCHEMA.Cases, { client_id: bruno.client_id, case_name: 'Arrendamento' }));
