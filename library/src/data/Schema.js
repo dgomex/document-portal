@@ -29,7 +29,7 @@ const Schema = (function () {
     if (events && !events.isSheetHidden()) events.hideSheet();
     removeEmptyDefaultTabs_(ss);
 
-    Settings.set(ss, 'schema_version', Config.SCHEMA_VERSION);
+    // schema_version is Migrations' to set, after its steps have run.
     Settings.set(ss, 'library_version', Config.LIBRARY_VERSION);
     return report;
   }

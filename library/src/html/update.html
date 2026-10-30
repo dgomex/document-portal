@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body { margin: 0; padding: 12px; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1d2433; }
+      ol { padding-left: 20px; }
+      li { margin-bottom: 8px; }
+      button { width: 100%; min-height: 40px; border: 0; border-radius: 6px; background: #1f4e8c; color: #fff; font: inherit; cursor: pointer; }
+      button:disabled { opacity: .6; }
+      #result { margin-top: 12px; padding: 8px; border-radius: 6px; display: none; }
+      #result.ok { display: block; background: #e7f4ea; }
+      #result.bad { display: block; background: #fdf3dc; }
+      .muted { color: #5b6475; }
+    </style>
+  </head>
+  <body>
+    <p data-t="update.intro"></p>
+    <ol>
+      <li data-t="update.s1"></li>
+      <li data-t="update.s2"></li>
+      <li data-t="update.s3"></li>
+      <li data-t="update.s4"></li>
+      <li data-t="update.s5"></li>
+    </ol>
+    <p class="muted" id="sheetVersion"></p>
+    <button id="check" type="button" data-t="update.check"></button>
+    <div id="result" role="status"></div>
+    <script>
+      const BOOT = <?!= boot ?>;
+      const S = BOOT.strings;
+      const t = (key, p) => (S[key] || key).replace(/\{(\w+)\}/g, (m, k) => (p && p[k] !== undefined ? p[k] : m));
+      const $ = (id) => document.getElementById(id);
+      document.querySelectorAll('[data-t]').forEach((el) => { el.textContent = t(el.dataset.t); });
+      $('sheetVersion').textContent = t('update.sheet', { version: BOOT.sheetVersion });
+
+      function show(ok, lines) {
+        $('result').className = ok ? 'ok' : 'bad';
+        $('result').textContent = '';
+        lines.forEach((l) => { const p = document.createElement('div'); p.textContent = l; $('result').appendChild(p); });
+      }
+
+      $('check').onclick = () => {
+        $('check').disabled = true;
+        $('check').textContent = t('update.checking');
+        google.script.run
+          .withSuccessHandler((res) => {
+            $('check').disabled = false;
+            $('check').textContent = t('update.check');
+            if (!res.ok) return show(false, [t('error.' + res.error), res.message || '']);
+            const s = res.data;
+            const lines = [t('update.sheet', { version: s.sheet }), t('update.portal', { version: s.portal || t('update.unknown') })];
+            if (s.migrated) lines.push(t('update.migrated'));
+            if (!s.portal) lines.push(t('update.noPortal'));
+            else lines.push(s.match ? t('update.ok', { version: s.sheet }) : t('update.missingDeploy'));
+            show(s.match, lines);
+          })
+          .withFailureHandler(() => {
+            $('check').disabled = false;
+            $('check').textContent = t('update.check');
+            show(false, [t('error.generic')]);
+          })
+          .admin('updateStatus', {});
+      };
+    </script>
+  </body>
+</html>

@@ -29,7 +29,7 @@ function onOpen(e) {
 /** Builds the sheet structure, then opens the setup sidebar. */
 function menuSetup(ctx) {
   sheetAction_(ctx, function (lang) {
-    Schema.ensure(ctx.ss);
+    Migrations.run(ctx);
     const template = HtmlService.createTemplateFromFile('html/setup');
     template.boot = bootJson_({ state: Setup.state(ctx), strings: I18n.bundle()[lang] });
     SpreadsheetApp.getUi().showSidebar(template.evaluate().setTitle(I18n.t(lang, 'setup.title')));
@@ -46,8 +46,22 @@ function menuProvision(ctx) {
   });
 }
 
-function menuInvite(ctx) { sheetAction_(ctx, function (lang) { SpreadsheetApp.getUi().alert(I18n.t(lang, 'notYet')); }); }
-function menuUpdate(ctx) { sheetAction_(ctx, function (lang) { SpreadsheetApp.getUi().alert(I18n.t(lang, 'notYet')); }); }
+function menuInvite(ctx) {
+  sheetAction_(ctx, function (lang) {
+    const r = Invite.run(ctx);
+    SpreadsheetApp.getUi().alert(I18n.t(lang, 'invite.done', { sent: r.sent, failed: r.failed, waiting: r.waiting }) +
+      (r.budget ? '\n' + I18n.t(lang, 'invite.budget') : ''));
+  });
+}
+
+/** Opens the guided-update sidebar (see admin/Update.js for why it can't be automatic). */
+function menuUpdate(ctx) {
+  sheetAction_(ctx, function (lang) {
+    const template = HtmlService.createTemplateFromFile('html/update');
+    template.boot = bootJson_({ sheetVersion: Config.LIBRARY_VERSION, strings: I18n.bundle()[lang] });
+    SpreadsheetApp.getUi().showSidebar(template.evaluate().setTitle(I18n.t(lang, 'update.title')));
+  });
+}
 
 function menuDevSeed(ctx) {
   sheetAction_(ctx, function (lang) {
@@ -62,10 +76,13 @@ function menuDevSeed(ctx) {
 }
 
 /** Time-driven, every 5 minutes. Exits without the lock when nothing is pending. */
+/** Time-driven, every 5 minutes: sheet upgrades, new rows, requested invites. Cheap when idle. */
 function cronProvision(ctx) {
   Context.check(ctx);
-  if (!String(Settings.get(ctx.ss, 'root_folder_id') || '') || !Provision.hasWork(ctx.ss)) return;
-  Provision.run(ctx, {});
+  if (!String(Settings.get(ctx.ss, 'root_folder_id') || '')) return;
+  if (Migrations.needed(ctx.ss)) Migrations.run(ctx);
+  if (Provision.hasWork(ctx.ss)) Provision.run(ctx, {});
+  if (Invite.hasWork(ctx.ss) && Settings.get(ctx.ss, 'portal_url')) safe_(function () { Invite.run(ctx); });
 }
 
 /** Time-driven, every 10 minutes: mails batches the client never finished. */
@@ -86,6 +103,11 @@ function pruneDaily_(ctx) {
 
 function doGet(e, ctx) {
   Context.check(ctx);
+  // Lets "Portal > Update" confirm which version the live portal serves. Public, and only that.
+  if (e && e.parameter && e.parameter.portal === 'version') {
+    return ContentService.createTextOutput(JSON.stringify({ libraryVersion: Config.LIBRARY_VERSION }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
   const ready = !!ctx.ss.getSheetByName(Config.TABS.SETTINGS);
   const settings = ready ? Settings.read(ctx.ss) : {};
   if (ready) Setup.recordPortalUrl(ctx, settings);
@@ -166,6 +188,7 @@ function me_(ctx, client) {
 
 const ADMIN_ = {
   saveSetup: function (data, ctx) { return Setup.save(ctx, data); },
+  updateStatus: function (data, ctx) { return Update.status(ctx); },
 };
 
 /** detailed: owner-only callers also get the internal message, to report problems. */

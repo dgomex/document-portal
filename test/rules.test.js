@@ -43,7 +43,7 @@ describe('i18n coverage', () => {
   const sources = [...files, ...fs.readdirSync(path.join(SRC, 'html')).map((n) => ({
     name: 'html/' + n, code: fs.readFileSync(path.join(SRC, 'html', n), 'utf8'),
   }))];
-  const KEY = /['"`]((?:app|lang|menu|setup|provision|seed|error|ping|notYet|settings|login|home|mail|upload|privacy)(?:\.[\w]+)+|notYet)['"`]/g;
+  const KEY = /['"`]((?:app|lang|menu|setup|provision|seed|error|ping|notYet|settings|login|home|mail|upload|privacy|invite|update)(?:\.[\w]+)+|notYet)['"`]/g;
   const DATA_T = /data-t="([\w.]+)"/g;
 
   test('every literal text key in the code exists (EN parity is checked separately)', () => {

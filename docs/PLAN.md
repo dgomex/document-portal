@@ -41,6 +41,17 @@ The spike settled these decisions; full results are in [spike/README.md](../spik
   - The `active` checkbox column puts FALSE in every row, so `appendRow` wrote below row 1000. Rows now go to the first free row, and unticked boxes or script-written columns never make a row count as real.
 - **Tests:** 105.
 
+## Phase 6 status (2026-10-30): part A verified on DEV (schema 2 migration, update sidebar and check, invite email); part B (release, template copy, guided update) pending
+- **Email budget:** one daily budget (`google/MailBudget.js`, Settings `daily_email_limit`, default 95, at most 1500). Digests and invites stop 30 short of it, so code emails always have room.
+- **Invites:** `admin/Invite.js` sends rows marked `REQUESTED` when the client is active and their folder exists. It's triggered by the menu or the 5-minute trigger, and marks the row `SENT` with `invited_at`, or `ERROR`.
+- **Migrations:** `admin/Migrations.js` runs `schema_version` steps. Schema 2 adds `Clients.invited_at`, the `daily_email_limit` setting, and step 2 (removes the old counters). Migrations run on Configurar, on Guardar and from the 5-minute trigger.
+- **Update: guided, not automatic.**
+  - Automatic self-update is impossible: a copy's hidden Cloud project has the Apps Script API off, and not even the owner can enable it (`resourcemanager.projects.get` missing).
+  - Instead, **Atualizar portal** opens a sidebar with the editor steps (library version, then edit the deployment to a new version, so the URL is kept). **Verificar** compares the sheet's version with the live portal's (`?portal=version`) and runs migrations.
+  - The API scopes were removed again.
+- **Release:** `npm run release` and `docs/release-process.md`. Template sheet "Portal - Template" `1qSIabs0k2ATwRoMc6xNs84aQcUar1IAzUQH4YsYRRzY`, script `1VGlwgBL3au0P3Xy5SzoCitqeQyCj1iOONMzKg5_Apy5Gz9be0g1QvfQb`.
+- **Tests:** 198.
+
 ## Phase 5 status (2026-10-30): done (verified on the live DEV portal: logo, privacy notice with contact and link, language remembered)
 - **Logo:** `ui/Branding.js` reads the logo from Drive on the server and inlines it as a `data:` URI. The Drive file is never public. It's cached in parts of 90 KB or less, keyed by file ID; any failure means no logo, never a broken page.
 - **Privacy:** a short line plus an expandable notice in the footer, built from the firm name, `privacy_contact` and `privacy_policy_url` (https only).

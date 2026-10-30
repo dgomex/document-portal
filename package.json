@@ -7,7 +7,9 @@
     "spike:push": "cd spike && clasp push --force",
     "push:lib": "cd library && clasp push --force",
     "push:shell": "cd shell && clasp push --force",
-    "test": "jest"
+    "test": "jest",
+    "release": "node scripts/release.js",
+    "push:template": "cd template && clasp push --force"
   },
   "devDependencies": {
     "@google/clasp": "^3.0.0",

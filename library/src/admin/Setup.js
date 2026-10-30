@@ -80,7 +80,7 @@ const Setup = (function () {
       throw Errors.make('invalid', 'Portal address does not open', { fields: { portal_url: 'setup.err.portalDead' } });
     }
 
-    Schema.ensure(ctx.ss);
+    Migrations.run(ctx);
     Object.keys(v).forEach(function (k) { if (k !== 'portal_url') Settings.set(ctx.ss, k, v[k]); });
 
     const token = ctx.script.getOAuthToken();

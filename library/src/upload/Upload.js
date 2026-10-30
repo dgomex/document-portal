@@ -188,11 +188,10 @@ const Upload = (function () {
       if (!Validate.isEmail(to)) return;
       (groups[to] = groups[to] || { to: to, folderId: c.folder_id, rows: [] }).rows.push(r);
     });
-    const day = Utilities.formatDate(new Date(opts.now || Date.now()), Config.TIME_ZONE, 'yyyy-MM-dd');
     const lang = I18n.lang(String(settings.default_language || ''));
     let sent = 0;
     Object.keys(groups).forEach(function (to) {
-      if (!RateLimit.takeDaily(ctx.props, 'DIGEST_DAILY', Config.UPLOAD.DIGEST_DAILY_CAP, day)) {
+      if (!MailBudget.take(ctx, 'digest', opts.now)) {
         Events.log(ctx.ss, 'digest_daily_cap', '', batch.c);
         return;
       }

@@ -99,7 +99,7 @@ describe('Otp.request', () => {
 
   test('daily cap stops code emails', () => {
     const s = setup();
-    s.ctx.props.setProperty('OTP_DAILY', JSON.stringify({ day: '2026-10-30', n: Config.OTP.DAILY_CAP }));
+    s.ctx.props.setProperty('MAIL_DAILY', JSON.stringify({ day: '2026-10-30', n: Config.MAIL.DEFAULT_LIMIT }));
     lib.Otp.request(s.ctx, { email: 'ana@x.pt' }, s.opts());
     expect(s.sent).toHaveLength(0);
     expect(s.events()).toEqual(['otp_daily_cap']);

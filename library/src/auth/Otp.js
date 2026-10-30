@@ -63,8 +63,7 @@ const Otp = (function () {
       ctx.cache.remove('otpa:' + h);  // a fresh request gives 5 new tries, known email or not
       const client = Clients.findActiveByEmail(ctx.ss, email);
       if (!client) return Events.log(ctx.ss, 'otp_unknown', h);
-      const day = Utilities.formatDate(new Date(now), Config.TIME_ZONE, 'yyyy-MM-dd');
-      if (!RateLimit.takeDaily(ctx.props, 'OTP_DAILY', L.DAILY_CAP, day)) return Events.log(ctx.ss, 'otp_daily_cap', h, client.client_id);
+      if (!MailBudget.take(ctx, 'code', now)) return Events.log(ctx.ss, 'otp_daily_cap', h, client.client_id);
 
       const code = Crypto.randomDigits(L.LENGTH);
       ctx.cache.put('otp:' + h, JSON.stringify({
