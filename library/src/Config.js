@@ -31,6 +31,7 @@ const Config = Object.freeze({
   },
   SESSION_TTL_SECONDS: 45 * 60, // sliding: renewed on every request
   SESSION_MAX_SECONDS: 8 * 3600,
+  EVENTS_RETENTION_DAYS: 90,
 
   ID_PREFIX: { CLIENT: 'CL', CASE: 'CS', UPLOAD: 'UP' },
   PROVISION: { PENDING: 'PENDING', ACTIVE: 'ACTIVE', ERROR: 'ERROR' },

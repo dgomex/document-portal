@@ -71,8 +71,17 @@ function cronProvision(ctx) {
 /** Time-driven, every 10 minutes: mails batches the client never finished. */
 function cronDigest(ctx) {
   Context.check(ctx);
+  pruneDaily_(ctx);
   if (!ctx.props.getProperty('DIGEST_QUEUE') || ctx.props.getProperty('DIGEST_QUEUE') === '{}') return;
   Upload.flush(ctx);
+}
+
+/** Once a day: drop security-log rows past their retention. */
+function pruneDaily_(ctx) {
+  const day = Utilities.formatDate(new Date(), Config.TIME_ZONE, 'yyyy-MM-dd');
+  if (ctx.props.getProperty('EVENTS_PRUNED') === day) return;
+  safe_(function () { Events.prune(ctx.ss); });
+  ctx.props.setProperty('EVENTS_PRUNED', day);
 }
 
 function doGet(e, ctx) {
@@ -87,7 +96,13 @@ function doGet(e, ctx) {
     maxFileMb: Math.min(Number(settings.max_file_mb) || 100, Config.MAX_FILE_BYTES / 1048576),
     allowedTypes: Config.ALLOWED_MIME,
     lang: I18n.lang(String(settings.default_language || '')),
-    strings: I18n.bundle(),
+    logo: ready ? Branding.logoDataUri(ctx, settings.logo_file_id) : '',
+    privacy: {
+      contact: String(settings.privacy_contact || ''),
+      // Only https links reach the page (setup validates this too).
+      url: /^https:\/\/[^\s"'<>]+$/.test(String(settings.privacy_policy_url || '')) ? String(settings.privacy_policy_url) : '',
+    },
+    strings: I18n.publicBundle(),
   });
   return template.evaluate()
     .setTitle(String(settings.firm_name || '') || I18n.t('pt', 'app.title'))

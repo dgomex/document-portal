@@ -22,5 +22,16 @@ const I18n = (function () {
     return { pt: I18N_PT, en: I18N_EN };
   }
 
-  return { t: t, lang: lang, bundle: bundle };
+  /** Only what the public page shows: no setup or menu text for clients' browsers. */
+  const PUBLIC = /^(app|lang|login|home|upload|error|privacy)\./;
+  function publicBundle() {
+    const pick = function (table) {
+      const out = {};
+      Object.keys(table).forEach(function (k) { if (PUBLIC.test(k)) out[k] = table[k]; });
+      return out;
+    };
+    return { pt: pick(I18N_PT), en: pick(I18N_EN) };
+  }
+
+  return { t: t, lang: lang, bundle: bundle, publicBundle: publicBundle };
 })();

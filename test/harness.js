@@ -37,7 +37,7 @@ function load(overrides = {}) {
     computeDigest: (alg, text) => signed(crypto.createHash(alg).update(String(text), 'utf8').digest()),
     getUuid: () => crypto.randomUUID(),
     formatDate,
-    base64Encode: (s) => Buffer.from(String(s), 'utf8').toString('base64'),
+    base64Encode: (s) => (Array.isArray(s) ? Buffer.from(s.map((b) => b & 0xff)) : Buffer.from(String(s), 'utf8')).toString('base64'),
     base64EncodeWebSafe: (s) => Buffer.from(String(s), 'utf8').toString('base64url'),
     sleep: () => {},
   };
@@ -60,6 +60,7 @@ class FakeSheet {
   getLastRow() { return this.data.length; }
   getLastColumn() { return this.data.reduce((m, r) => Math.max(m, r.length), 0); }
   appendRow(row) { this.data.push(row.slice()); }
+  deleteRows(start, n) { this.data.splice(start - 1, n); }
   getMaxRows() { return Math.max(this.maxRows || 0, this.data.length); }
   insertRowsAfter(after, n) { this.maxRows = this.getMaxRows() + n; }
   getRange(row, col, numRows = 1, numCols = 1) {

@@ -41,6 +41,21 @@ The spike settled these decisions; full results are in [spike/README.md](../spik
   - The `active` checkbox column puts FALSE in every row, so `appendRow` wrote below row 1000. Rows now go to the first free row, and unticked boxes or script-written columns never make a row count as real.
 - **Tests:** 105.
 
+## Phase 5 status (2026-10-30): done (verified on the live DEV portal: logo, privacy notice with contact and link, language remembered)
+- **Logo:** `ui/Branding.js` reads the logo from Drive on the server and inlines it as a `data:` URI. The Drive file is never public. It's cached in parts of 90 KB or less, keyed by file ID; any failure means no logo, never a broken page.
+- **Privacy:** a short line plus an expandable notice in the footer, built from the firm name, `privacy_contact` and `privacy_policy_url` (https only).
+  - Templates for the firm's full policy: `docs/privacy-notice.pt.md` / `.en.md`. These cover Google as processor and the optional Claude/Anthropic disclosure for the skill.
+  - The Events log is now pruned after 90 days, once a day, from `cronDigest`.
+- **Language:** a visitor's choice is remembered in localStorage (wrapped in try/catch). Without a choice, the client's language from the sheet applies after login.
+- **Public strings only:** the page gets only the `app`, `lang`, `login`, `home`, `upload`, `error` and `privacy` strings; there's a test that every key the page uses is in that set.
+- **Accessibility:**
+  - `aria-invalid` and focus on wrong fields; the status region is described-by.
+  - Progress bars are labelled; focus moves to the success message.
+  - The language button has its own `lang` and an aria-label.
+  - Tap targets are 32 px or more; reduced motion is respected.
+- **Mobile:** tighter padding at 420 px or less. Checked in a 375 px preview in light and dark mode.
+- **Tests:** 179.
+
 ## Phase 4 status (2026-10-30): done
 - **Verified:** Ana with several files and a note (one digest email); Bruno with a single case; the fake PDF trashed; the oversized file refused before sending; a phone photo.
 - **Bugs found during verification:**

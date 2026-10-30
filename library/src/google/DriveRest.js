@@ -98,11 +98,21 @@ const DriveRest = (function () {
     return res.getContent().slice(0, n);
   }
 
-  function trash(token, fileId) {
+  /** Whole file content: { bytes, mimeType }. Small files only (the logo). */
+  function download(token, fileId) {
+    const res = UrlFetchApp.fetch(FILES + '/' + encodeURIComponent(fileId) + '?alt=media&supportsAllDrives=true', {
+      headers: { Authorization: 'Bearer ' + token }, muteHttpExceptions: true,
+    });
+    if (res.getResponseCode() !== 200) throw Errors.make('drive', 'Download ' + res.getResponseCode(), { status: res.getResponseCode() });
+    const blob = res.getBlob();
+    return { bytes: blob.getBytes(), mimeType: String(blob.getContentType() || '').split(';')[0] };
+  }
+
+    function trash(token, fileId) {
     return request_(token, 'patch', FILES + '/' + encodeURIComponent(fileId) + '?supportsAllDrives=true&fields=id,trashed',
       { json: { trashed: true } });
   }
 
   return { createFolder: createFolder, get: get, exists: exists, uploadSmall: uploadSmall,
-    startResumable: startResumable, head: head, trash: trash };
+    startResumable: startResumable, head: head, download: download, trash: trash };
 })();
