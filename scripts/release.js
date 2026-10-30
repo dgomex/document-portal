@@ -64,5 +64,5 @@ Template now pins version ${version}. Copy link for new firms:
   https://docs.google.com/spreadsheets/d/${sheetId}/copy
 
 Next:
-  git commit -am "Release ${semver}" && git tag v${semver} && git push --follow-tags
+  git commit -am "Release ${semver}" && git tag -a v${semver} -m "${semver}" && git push --follow-tags
 Existing firms: Portal > Atualizar portal in their sheet.`);

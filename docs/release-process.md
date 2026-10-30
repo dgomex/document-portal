@@ -30,7 +30,7 @@ The script:
 Then commit and tag:
 
 ```bash
-git commit -am "Release 0.2.0" && git tag v0.2.0 && git push --follow-tags
+git commit -am "Release 0.2.0" && git tag -a v0.2.0 -m "0.2.0" && git push --follow-tags
 ```
 
 ## Sheet changes between versions
