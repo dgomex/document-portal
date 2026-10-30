@@ -41,7 +41,13 @@ The spike settled these decisions; full results are in [spike/README.md](../spik
   - The `active` checkbox column puts FALSE in every row, so `appendRow` wrote below row 1000. Rows now go to the first free row, and unticked boxes or script-written columns never make a row count as real.
 - **Tests:** 105.
 
-## Phase 6 status (2026-10-30): part A verified on DEV (schema 2 migration, update sidebar and check, invite email); part B (release, template copy, guided update) pending
+## Phase 6 status (2026-10-30): done
+- **Part A, on DEV:** schema 2 migration, the update sidebar and its check, the invite email.
+- **Part B:**
+  - Release 0.2.0 (library v2). The library and template were shared by link.
+  - A test lawyer (danielddg96) copied the template, set it up, deployed, logged in and uploaded.
+  - Release 0.2.1 (library v3), then the guided update in that copy: Verificar shows 0.2.1 on both sides, with the same portal URL.
+- **Bug found in part B:** an untouched checkbox reads FALSE, so hand-typed clients were never activated. Rows without `created_by` are now activated on first processing (fixed in 0.2.1). **The Claude skill must set `created_by` and `active` explicitly.**
 - **Email budget:** one daily budget (`google/MailBudget.js`, Settings `daily_email_limit`, default 95, at most 1500). Digests and invites stop 30 short of it, so code emails always have room.
 - **Invites:** `admin/Invite.js` sends rows marked `REQUESTED` when the client is active and their folder exists. It's triggered by the menu or the 5-minute trigger, and marks the row `SENT` with `invited_at`, or `ERROR`.
 - **Migrations:** `admin/Migrations.js` runs `schema_version` steps. Schema 2 adds `Clients.invited_at`, the `daily_email_limit` setting, and step 2 (removes the old counters). Migrations run on Configurar, on Guardar and from the 5-minute trigger.
