@@ -130,3 +130,13 @@ describe('merge', () => {
     expect(plan.update.some((u) => u.row.key === 'REQ-1')).toBe(false);
   });
 });
+
+test('items the portal waived come back when they apply again; the lawyer\'s waivers stay', () => {
+  const row = (item, extra) => ({ ...item, text_json: '', status: 'missing', ...extra });
+  const auto = Checklist.build({ visaId: 'PT-D7', facts: '', people: [ana], now: NOW }).map((i) => row(i,
+    i.doc_type === 'TRAVEL_INSURANCE' ? { level: 'waived', reason: 'Deixou de se aplicar a este processo (lista atualizada).' }
+      : i.doc_type === 'PHOTOS' ? { level: 'waived', reason: 'Já entregou no consulado' } : {}));
+  const plan = Checklist.merge(auto, Checklist.build({ visaId: 'PT-D7', facts: '', people: [ana], now: NOW }), 'pt');
+  expect(plan.update.find((u) => u.row.doc_type === 'TRAVEL_INSURANCE').partial).toMatchObject({ level: 'required', reason: '' });
+  expect(plan.update.find((u) => u.row.doc_type === 'PHOTOS').partial.level).toBeUndefined();
+});

@@ -172,7 +172,12 @@ const Checklist = (function () {
         title: item.title, instructions: item.instructions, person_name: item.person_name,
         doc_type: item.doc_type, source: item.source, text_json: JSON.stringify(item.text),
       };
-      if (row.level !== Config.ITEM_LEVEL.WAIVED) partial.level = item.level;
+      // The lawyer's waivers stay; items the portal itself waived (no longer
+      // applied) come back when they apply again.
+      const autoWaived = row.level === Config.ITEM_LEVEL.WAIVED &&
+        Catalog.data().languages.some(function (l) { return String(row.reason || '') === I18n.t(l, 'checklist.noLongerApplies'); });
+      if (row.level !== Config.ITEM_LEVEL.WAIVED || autoWaived) partial.level = item.level;
+      if (autoWaived) partial.reason = '';
       out.update.push({ row: row, partial: partial });
     });
     Object.keys(byKey).forEach(function (key) {
