@@ -24,7 +24,8 @@ const Checklist = (function () {
 
   /** Whole years from a birth date (Date or YYYY-MM-DD) to now; null if unknown. */
   function age(birthDate, now) {
-    const b = birthDate instanceof Date ? birthDate : /^\d{4}-\d{2}-\d{2}$/.test(String(birthDate || '')) ? new Date(String(birthDate) + 'T00:00:00Z') : null;
+    const day = Validate.ymd(birthDate);
+    const b = day ? new Date(day + 'T00:00:00Z') : null;
     if (!b || isNaN(b.getTime())) return null;
     const n = new Date(now || Date.now());
     let years = n.getUTCFullYear() - b.getUTCFullYear();

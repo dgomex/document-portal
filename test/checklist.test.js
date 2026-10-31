@@ -140,3 +140,12 @@ test('items the portal waived come back when they apply again; the lawyer\'s wai
   expect(plan.update.find((u) => u.row.doc_type === 'TRAVEL_INSURANCE').partial).toMatchObject({ level: 'required', reason: '' });
   expect(plan.update.find((u) => u.row.doc_type === 'PHOTOS').partial.level).toBeUndefined();
 });
+
+test('a birth date that is a Date from another realm (as Sheets hands it to a library) still counts', () => {
+  const vm = require('vm');
+  const foreign = vm.runInNewContext('new Date(Date.UTC(2009, 8, 1))');
+  expect(foreign instanceof Date).toBe(false);
+  expect(Checklist.age(foreign, NOW)).toBe(17);
+  const items = Checklist.build({ visaId: 'PT-D7', people: [ana, { ...joao, birth_date: foreign }], now: NOW });
+  expect(items.some((i) => i.key === 'CRIMINAL_RECORD|PE-DDDDDD')).toBe(true);
+});

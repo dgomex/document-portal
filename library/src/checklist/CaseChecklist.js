@@ -27,8 +27,7 @@ const CaseChecklist = (function () {
       r.person_id = String(r.person_id || '').trim();
       r.case_id = String(r.case_id || '').trim();
       r.role = String(r.role || '').trim().toLowerCase() || 'dependant';
-      r.birth_date = r.birth_date instanceof Date
-        ? Utilities.formatDate(r.birth_date, Config.TIME_ZONE, 'yyyy-MM-dd') : String(r.birth_date || '').trim();
+      r.birth_date = Validate.ymd(r.birth_date) || String(r.birth_date || '').trim();
       return r;
     });
   }
@@ -175,7 +174,7 @@ const CaseChecklist = (function () {
         title: text ? Catalog.text(text.title, lang) || String(r.title || '') : String(r.title || ''),
         instructions: text ? Catalog.text(text.instructions, lang) || String(r.instructions || '') : String(r.instructions || ''),
         options: options, reason: r.status === Config.ITEM_STATUS.REJECTED ? String(r.reason || '') : '',
-        due: r.due_date instanceof Date ? Utilities.formatDate(r.due_date, Config.TIME_ZONE, 'yyyy-MM-dd') : String(r.due_date || ''),
+        due: Validate.ymd(r.due_date) || String(r.due_date || ''),
       };
     });
     const groups = casePeople.map(function (p) {

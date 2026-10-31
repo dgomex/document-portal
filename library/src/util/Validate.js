@@ -27,6 +27,22 @@ const Validate = (function () {
     return n.length >= 1 && n.length <= 120;
   }
 
+  /**
+   * A date from the sheet. Not `instanceof Date`: Sheets values reach the
+   * library as Dates of the calling script, with a different Date
+   * constructor, so instanceof is false for real dates (seen on DEV).
+   */
+  function isDate(v) {
+    return !!v && typeof v === 'object' && typeof v.getTime === 'function' && typeof v.getUTCFullYear === 'function' && !isNaN(v.getTime());
+  }
+
+  /** A sheet date or YYYY-MM-DD text, as YYYY-MM-DD in the portal's time zone; '' otherwise. */
+  function ymd(v) {
+    if (isDate(v)) return Utilities.formatDate(v, Config.TIME_ZONE, 'yyyy-MM-dd');
+    const s = String(v == null ? '' : v).trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : '';
+  }
+
   function isLanguage(s) {
     return Config.LANGUAGES.indexOf(String(s)) !== -1;
   }
@@ -73,5 +89,5 @@ const Validate = (function () {
   }
 
   return { normalizeEmail: normalizeEmail, isEmail: isEmail, parseEmailList: parseEmailList, isName: isName,
-    isLanguage: isLanguage, toBool: toBool, clientRow: clientRow, caseRow: caseRow };
+    isLanguage: isLanguage, isDate: isDate, ymd: ymd, toBool: toBool, clientRow: clientRow, caseRow: caseRow };
 })();

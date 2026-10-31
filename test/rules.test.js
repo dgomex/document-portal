@@ -38,6 +38,12 @@ test('no library module shadows an Apps Script global', () => {
   expect(declared.filter((n) => GLOBALS.includes(n))).toEqual([]);
 });
 
+// Sheets values reach the library as Dates of the calling script, so
+// `instanceof Date` is false for real dates. Use Validate.isDate / ymd.
+test('the library never uses instanceof Date', () => {
+  expect(files.filter((f) => /instanceof\s+Date\b/.test(stripComments(f.code))).map((f) => f.name)).toEqual([]);
+});
+
 describe('i18n coverage', () => {
   const { I18N_PT } = require('./harness').load();
   const sources = [...files, ...fs.readdirSync(path.join(SRC, 'html')).map((n) => ({
