@@ -264,3 +264,44 @@ describe('GmailRest.build', () => {
     expect(() => lib.GmailRest.build({ ...m, to: 'a@b.pt\r\nBcc: x@y.pt' })).toThrow();
   });
 });
+
+describe('slow guessing', () => {
+  test('at most WRONG_PER_6H wrong codes per email per 6 hours, even across fresh codes', () => {
+    const s = setup();
+    let wrong = 0;
+    let blocked = false;
+    for (let round = 0; round < 10 && !blocked; round++) {
+      s.tick(13 * 60);  // past the 1-a-minute and within the 5-an-hour limits often enough
+      lib.Otp.request(s.ctx, { email: 'ana@x.pt' }, s.opts());
+      for (let i = 0; i < 4; i++) {
+        try { lib.Otp.verify(s.ctx, { email: 'ana@x.pt', code: '000000' }, s.opts()); } catch (e) {
+          if (e.code === 'tooMany') { blocked = true; break; }
+          wrong++;
+        }
+      }
+    }
+    expect(blocked).toBe(true);
+    expect(wrong).toBe(Config.OTP.WRONG_PER_6H);
+    // Even the right code is refused until the window ends.
+    s.tick(13 * 60);
+    lib.Otp.request(s.ctx, { email: 'ana@x.pt' }, s.opts());
+    expect(() => lib.Otp.verify(s.ctx, { email: 'ana@x.pt', code: s.codeOf() }, s.opts()))
+      .toThrow(expect.objectContaining({ code: 'tooMany' }));
+  });
+});
+
+describe('cron throttle', () => {
+  test('a cron called in a loop does its work at most once a minute', () => {
+    const s = setup();
+    let runs = 0;
+    const orig = lib.Migrations.needed;
+    lib.Migrations.needed = () => { runs++; return false; };
+    lib.Settings.set(s.ss, 'root_folder_id', 'ROOT');
+    try {
+      for (let i = 0; i < 5; i++) lib.cronProvision(s.ctx);
+    } finally {
+      lib.Migrations.needed = orig;
+    }
+    expect(runs).toBe(1);
+  });
+});

@@ -79,6 +79,7 @@ function menuDevSeed(ctx) {
 /** Time-driven, every 5 minutes: sheet upgrades, new rows, requested invites. Cheap when idle. */
 function cronProvision(ctx) {
   Context.check(ctx);
+  if (!cronSlot_(ctx, 'provision')) return;
   if (!String(Settings.get(ctx.ss, 'root_folder_id') || '')) return;
   if (Migrations.needed(ctx.ss)) Migrations.run(ctx);
   if (Provision.hasWork(ctx.ss)) Provision.run(ctx, {});
@@ -88,9 +89,22 @@ function cronProvision(ctx) {
 /** Time-driven, every 10 minutes: mails batches the client never finished. */
 function cronDigest(ctx) {
   Context.check(ctx);
+  if (!cronSlot_(ctx, 'digest')) return;
   pruneDaily_(ctx);
   if (!ctx.props.getProperty('DIGEST_QUEUE') || ctx.props.getProperty('DIGEST_QUEUE') === '{}') return;
   Upload.flush(ctx);
+}
+
+/**
+ * True at most once per CRON_MIN_GAP_SECONDS per job. google.script.run can
+ * reach every shell function, so the public page could call a cron in a loop
+ * and burn the firm's quotas; the real triggers run every 5-10 minutes.
+ */
+function cronSlot_(ctx, name) {
+  const key = 'cron:' + name;
+  if (ctx.cache.get(key)) return false;
+  ctx.cache.put(key, '1', Config.CRON_MIN_GAP_SECONDS);
+  return true;
 }
 
 /** Once a day: drop security-log rows past their retention. */

@@ -41,6 +41,20 @@ The spike settled these decisions; full results are in [spike/README.md](../spik
   - The `active` checkbox column puts FALSE in every row, so `appendRow` wrote below row 1000. Rows now go to the first free row, and unticked boxes or script-written columns never make a row count as real.
 - **Tests:** 105.
 
+## Phase 8 status (2026-10-31): in progress
+- **Security review:** [security-review.md](security-review.md). Two fixes:
+  - crons throttled to once a minute (the page can call any shell function);
+  - at most 20 wrong codes per email per 6 hours (slow guessing across fresh codes).
+- **Onboarding:** [onboarding-checklist.md](onboarding-checklist.md), rewritten from what Phases 2–7 taught us.
+- **Tests:** 202.
+- **Still to do:**
+  - release 0.2.2;
+  - a dry run of the checklist on a fresh copy;
+  - the website embed test for multi-account phones;
+  - the Workspace alias check (needs a Workspace account);
+  - spike cleanup;
+  - the pilot firm.
+
 ## Phase 7 status (2026-10-31): done (live test: the skill wrote client and case rows into a portal sheet through a Google Sheets connector)
 - **Skill:** `skill/portal-clients/`: `SKILL.md`, `references/schema.md` (columns, allowed values, what each `provision_error` means), and `scripts/portal_rows.py` (IDs and checks matching the portal's rules; 7 Python tests).
 - **Rules beyond §6:**

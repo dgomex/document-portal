@@ -31,7 +31,9 @@ const Config = Object.freeze({
     MIN_GAP_SECONDS: 60,        // per email
     PER_EMAIL_PER_HOUR: 5,
     GLOBAL_PER_HOUR: 300,       // beyond this, requests are dropped silently (flood)
+    WRONG_PER_6H: 20,           // wrong codes per email per 6 hours (the cache's longest life), across all codes
   },
+  CRON_MIN_GAP_SECONDS: 60,     // the page can call any shell function, crons included: throttle them
   SESSION_TTL_SECONDS: 45 * 60, // sliding: renewed on every request
   SESSION_MAX_SECONDS: 8 * 3600,
   EVENTS_RETENTION_DAYS: 90,

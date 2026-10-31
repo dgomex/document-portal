@@ -110,10 +110,16 @@ const Otp = (function () {
     try {
       const tries = Number(ctx.cache.get(aKey)) || 0;
       if (tries >= Config.OTP.MAX_ATTEMPTS) throw Errors.make('tooMany');
+      // Fresh codes reset the per-code tries; this 6-hour count does not, so
+      // requesting code after code can't turn into unlimited guessing.
+      const windowKey = 'rl:wrong:' + h + ':' + Math.floor(now / 21600000);
+      const wrongInWindow = Number(ctx.cache.get(windowKey)) || 0;
+      if (wrongInWindow >= Config.OTP.WRONG_PER_6H) throw Errors.make('tooMany');
       try { entry = JSON.parse(ctx.cache.get(oKey) || 'null'); } catch (err) { entry = null; }
       const ok = !!entry && entry.exp > now && Crypto.constantTimeEqual(entry.hash, codeHash_(salt, email, code));
       if (!ok) {
         ctx.cache.put(aKey, String(tries + 1), Config.OTP.TTL_SECONDS);
+        ctx.cache.put(windowKey, String(wrongInWindow + 1), 21600);
         if (tries + 1 >= Config.OTP.MAX_ATTEMPTS) {
           ctx.cache.remove(oKey);
           Events.log(ctx.ss, 'verify_locked', h);
