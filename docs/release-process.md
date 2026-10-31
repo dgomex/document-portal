@@ -41,7 +41,7 @@ git commit -am "Release 0.2.0" && git tag -a v0.2.0 -m "0.2.0" && git push --fol
 
 ## Updating existing firms
 
-When you release, tell each firm (email them). The lawyer runs **Portal → Atualizar portal**, which opens a sidebar with five steps (about 3 minutes):
+When you release, tell each firm (email them). The easiest path is the **portal-update** skill: the lawyer says "atualiza o portal" to their Claude, and it does the steps below in their own browser (tested 2026-10-31: 0.3.0 to 0.3.1 with no clicks from the lawyer, same URL). Without the skill, the lawyer runs **Portal → Atualizar portal**, which opens a sidebar with five steps (about 3 minutes):
 1. open the script editor;
 2. Libraries → Portal → choose the highest version → Save;
 3. Deploy → Manage deployments;

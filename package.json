@@ -8,7 +8,8 @@
     "push:shell": "cd shell && clasp push --force",
     "test": "jest",
     "release": "node scripts/release.js",
-    "push:template": "cd template && clasp push --force"
+    "push:template": "cd template && clasp push --force",
+    "skills": "node scripts/skill-labels.js && cd skill && rm -f *.skill && for s in portal-clients portal-onboarding portal-update; do zip -qr $s.skill $s -x \"$s/evals/*\" \"*/__pycache__/*\" \"*.pyc\" \"*/.DS_Store\"; done && ls -1 *.skill"
   },
   "devDependencies": {
     "@google/clasp": "^3.0.0",

@@ -86,6 +86,10 @@ function cronProvision(ctx) {
   if (!cronSlot_(ctx, 'provision')) return;
   if (!String(Settings.get(ctx.ss, 'root_folder_id') || '')) return;
   if (Migrations.needed(ctx.ss)) Migrations.run(ctx);
+  // After an update the sheet runs the new library before anything rewrites Settings.
+  if (String(Settings.get(ctx.ss, 'library_version')) !== Config.LIBRARY_VERSION) {
+    Settings.set(ctx.ss, 'library_version', Config.LIBRARY_VERSION);
+  }
   if (Provision.hasWork(ctx.ss)) Provision.run(ctx, {});
   if (Invite.hasWork(ctx.ss) && Settings.get(ctx.ss, 'portal_url')) safe_(function () { Invite.run(ctx); });
 }

@@ -14,6 +14,7 @@ A lightweight document upload portal for small law firms, built on Google Apps S
 | `npm run push:lib` | Push `library/src` to the Portal Library project |
 | `npm run push:shell` | Push `shell/` to the Portal - DEV sheet's script |
 | `npm run release -- 0.2.0 "notes"` | Publish a library version and point the template at it ([docs/release-process.md](docs/release-process.md)) |
+| `npm run skills` | Regenerate the skills' bilingual labels and package the three `.skill` files for firms |
 
 ## Layout (target)
 

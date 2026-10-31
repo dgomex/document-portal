@@ -57,6 +57,13 @@ The spike settled these decisions; full results are in [spike/README.md](../spik
   - spike cleanup in gddataai's Drive ("Copy of Portal spike" and its folder; danielddg96 was cleaned on 2026-10-31);
   - the pilot firm.
 
+## Update skill (2026-10-31): done
+- `skill/portal-update/SKILL.md`: `?portal=status`, then in the editor Libraries → Portal → highest version → Save, then Manage deployments → edit → New version → Deploy, then `?portal=status` again.
+- **Tested** on the test firm: 0.3.0 to 0.3.1 (library v6), the same URL, no Allow needed. Lessons:
+  - the version list's accessibility label lags, so confirm on screen;
+  - the `library_version` cell only refreshes on migration, so the 5-minute job now keeps it current (in the next release).
+- It also covers the rare release that changes the shell (it pastes the new `Code.gs` or manifest from the release note). This is the first route by which shell changes can reach existing firms.
+
 ## Onboarding skill (2026-10-31): done (release 0.3.0; dry run as the test lawyer: the skill set up a fresh copy end to end, and the lawyer only signed in, clicked Allow and tested on the phone)
 - **Portal changes (for 0.3.0):**
   - `Setup.fromSettings` runs setup from a Settings tab filled in through the connector.

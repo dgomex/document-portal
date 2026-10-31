@@ -61,6 +61,6 @@ Read-only for this skill. Useful keys:
 | `unknown client_id` | the case points to a client that doesn't exist | correct the case's `client_id`, then PENDING |
 | `client CL-… has an error` | the case waits on a client in ERROR | fix the client first; then set both back to PENDING |
 | `invalid status` | case status isn't open or closed | fix, then PENDING |
-| `folder: …` | Google Drive refused to create the folder | usually temporary: set PENDING again; if it repeats, the lawyer should run Portal → Configurar |
+| `folder: …` | Google Drive refused to create the folder | usually temporary: set PENDING again; if it repeats, the lawyer should run Portal → Configurar (EN: Set up) |
 
-A `provision_status` of PENDING for more than about 10 minutes means the portal's 5-minute trigger isn't running. Suggest **Portal → Processar novas linhas**, and if that fails, **Portal → Configurar → Guardar**, which reinstalls the triggers.
+A `provision_status` of PENDING for more than about 10 minutes means the portal's 5-minute trigger isn't running. Suggest **Portal → Processar novas linhas** (EN: Process new rows), and if that fails, **Portal → Configurar → Guardar** (EN: Set up → Save), which reinstalls the triggers.

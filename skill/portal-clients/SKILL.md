@@ -7,6 +7,8 @@ description: Manage the clients and cases of a law firm's document upload portal
 
 The lawyer's portal is a Google Sheet that they own. You edit it through their Google Sheets/Drive connector, so their data goes only between them, you and their own Google account. The portal's script reads these rows every 5 minutes. It creates Drive folders, activates clients and sends invites, so your job is to write **correct rows into the right cells**. Everything else happens on its own.
 
+**Labels:** menus and buttons appear in the lawyer's language. `references/labels.md` lists the portal's own menu in Portuguese and English and Google's screens in English, pt-PT and pt-BR. When you tell the lawyer what to click, use the words on **their** screen.
+
 A bad row is worse than no row: a wrong email lets the wrong person upload into a client's case. So you validate first, show the lawyer exactly what you will write, and write only after they say yes.
 
 ## 0. Find the sheet
@@ -24,7 +26,7 @@ If no Google Sheets tool is available, tell the lawyer to connect Google Drive/S
 
 1. Read the **Settings** tab (key/value). Check `schema_version`:
    - **1 or 2:** supported.
-   - **Empty:** the portal isn't set up yet. Tell them to run Portal → Configurar in the sheet first, and stop.
+   - **Empty:** the portal isn't set up yet. Tell them to run Portal → Configurar (EN: Set up) in the sheet first, and stop.
    - **Anything higher:** stop. The portal is newer than this skill, so writing could break it. Tell them to get an updated skill.
 2. Read the **header row** (row 1) of Clients and Cases, and build a map from column name to column letter. **Always address columns by header name.** Lawyers add their own columns and reorder things, so position means nothing. If a column you need is missing, stop and say which one. Never create columns: the portal's setup does that.
 3. Read the data rows you need: all of Clients (and Cases when the task involves cases). A row counts only if it has something in `client_id`, `name` or `email` (or `case_id`, `client_id`, `case_name` for Cases). The checkbox column holds FALSE in every row down to 1000, and `provision_status` may hold leftover text, so neither makes a row real.
@@ -76,7 +78,7 @@ If the lawyer has already said to go ahead without asking ("podes escrever", "co
 
 ## 5. Tell the lawyer what happens next
 
-- **New clients and cases:** the folders appear within about 5 minutes, or straight away with **Portal → Processar novas linhas** in the sheet. A case waits for its client's folder.
+- **New clients and cases:** the folders appear within about 5 minutes, or straight away with **Portal → Processar novas linhas** (EN: Process new rows) in the sheet. A case waits for its client's folder.
 - **Invites:** they go out once the client's folder exists. `invite_status` changes to SENT.
 - **A closed case** disappears from the client's portal at once, and a deactivated client can no longer log in.
 

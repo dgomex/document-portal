@@ -59,3 +59,58 @@ describe('portal-onboarding skill', () => {
       .forEach((f) => expect(ob).toContain('`' + f + '`'));
   });
 });
+
+describe('portal-update skill', () => {
+  const up = fs.readFileSync(path.join(__dirname, '..', 'skill', 'portal-update', 'SKILL.md'), 'utf8');
+
+  test('edits the existing deployment, never a new one (the URL must not change)', () => {
+    expect(up).toContain('Manage deployments');
+    expect(up).toContain('New version');
+    expect(up).toMatch(/\*\*Not\*\* "New deployment"/);
+  });
+
+  test('checks the live portal through the status endpoint the portal serves', () => {
+    expect(up).toContain('?portal=status');
+    const portal = fs.readFileSync(path.join(__dirname, '..', 'library', 'src', 'Portal.js'), 'utf8');
+    expect(portal).toContain("e.parameter.portal === 'status'");
+  });
+
+  test('warns against the development-mode library entry', () => {
+    expect(up).toMatch(/HEAD/);
+  });
+});
+
+describe('labels in both languages', () => {
+  const { execFileSync } = require('child_process');
+  const { I18N_PT, I18N_EN } = load();
+  const SKILLS = ['portal-clients', 'portal-onboarding', 'portal-update'];
+  const texts = SKILLS.flatMap((s) => {
+    const dir = path.join(__dirname, '..', 'skill', s);
+    return [path.join(dir, 'SKILL.md'), ...fs.readdirSync(path.join(dir, 'references')).filter((f) => f !== 'labels.md')
+      .map((f) => path.join(dir, 'references', f))].map((p) => ({ p, text: fs.readFileSync(p, 'utf8') }));
+  });
+
+  test('each skill\'s labels.md is generated from the current translations', () => {
+    expect(() => execFileSync('node', [path.join(__dirname, '..', 'scripts', 'skill-labels.js'), '--check'], { stdio: 'pipe' }))
+      .not.toThrow();
+  });
+
+  test('each skill points to its labels file', () => {
+    SKILLS.forEach((s) => expect(fs.readFileSync(path.join(__dirname, '..', 'skill', s, 'SKILL.md'), 'utf8')).toContain('references/labels.md'));
+  });
+
+  test('every Portal menu item a skill names in Portuguese also gives the English name next to it', () => {
+    const missing = [];
+    ['menu.setup', 'menu.provision', 'menu.invite', 'menu.update'].forEach((key) => {
+      texts.forEach(({ p, text }) => {
+        const re = new RegExp('Portal → ' + I18N_PT[key].replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        let m;
+        while ((m = re.exec(text))) {
+          const after = text.slice(m.index, m.index + m[0].length + 80);
+          if (!after.includes(I18N_EN[key])) missing.push(path.basename(path.dirname(p)) + ': ' + after.split('\n')[0]);
+        }
+      });
+    });
+    expect(missing).toEqual([]);
+  });
+});
