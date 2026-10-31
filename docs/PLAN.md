@@ -47,15 +47,17 @@ The spike settled these decisions; full results are in [spike/README.md](../spik
   - at most 20 wrong codes per email per 6 hours (slow guessing across fresh codes).
 - **Onboarding:** [onboarding-checklist.md](onboarding-checklist.md), rewritten from what Phases 2–7 taught us.
 - **Tests:** 202.
-- **Still to do:**
+- **Done since:**
   - release 0.2.2;
-  - a dry run of the checklist on a fresh copy;
+  - the onboarding is automated by the portal-onboarding skill (release 0.3.0), and its dry run passed;
+  - spike cleanup in danielddg96's Drive: both "Portal spike" sheets (with the spike script and its deployment), the "Portal spike uploads" folder and the unconfigured "Portal - Onboarding Test" copy were moved to the trash.
+- **Still to do:**
   - the website embed test for multi-account phones;
   - the Workspace alias check (needs a Workspace account);
-  - spike cleanup;
+  - spike cleanup in gddataai's Drive ("Copy of Portal spike" and its folder; danielddg96 was cleaned on 2026-10-31);
   - the pilot firm.
 
-## Onboarding skill (2026-10-31): built; release 0.3.0 and dry run pending
+## Onboarding skill (2026-10-31): done (release 0.3.0; dry run as the test lawyer: the skill set up a fresh copy end to end, and the lawyer only signed in, clicked Allow and tested on the phone)
 - **Portal changes (for 0.3.0):**
   - `Setup.fromSettings` runs setup from a Settings tab filled in through the connector.
   - The `logo_url` setting: the portal fetches the logo itself. It must be https, its bytes must be PNG or JPEG, up to 1 MB.

@@ -1,5 +1,8 @@
 # Phase 0 spike
 
+> **Archived (2026-10-31):** the spike sheet, its script and the upload folder were moved to the trash in danielddg96's Drive. This folder keeps the code and findings for reference (the `spike:push` command was removed).
+
+
 Throwaway Apps Script project, bound to a test Google Sheet, that answers the open questions in [docs/PLAN.md](../docs/PLAN.md) §3 before any real code is written. Delete it after the decision gate.
 
 ## Run it

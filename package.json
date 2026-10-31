@@ -4,7 +4,6 @@
   "private": true,
   "description": "Per-firm document upload portal on Google Apps Script (library + bound template shell).",
   "scripts": {
-    "spike:push": "cd spike && clasp push --force",
     "push:lib": "cd library && clasp push --force",
     "push:shell": "cd shell && clasp push --force",
     "test": "jest",
