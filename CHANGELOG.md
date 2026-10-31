@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 (library version 7, 2026-10-31)
+
+Visa checklists: per-person document lists from a central catalog (Portugal, 12 visas), firm adjustments, reminders, catalog update notices, Spanish
+
 ## 0.3.1 (library version 6, 2026-10-31)
 
 Maintenance release: target for the first skill-driven update
