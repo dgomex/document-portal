@@ -12,6 +12,13 @@
       #result.ok { display: block; background: #e7f4ea; }
       #result.bad { display: block; background: #fdf3dc; }
       .muted { color: #5b6475; }
+      h2 { font-size: 15px; margin: 20px 0 6px; padding-top: 14px; border-top: 1px solid #d9dde5; }
+      ul.changes { padding-left: 18px; margin: 6px 0; }
+      .row2 { display: flex; gap: 8px; margin-top: 8px; }
+      .row2 button { flex: 1; }
+      button.secondary { background: #fff; color: #1f4e8c; border: 1px solid #1f4e8c; }
+      label.check { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+      #catalogResult { margin-top: 8px; }
     </style>
   </head>
   <body>
@@ -26,6 +33,22 @@
     <p class="muted" id="sheetVersion"></p>
     <button id="check" type="button" data-t="update.check"></button>
     <div id="result" role="status"></div>
+
+    <h2 data-t="catalog.title"></h2>
+    <p id="catalogCurrent" class="muted"></p>
+    <div id="catalogPending" hidden>
+      <p id="catalogPendingText"></p>
+      <p data-t="catalog.changes"></p>
+      <ul id="catalogChanges" class="changes"></ul>
+      <p class="muted" data-t="catalog.note"></p>
+      <div class="row2">
+        <button id="catalogApply" type="button" data-t="catalog.apply"></button>
+        <button id="catalogIgnore" type="button" class="secondary" data-t="catalog.ignore"></button>
+      </div>
+    </div>
+    <p id="catalogNone" class="muted" data-t="catalog.none" hidden></p>
+    <label class="check"><input id="catalogCheck" type="checkbox"> <span data-t="catalog.checkLabel"></span></label>
+    <div id="catalogResult" role="status"></div>
     <script>
       const BOOT = <?!= boot ?>;
       const S = BOOT.strings;
@@ -39,6 +62,52 @@
         $('result').textContent = '';
         lines.forEach((l) => { const p = document.createElement('div'); p.textContent = l; $('result').appendChild(p); });
       }
+
+      function renderCatalog(c) {
+        $('catalogCurrent').textContent = t('catalog.current', { version: c.current });
+        $('catalogPending').hidden = !c.pending;
+        $('catalogNone').hidden = !!c.pending;
+        $('catalogCheck').checked = c.check;
+        $('catalogChanges').textContent = '';
+        if (!c.pending) return;
+        $('catalogPendingText').textContent = t('catalog.pending', { version: c.pending.version });
+        (c.pending.changes.length ? c.pending.changes : [t('catalog.noChanges')]).forEach((line) => {
+          const li = document.createElement('li');
+          li.textContent = line;
+          $('catalogChanges').appendChild(li);
+        });
+      }
+
+      function catalogCall(action, data, done) {
+        ['catalogApply', 'catalogIgnore', 'catalogCheck'].forEach((id) => { $(id).disabled = true; });
+        google.script.run
+          .withSuccessHandler((res) => {
+            ['catalogApply', 'catalogIgnore', 'catalogCheck'].forEach((id) => { $(id).disabled = false; });
+            if (!res.ok) { $('catalogResult').textContent = t('error.' + res.error) + (res.message ? ' ' + res.message : ''); return; }
+            done(res.data);
+          })
+          .withFailureHandler(() => {
+            ['catalogApply', 'catalogIgnore', 'catalogCheck'].forEach((id) => { $(id).disabled = false; });
+            $('catalogResult').textContent = t('error.generic');
+          })
+          .admin(action, data);
+      }
+
+      renderCatalog(BOOT.catalog);
+      $('catalogApply').onclick = () => catalogCall('catalogApply', { version: BOOT.catalog.pending.version }, (r) => {
+        BOOT.catalog = { current: r.version, pending: null, check: BOOT.catalog.check };
+        renderCatalog(BOOT.catalog);
+        $('catalogResult').textContent = t('catalog.applied', { version: r.version });
+      });
+      $('catalogIgnore').onclick = () => catalogCall('catalogIgnore', {}, () => {
+        BOOT.catalog.pending = null;
+        renderCatalog(BOOT.catalog);
+        $('catalogResult').textContent = t('catalog.ignored');
+      });
+      $('catalogCheck').onchange = () => catalogCall('catalogCheck', { on: $('catalogCheck').checked }, (c) => {
+        BOOT.catalog.check = c.check;
+        renderCatalog(BOOT.catalog);
+      });
 
       $('check').onclick = () => {
         $('check').disabled = true;

@@ -51,3 +51,13 @@ When you release, tell each firm (email them). The easiest path is the **portal-
 **Why it isn't automatic:** the update would need the Apps Script API, and that API is off in the hidden Google Cloud project behind every copy. Not even the owner can switch it on: Google returns `resourcemanager.projects.get` missing (tested 2026-10-30). Automating it would need each firm on a standard Cloud project, which is too technical for the target lawyer.
 
 **Shell changes** (`shell/Code.js` or manifest scopes) don't reach existing firms through the update: it only changes the library version. Keep the shell frozen; a shell change means a guided step with each firm.
+
+## Visa catalog updates
+
+The catalog (`catalog/*.yaml`) has its own version (`catalog.yaml`: `version`, e.g. `2026.12`), separate from the portal's.
+
+1. Edit the YAML (keep sources and `last_reviewed` current), bump `version`, run `npm run catalog`, and `npm test`.
+2. **Publishing = merging into `main`.** `dist/catalog.json` on main is the feed every portal checks once a day (`Config.CATALOG_FEED_URL`). Firms then see "Atualizar portal (listas novas)" in their menu, with the list of changes, and decide: **Aplicar** or **Ignorar**. Nothing changes by itself, and existing cases keep their checklist.
+3. The next portal release also bundles the new catalog. Firms that turned `catalog_check` off see it only after updating the portal, and still have to apply it.
+
+Never remove an ID: retire visas and document types with `active: false` (the build enforces it through `catalog/ids.lock`).

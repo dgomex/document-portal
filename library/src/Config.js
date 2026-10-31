@@ -33,7 +33,9 @@ const Config = Object.freeze({
     GLOBAL_PER_HOUR: 300,       // beyond this, requests are dropped silently (flood)
     WRONG_PER_6H: 20,           // wrong codes per email per 6 hours (the cache's longest life), across all codes
   },
-  CRON_MIN_GAP_SECONDS: 60,     // the page can call any shell function, crons included: throttle them
+  CRON_MIN_GAP_SECONDS: 60,
+  // Published catalog (main branch of our repo): only ever offered, never applied by itself.
+  CATALOG_FEED_URL: 'https://raw.githubusercontent.com/dgomex/document-portal/main/dist/catalog.json',     // the page can call any shell function, crons included: throttle them
   SESSION_TTL_SECONDS: 45 * 60, // sliding: renewed on every request
   SESSION_MAX_SECONDS: 8 * 3600,
   EVENTS_RETENTION_DAYS: 90,
@@ -69,6 +71,7 @@ const Config = Object.freeze({
     ['countries', 'PT'],
     ['catalog_version', ''],
     ['catalog_check', 'on'],
+    ['catalog_pending', ''],
     ['reminder_days', '7'],
     ['schema_version', ''],
     ['library_version', ''],
