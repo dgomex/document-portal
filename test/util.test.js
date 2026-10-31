@@ -161,15 +161,19 @@ describe('Validate', () => {
 });
 
 describe('I18n', () => {
-  const { I18n, I18N_PT, I18N_EN } = lib;
+  const { I18n, I18N_PT, I18N_EN, I18N_ES } = lib;
 
-  test('PT and EN have exactly the same keys', () => {
+  test('PT, EN and ES have exactly the same keys', () => {
     expect(Object.keys(I18N_EN).sort()).toEqual(Object.keys(I18N_PT).sort());
+    expect(Object.keys(I18N_ES).sort()).toEqual(Object.keys(I18N_PT).sort());
   });
 
-  test('PT and EN use the same placeholders for every key', () => {
+  test('every language uses the same placeholders for every key', () => {
     const holes = (s) => (s.match(/\{\w+\}/g) || []).sort();
-    Object.keys(I18N_PT).forEach((k) => expect([k, holes(I18N_EN[k])]).toEqual([k, holes(I18N_PT[k])]));
+    Object.keys(I18N_PT).forEach((k) => {
+      expect([k, holes(I18N_EN[k])]).toEqual([k, holes(I18N_PT[k])]);
+      expect([k, holes(I18N_ES[k])]).toEqual([k, holes(I18N_PT[k])]);
+    });
   });
 
   test('every Settings default has a description in both languages', () => {

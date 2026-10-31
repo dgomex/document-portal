@@ -16,8 +16,8 @@ const SKILLS = ['portal-clients', 'portal-onboarding', 'portal-update'];
 
 function translations() {
   const ctx = vm.createContext({});
-  ['pt', 'en'].forEach((l) => vm.runInContext(fs.readFileSync(path.join(ROOT, 'library/src/i18n', l + '.js'), 'utf8'), ctx));
-  return vm.runInContext('({ pt: I18N_PT, en: I18N_EN })', ctx);
+  ['pt', 'en', 'es'].forEach((l) => vm.runInContext(fs.readFileSync(path.join(ROOT, 'library/src/i18n', l + '.js'), 'utf8'), ctx));
+  return vm.runInContext('({ pt: I18N_PT, en: I18N_EN, es: I18N_ES })', ctx);
 }
 
 // The portal's own labels a skill may tell the lawyer to click.
@@ -34,24 +34,24 @@ const PORTAL = [
 // Google's labels, which follow the Google account's language. Exact wording
 // can shift between Google releases; match by meaning.
 const GOOGLE = [
-  ['Make a copy', 'Fazer uma cópia', 'Fazer uma cópia'],
-  ['Extensions → Apps Script', 'Extensões → Apps Script', 'Extensões → Apps Script'],
-  ['Libraries', 'Bibliotecas', 'Bibliotecas'],
-  ['Version', 'Versão', 'Versão'],
-  ['Save', 'Guardar', 'Salvar'],
-  ['Cancel', 'Cancelar', 'Cancelar'],
-  ['Deploy', 'Implementar', 'Implantar'],
-  ['New deployment', 'Nova implementação', 'Nova implantação'],
-  ['Manage deployments', 'Gerir implementações', 'Gerenciar implantações'],
-  ['Select type ⚙️ → Web app', 'Selecionar tipo ⚙️ → Aplicação Web', 'Selecionar tipo ⚙️ → App da Web'],
-  ['Execute as → Me', 'Executar como → Eu', 'Executar como → Eu'],
-  ['Who has access → Anyone', 'Quem tem acesso → Qualquer pessoa', 'Quem pode acessar → Qualquer pessoa'],
-  ['Edit (pencil)', 'Editar (lápis)', 'Editar (lápis)'],
-  ['New version', 'Nova versão', 'Nova versão'],
-  ['Done', 'Concluído', 'Concluído'],
-  ['Authorize access', 'Autorizar acesso', 'Autorizar acesso'],
-  ['Advanced → Go to … (unsafe)', 'Avançadas → Aceder a … (não seguro)', 'Avançado → Acessar … (não seguro)'],
-  ['Allow', 'Permitir', 'Permitir'],
+  ['Make a copy', 'Fazer uma cópia', 'Fazer uma cópia', 'Hacer una copia'],
+  ['Extensions → Apps Script', 'Extensões → Apps Script', 'Extensões → Apps Script', 'Extensiones → Apps Script'],
+  ['Libraries', 'Bibliotecas', 'Bibliotecas', 'Bibliotecas'],
+  ['Version', 'Versão', 'Versão', 'Versión'],
+  ['Save', 'Guardar', 'Salvar', 'Guardar'],
+  ['Cancel', 'Cancelar', 'Cancelar', 'Cancelar'],
+  ['Deploy', 'Implementar', 'Implantar', 'Implementar'],
+  ['New deployment', 'Nova implementação', 'Nova implantação', 'Nueva implementación'],
+  ['Manage deployments', 'Gerir implementações', 'Gerenciar implantações', 'Gestionar implementaciones'],
+  ['Select type ⚙️ → Web app', 'Selecionar tipo ⚙️ → Aplicação Web', 'Selecionar tipo ⚙️ → App da Web', 'Seleccionar tipo ⚙️ → Aplicación web'],
+  ['Execute as → Me', 'Executar como → Eu', 'Executar como → Eu', 'Ejecutar como → Yo'],
+  ['Who has access → Anyone', 'Quem tem acesso → Qualquer pessoa', 'Quem pode acessar → Qualquer pessoa', 'Quién tiene acceso → Cualquier persona'],
+  ['Edit (pencil)', 'Editar (lápis)', 'Editar (lápis)', 'Editar (lápiz)'],
+  ['New version', 'Nova versão', 'Nova versão', 'Nueva versión'],
+  ['Done', 'Concluído', 'Concluído', 'Hecho'],
+  ['Authorize access', 'Autorizar acesso', 'Autorizar acesso', 'Autorizar acceso'],
+  ['Advanced → Go to … (unsafe)', 'Avançadas → Aceder a … (não seguro)', 'Avançado → Acessar … (não seguro)', 'Configuración avanzada → Ir a … (no seguro)'],
+  ['Allow', 'Permitir', 'Permitir', 'Permitir'],
 ];
 
 function render() {
@@ -66,18 +66,18 @@ function render() {
     '',
     '## The portal\'s own menu and buttons',
     '',
-    'They follow the firm\'s `default_language` in Settings (`pt` or `en`).',
+    'They follow the firm\'s `default_language` in Settings (`pt`, `en` or `es`).',
     '',
-    row(['Português', 'English', 'What it is']),
-    row(['---', '---', '---']),
-    ...PORTAL.map(([key, what]) => row([t.pt[key], t.en[key], what])),
+    row(['Português', 'English', 'Español', 'What it is']),
+    row(['---', '---', '---', '---']),
+    ...PORTAL.map(([key, what]) => row([t.pt[key], t.en[key], t.es[key], what])),
     '',
     '## Google\'s screens',
     '',
     'These follow the language of the lawyer\'s Google account, and Google rewords them now and then: **match by meaning**, not exact text.',
     '',
-    row(['English', 'Português (Portugal)', 'Português (Brasil)']),
-    row(['---', '---', '---']),
+    row(['English', 'Português (Portugal)', 'Português (Brasil)', 'Español']),
+    row(['---', '---', '---', '---']),
     ...GOOGLE.map(row),
     '',
   ].join('\n');

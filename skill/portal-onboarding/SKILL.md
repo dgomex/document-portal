@@ -7,7 +7,7 @@ description: Set up a law firm's own document upload portal ("Portal" for Google
 
 You set up the firm's document portal **in the firm's own Google account**, acting for the lawyer who is talking to you. The portal is a Google Sheet with a script. Clients log in with a code sent by email and upload documents straight into the firm's Google Drive. Nobody else, including the people who make the portal, gets access to the firm's account or data. Keep it that way: everything you create belongs to the lawyer's account.
 
-**Labels:** menus and buttons appear in the lawyer's language. `references/labels.md` lists the portal's own menu in Portuguese and English and Google's screens in English, pt-PT and pt-BR. When you tell the lawyer what to click, use the words on **their** screen.
+**Labels:** menus and buttons appear in the lawyer's language. `references/labels.md` lists the portal's own menu in Portuguese, English and Spanish, and Google's screens in English, pt-PT, pt-BR and Spanish. When you tell the lawyer what to click, use the words on **their** screen.
 
 It takes about 10–15 minutes. The lawyer has to do three things themselves, and you should tell them so up front:
 1. be signed in to Google in Chrome with the firm's account;
@@ -27,7 +27,7 @@ The template to copy, always the latest release: Google Sheets file `1qSIabs0k2A
 
 - Firm name, as clients should see it.
 - Email for new-document notices (usually the firm's general address).
-- Portal language for clients: `pt` (default) or `en`.
+- Portal language for clients: `pt` (default), `en` or `es`.
 - Privacy contact (an email) and, if they have one, the link to the firm's privacy policy (https).
 - Optional: an https link to their logo (PNG or JPEG, up to 1 MB). Their website's logo often works: right-click it → copy image address.
 - Is the Google account a paid **Google Workspace** account or a free Gmail? Workspace can send many more emails a day.
@@ -49,7 +49,7 @@ The copy has a single empty tab. Rename it to `Settings` and write, from A1:
 |---|---|---|
 | firm_name | the firm name | |
 | notification_email | notice email | |
-| default_language | pt or en | |
+| default_language | pt, en or es | |
 | privacy_contact | privacy email | |
 | privacy_policy_url | https link, or leave empty | |
 | logo_url | https link to the logo, or leave empty | |
@@ -93,13 +93,13 @@ Open `<portal URL>?portal=status` in the browser (or fetch it). The first visit 
   - `firm_name`: empty or over 120 characters;
   - `privacy_contact`: over 200 characters;
   - `notification_email`: not a valid email;
-  - `default_language`: must be pt or en;
+  - `default_language`: must be pt, en or es;
   - `privacy_policy_url`: must be https;
   - `logo_url`: not reachable, not https, not a PNG/JPEG, or over 1 MB;
   - `max_file_mb`: must be 1–100.
 
   Fix the value with the lawyer, write it to Settings, wait a minute, and open the status address again.
-- Anything else, or still not ready after two tries: ask the lawyer to run **Portal → Configurar** (EN: Set up) in the sheet once. It runs the same setup and shows what's wrong.
+- Anything else, or still not ready after two tries: ask the lawyer to run **Portal → Configurar** (EN: Set up · ES: Configurar) in the sheet once. It runs the same setup and shows what's wrong.
 
 Then read the Settings tab back: `root_folder_id`, `portal_url` and `schema_version` should now be filled in.
 
@@ -124,9 +124,9 @@ Afterwards, untick the test client's `active` box. Don't delete rows.
 
 Tell the lawyer, briefly:
 - **Portal address:** the `/exec` URL. Put it on the website and in the email signature.
-- **Adding clients and cases:** ask Claude (portal-clients skill), or type rows in the sheet and use **Portal → Processar novas linhas** (EN: Process new rows).
+- **Adding clients and cases:** ask Claude (portal-clients skill), or type rows in the sheet and use **Portal → Processar novas linhas** (EN: Process new rows · ES: Procesar filas nuevas).
 - **Inviting a client:** set `invite_status` to REQUESTED. The email goes out within 5 minutes.
-- **Updates:** when a new version is announced, **Portal → Atualizar portal** (EN: Update portal) walks them through it (about 3 minutes; the address stays the same).
+- **Updates:** when a new version is announced, **Portal → Atualizar portal** (EN: Update portal · ES: Actualizar portal) walks them through it (about 3 minutes; the address stays the same).
 - **Privacy:** their privacy policy should mention the portal. There are templates in Portuguese and English. If they use Claude to manage clients, it should also say client names and emails are processed by Anthropic.
 
 Answer in the lawyer's language throughout, and keep technical words to the ones they'll see on screen.

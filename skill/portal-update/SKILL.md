@@ -1,6 +1,6 @@
 ---
 name: portal-update
-description: Update a law firm's document upload portal ("Portal" for Google Sheets/Drive) to the newest released version, in the firm's own Google account, keeping the same portal address. Use it whenever the lawyer says the portal should be updated, upgraded, "atualizado", "pôr na versão nova", or forwards an announcement of a new portal version, or when Portal → Atualizar portal (EN: Update portal) shows the sheet and the portal on different versions. Not for first-time installation (portal-onboarding) or for clients and cases (portal-clients).
+description: Update a law firm's document upload portal ("Portal" for Google Sheets/Drive) to the newest released version, in the firm's own Google account, keeping the same portal address. Use it whenever the lawyer says the portal should be updated, upgraded, "atualizado", "pôr na versão nova", or forwards an announcement of a new portal version, or when Portal → Atualizar portal (EN: Update portal · ES: Actualizar portal) shows the sheet and the portal on different versions. Not for first-time installation (portal-onboarding) or for clients and cases (portal-clients).
 ---
 
 # Portal update
@@ -14,7 +14,7 @@ The sheet upgrades its own structure afterwards (within 5 minutes), so you don't
 
 It usually needs no clicks from the lawyer. The exception: if the new version needs new Google permissions, Google asks them to **Allow** (see step 3).
 
-**Labels:** menus and buttons appear in the lawyer's language. `references/labels.md` lists the portal's own menu in Portuguese and English and Google's screens in English, pt-PT and pt-BR. When you tell the lawyer what to click, use the words on **their** screen.
+**Labels:** menus and buttons appear in the lawyer's language. `references/labels.md` lists the portal's own menu in Portuguese, English and Spanish, and Google's screens in English, pt-PT, pt-BR and Spanish. When you tell the lawyer what to click, use the words on **their** screen.
 
 ## What you need
 
@@ -22,7 +22,7 @@ It usually needs no clicks from the lawyer. The exception: if the new version ne
 - The portal sheet. Ask for its link, or find it with the Drive connector: a spreadsheet titled "Portal - <firm>" owned by the lawyer.
 - The portal address: the `portal_url` key in the sheet's **Settings** tab (Sheets connector), or ask the lawyer.
 
-If Claude in Chrome isn't available, guide the lawyer through **Portal → Atualizar portal** (EN: Update portal) in their sheet, which lists the same steps. Then use step 4 to check.
+If Claude in Chrome isn't available, guide the lawyer through **Portal → Atualizar portal** (EN: Update portal · ES: Actualizar portal) in their sheet, which lists the same steps. Then use step 4 to check.
 
 ## 1. Note where it stands
 
@@ -56,7 +56,7 @@ Open `<portal_url>?portal=status`. It returns JSON with `libraryVersion` (e.g. `
 Open `<portal_url>?portal=status` again.
 - `libraryVersion` should be **newer** than in step 1, and `ready` should be `true`. Tell the lawyer the old and new versions.
 - **Still the old version:** the deployment step didn't take. Repeat step 3 and make sure you picked **New version**.
-- **An error page, or `ready: false`:** ask the lawyer to open the sheet and run **Portal → Atualizar portal → Verificar (EN: Portal → Update portal → Check)**. It shows the version the sheet and the portal each run, and points to the missing step.
+- **An error page, or `ready: false`:** ask the lawyer to open the sheet and run **Portal → Atualizar portal → Verificar (EN: Portal → Update portal → Check · ES: Portal → Actualizar portal → Comprobar)**. It shows the version the sheet and the portal each run, and points to the missing step.
 
 The sheet's own `library_version` cell catches up within 5 minutes, so don't rely on it right after updating.
 

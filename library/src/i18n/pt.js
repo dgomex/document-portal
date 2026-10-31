@@ -1,10 +1,10 @@
-/** Portuguese (PT-PT). Default language. Keys must match en.js exactly. */
+/** Portuguese (PT-PT). Default language. Keys must match en.js and es.js exactly. */
 const I18N_PT = {
   'app.title': 'Portal de documentos',
   'app.notReady': 'Este portal ainda está a ser configurado. Contacte o seu advogado.',
-  'lang.switch': 'English',
+  'lang.name': 'Português',
+  'lang.choose': 'Idioma',
 
-  'lang.switchTo': 'Change language to English',
   'privacy.title': 'Aviso de privacidade',
   'privacy.short': 'Os dados que envia são tratados por {firm} apenas para a prestação dos seus serviços jurídicos.',
   'privacy.body': 'Responsável pelo tratamento: {firm}.\nFinalidade: receber os documentos que envia para o seu processo e registar quem os enviou e quando.\nFundamento: execução do contrato de prestação de serviços jurídicos (ou de diligências pré-contratuais) e cumprimento de obrigações legais.\nDados tratados: o seu nome e e-mail, os documentos que envia, a nota que escrever e a data e hora de cada envio.\nOs documentos ficam guardados na conta Google do escritório; a Google atua como subcontratante.\nConservação: durante o tempo necessário ao processo e aos prazos legais aplicáveis.\nDireitos: pode pedir o acesso, a retificação ou o apagamento dos seus dados, a limitação do tratamento ou a portabilidade, opor-se ao tratamento e apresentar reclamação à Comissão Nacional de Proteção de Dados (www.cnpd.pt).\nEste portal não usa cookies de publicidade nem de análise. Guarda apenas a sua escolha de idioma neste navegador.',
@@ -104,7 +104,7 @@ const I18N_PT = {
   'setup.fixFields': 'Corrija os campos assinalados.',
   'setup.err.firmName': 'Indique o nome do escritório (até 120 caracteres).',
   'setup.err.email': 'Indique um endereço de e-mail válido.',
-  'setup.err.language': 'Escolha português ou inglês.',
+  'setup.err.language': 'Escolha português, inglês ou espanhol.',
   'setup.err.tooLong': 'Texto demasiado longo (até 200 caracteres).',
   'setup.err.url': 'Indique um endereço que comece por https://',
   'setup.err.maxMb': 'Indique um número inteiro entre 1 e 100.',
@@ -184,7 +184,7 @@ const I18N_PT = {
   'settings.notification_email': 'E-mail que recebe os avisos de novos documentos',
   'settings.send_as_alias': 'Opcional: alias de envio configurado no Gmail',
   'settings.root_folder_id': 'Preenchido pela configuração: pasta principal no Drive',
-  'settings.default_language': 'pt ou en',
+  'settings.default_language': 'pt, en ou es',
   'settings.portal_url': 'Endereço público do portal (após a implementação)',
   'settings.privacy_contact': 'Contacto para questões de privacidade',
   'settings.privacy_policy_url': 'Endereço da política de privacidade do escritório',

@@ -6,7 +6,7 @@ Schema versions 1 to 3 (Settings `schema_version`). Version 2 added `Clients.inv
 
 Read-only for this skill. Useful keys:
 - `firm_name`
-- `default_language` (`pt` or `en`): use it for new clients when the lawyer doesn't say.
+- `default_language` (`pt`, `en` or `es`): use it for new clients when the lawyer doesn't say.
 - `portal_url`: the address to give clients.
 - `schema_version`
 
@@ -18,7 +18,7 @@ Read-only for this skill. Useful keys:
 | `name` | skill | 1–120 characters |
 | `email` | skill | main login address, lowercase |
 | `additional_emails` | skill | more login addresses, separated by `;` |
-| `language` | skill | `pt` or `en` (the client's emails and portal) |
+| `language` | skill | `pt`, `en` or `es` (the client's emails and portal) |
 | `active` | skill | TRUE / FALSE (checkbox). FALSE = cannot log in |
 | `invite_status` | skill (REQUESTED only), portal | empty, `REQUESTED`, `SENT`, `ERROR` |
 | `provision_status` | skill (PENDING only), portal | `PENDING`, `ACTIVE`, `ERROR` |
@@ -101,11 +101,11 @@ The firm's changes to the catalog, as differences. They apply to lists built fro
 | `invalid additional_emails: …` | one of the extra addresses is wrong | correct it, then PENDING |
 | `email x already used by CL-…` | another client has that address | decide which client it belongs to; remove it from the other one |
 | `invalid name` / `invalid case_name` | empty, or longer than 120 characters | shorten or fill in, then PENDING |
-| `invalid language` | not pt or en | fix, then PENDING |
+| `invalid language` | not pt, en or es | fix, then PENDING |
 | `duplicate client_id` / `duplicate case_id` | two rows share an ID | almost always a copied row: ask the lawyer which row is real |
 | `unknown client_id` | the case points to a client that doesn't exist | correct the case's `client_id`, then PENDING |
 | `client CL-… has an error` | the case waits on a client in ERROR | fix the client first; then set both back to PENDING |
 | `invalid status` | case status isn't open or closed | fix, then PENDING |
-| `folder: …` | Google Drive refused to create the folder | usually temporary: set PENDING again; if it repeats, the lawyer should run Portal → Configurar (EN: Set up) |
+| `folder: …` | Google Drive refused to create the folder | usually temporary: set PENDING again; if it repeats, the lawyer should run Portal → Configurar (EN: Set up · ES: Configurar) |
 
-A `provision_status` of PENDING for more than about 10 minutes means the portal's 5-minute trigger isn't running. Suggest **Portal → Processar novas linhas** (EN: Process new rows), and if that fails, **Portal → Configurar → Guardar** (EN: Set up → Save), which reinstalls the triggers.
+A `provision_status` of PENDING for more than about 10 minutes means the portal's 5-minute trigger isn't running. Suggest **Portal → Processar novas linhas** (EN: Process new rows · ES: Procesar filas nuevas), and if that fails, **Portal → Configurar → Guardar** (EN: Set up → Save · ES: Configurar → Guardar), which reinstalls the triggers.

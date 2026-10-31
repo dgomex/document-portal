@@ -82,7 +82,7 @@ describe('portal-update skill', () => {
 
 describe('labels in both languages', () => {
   const { execFileSync } = require('child_process');
-  const { I18N_PT, I18N_EN } = load();
+  const { I18N_PT, I18N_EN, I18N_ES } = load();
   const SKILLS = ['portal-clients', 'portal-onboarding', 'portal-update'];
   const texts = SKILLS.flatMap((s) => {
     const dir = path.join(__dirname, '..', 'skill', s);
@@ -99,15 +99,15 @@ describe('labels in both languages', () => {
     SKILLS.forEach((s) => expect(fs.readFileSync(path.join(__dirname, '..', 'skill', s, 'SKILL.md'), 'utf8')).toContain('references/labels.md'));
   });
 
-  test('every Portal menu item a skill names in Portuguese also gives the English name next to it', () => {
+  test('every Portal menu item a skill names in Portuguese also gives the English and Spanish names next to it', () => {
     const missing = [];
     ['menu.setup', 'menu.provision', 'menu.invite', 'menu.update'].forEach((key) => {
       texts.forEach(({ p, text }) => {
         const re = new RegExp('Portal → ' + I18N_PT[key].replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
         let m;
         while ((m = re.exec(text))) {
-          const after = text.slice(m.index, m.index + m[0].length + 80);
-          if (!after.includes(I18N_EN[key])) missing.push(path.basename(path.dirname(p)) + ': ' + after.split('\n')[0]);
+          const after = text.slice(m.index, m.index + m[0].length + 140);
+          if (!after.includes(I18N_EN[key]) || !after.includes(I18N_ES[key])) missing.push(path.basename(path.dirname(p)) + ': ' + after.split('\n')[0]);
         }
       });
     });

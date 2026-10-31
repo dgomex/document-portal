@@ -65,8 +65,8 @@ def check_client(row, clients=()):
     extra_ok, extra_bad = email_list(row.get("additional_emails"))
     if extra_bad:
         problems.append("invalid additional_emails: " + ", ".join(extra_bad))
-    if row.get("language") and row["language"] not in ("pt", "en"):
-        problems.append("language must be pt or en")
+    if row.get("language") and row["language"] not in ("pt", "en", "es"):
+        problems.append("language must be pt, en or es")
     wanted = {norm_email(row.get("email"))} | set(extra_ok)
     for c in clients:
         if c.get("client_id") and c.get("client_id") == row.get("client_id"):

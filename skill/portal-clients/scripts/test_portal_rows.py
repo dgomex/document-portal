@@ -30,7 +30,7 @@ class PortalRows(unittest.TestCase):
     def test_client_bad_fields(self):
         self.assertEqual(check_client({"name": "", "email": "nope", "additional_emails": "a@x.pt; bad", "language": "fr"}),
                          ["name must be 1-120 characters", "invalid email: nope",
-                          "invalid additional_emails: bad", "language must be pt or en"])
+                          "invalid additional_emails: bad", "language must be pt, en or es"])
 
     def test_case_needs_an_active_known_client(self):
         self.assertEqual(check_case({"client_id": "CL-AAAAAA", "case_name": "Divórcio"}, CLIENTS), [])

@@ -50,3 +50,22 @@ catalog (ours)  →  firm adjustments (the firm's sheet)  →  case checklist (a
   - edit the firm's adjustments;
   - automatic reminders for missing items;
   - all of it through the portal-clients skill too.
+
+## Status on the branch (2026-10-31)
+
+All six build steps are done on `feature/visa-checklists`, with unit tests (274 Jest plus 7 Python). Not released, and not yet tried in a real sheet.
+
+1. **Catalog:** `catalog/*.yaml`, built by `npm run catalog`. Portugal has 12 residence visas and 42 document types, in PT/EN/ES, researched from the consular checklists.
+2. **Engine:** schema 3 (People, Checklist, Adjustments), `Checklist` (pure) and `CaseChecklist` (the sheet sync).
+3. **Portal:** the per-person checklist, uploads per item into each person's folder, and digests that name the item.
+4. **Lawyer:** review in the sheet; `Reminders`; the portal-clients skill covers visas, people, facts, review, requests and adjustments.
+5. **Catalog updates:** the firm's catalog is kept in its sheet; a newer one is offered daily and applied only by the lawyer.
+6. **Spanish:** the portal, emails, setup, menus and skills; a language picker on the page.
+
+**To verify before release:**
+- run the DEV sheet through the schema 3 migration;
+- set a family case's visa and check the list builds;
+- upload into items from a phone;
+- reject an item and see the reason on the portal;
+- reminders after `reminder_days`;
+- once on main, a catalog notice from the feed.

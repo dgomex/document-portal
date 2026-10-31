@@ -1,13 +1,13 @@
 ---
 name: portal-clients
-description: Manage the clients and cases of a law firm's document upload portal (a Google Sheet with Settings, Clients and Cases tabs, made from the "Portal" template). Use it whenever the lawyer wants to add a client, open or close a case, deactivate or reactivate a client, change a client's email, send a portal invitation, list who is registered, or check why a client or case shows ERROR or has no folder yet, even if they just say "add Ana Ferreira, ana@x.pt, divórcio", "fecha o processo da herança", "convida o Bruno para o portal" or "o portal está a recusar a Carla". Portuguese and English requests both apply. Do not use it for reading uploaded documents or Drive files.
+description: Manage the clients and cases of a law firm's document upload portal (a Google Sheet with Settings, Clients and Cases tabs, made from the "Portal" template). Use it whenever the lawyer wants to add a client, open or close a case, deactivate or reactivate a client, change a client's email, send a portal invitation, list who is registered, or check why a client or case shows ERROR or has no folder yet, even if they just say "add Ana Ferreira, ana@x.pt, divórcio", "fecha o processo da herança", "convida o Bruno para o portal" or "o portal está a recusar a Carla". Portuguese, English and Spanish requests all apply. Do not use it for reading uploaded documents or Drive files.
 ---
 
 # Portal clients
 
 The lawyer's portal is a Google Sheet that they own. You edit it through their Google Sheets/Drive connector, so their data goes only between them, you and their own Google account. The portal's script reads these rows every 5 minutes. It creates Drive folders, activates clients and sends invites, so your job is to write **correct rows into the right cells**. Everything else happens on its own.
 
-**Labels:** menus and buttons appear in the lawyer's language. `references/labels.md` lists the portal's own menu in Portuguese and English and Google's screens in English, pt-PT and pt-BR. When you tell the lawyer what to click, use the words on **their** screen.
+**Labels:** menus and buttons appear in the lawyer's language. `references/labels.md` lists the portal's own menu in Portuguese, English and Spanish, and Google's screens in English, pt-PT, pt-BR and Spanish. When you tell the lawyer what to click, use the words on **their** screen.
 
 A bad row is worse than no row: a wrong email lets the wrong person upload into a client's case. So you validate first, show the lawyer exactly what you will write, and write only after they say yes.
 
@@ -26,7 +26,7 @@ If no Google Sheets tool is available, tell the lawyer to connect Google Drive/S
 
 1. Read the **Settings** tab (key/value). Check `schema_version`:
    - **1 to 3:** supported. (3 adds visa types, people and document checklists.)
-   - **Empty:** the portal isn't set up yet. Tell them to run Portal → Configurar (EN: Set up) in the sheet first, and stop.
+   - **Empty:** the portal isn't set up yet. Tell them to run Portal → Configurar (EN: Set up · ES: Configurar) in the sheet first, and stop.
    - **Anything higher:** stop. The portal is newer than this skill, so writing could break it. Tell them to get an updated skill.
 2. Read the **header row** (row 1) of Clients and Cases, and build a map from column name to column letter. **Always address columns by header name.** Lawyers add their own columns and reorder things, so position means nothing. If a column you need is missing, stop and say which one. Never create columns: the portal's setup does that.
 3. Read the data rows you need: all of Clients (and Cases when the task involves cases). A row counts only if it has something in `client_id`, `name` or `email` (or `case_id`, `client_id`, `case_name` for Cases). The checkbox column holds FALSE in every row down to 1000, and `provision_status` may hold leftover text, so neither makes a row real.
@@ -65,7 +65,7 @@ The People tab's `person_id` and the Checklist tab's `item_id`, `person_id`, `up
 Before showing anything, check:
 - **Emails:** trim and lowercase them. They must look like `x@y.zz` with no spaces.
 - **Duplicates:** search the new email against **every** client's `email` and `additional_emails`, inactive ones included. If it's taken, don't create a duplicate: say who has it and offer the sensible alternative. An inactive match usually means "reactivate"; an active one, "add the case to that client".
-- **Names:** 1–120 characters. `language` is `pt` or `en`; default to the firm's `default_language` from Settings and mention it.
+- **Names:** 1–120 characters. `language` is `pt`, `en` or `es`; default to the firm's `default_language` from Settings and mention it.
 - **New cases:** the `client_id` must exist and be active. If the client was added a moment ago in this conversation, use its new ID.
 - **Formula injection:** any value starting with `=`, `+`, `-` or `@` gets a leading `'`. Sheets would otherwise run it as a formula.
 - **New IDs:** `CL-` or `CS-` plus 6 characters from `0123456789ABCDEFGHJKMNPQRSTVWXYZ` (no I, L, O, U). Make sure the ID isn't already used in that tab. If you can run Python, `scripts/portal_rows.py` does IDs and checks the same way the portal does.
@@ -87,7 +87,7 @@ If the lawyer has already said to go ahead without asking ("podes escrever", "co
 
 ## 5. Tell the lawyer what happens next
 
-- **New clients and cases:** the folders appear within about 5 minutes, or straight away with **Portal → Processar novas linhas** (EN: Process new rows) in the sheet. A case waits for its client's folder.
+- **New clients and cases:** the folders appear within about 5 minutes, or straight away with **Portal → Processar novas linhas** (EN: Process new rows · ES: Procesar filas nuevas) in the sheet. A case waits for its client's folder.
 - **Invites:** they go out once the client's folder exists. `invite_status` changes to SENT.
 - **A closed case** disappears from the client's portal at once, and a deactivated client can no longer log in.
 

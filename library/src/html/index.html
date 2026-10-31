@@ -89,7 +89,7 @@
           <summary data-t="privacy.title"></summary>
           <div id="privacyBody" class="small"></div>
         </details>
-        <button id="lang" type="button" class="link"></button>
+        <p class="langs" id="langs" role="group"></p>
       </footer>
     </main>
     <script>
@@ -97,7 +97,8 @@
       const RESEND_SECONDS = 60;
       const LANG_KEY = 'portal.lang';
       const storedLang = (() => { try { return localStorage.getItem(LANG_KEY); } catch (e) { return null; } })();
-      let langChosen = ['pt', 'en'].includes(storedLang);  // the visitor picked one, here or on an earlier visit
+      const LANGS = Object.keys(BOOT.strings);  // pt, en, es
+      let langChosen = LANGS.includes(storedLang);  // the visitor picked one, here or on an earlier visit
       let lang = langChosen ? storedLang : BOOT.lang;
       let step = 'emailStep';
       let email = '';
@@ -548,10 +549,7 @@
           $('logo').hidden = false;
         }
         document.querySelectorAll('[data-t]').forEach((el) => { if (!el.disabled) el.textContent = t(el.dataset.t); });
-        const other = lang === 'pt' ? 'en' : 'pt';
-        $('lang').textContent = t('lang.switch');
-        $('lang').lang = other;
-        $('lang').setAttribute('aria-label', t('lang.switchTo'));
+        renderLangs();
         renderPrivacy();
         if (me) renderHome();
       }
@@ -599,7 +597,7 @@
         token = res.data.token;
         me = res.data.me;
         // A client who never picked a language gets the one the firm set for them.
-        if (!langChosen && ['pt', 'en'].includes(me.language) && me.language !== lang) { lang = me.language; render(); }
+        if (!langChosen && LANGS.includes(me.language) && me.language !== lang) { lang = me.language; render(); }
         queue = [];
         batchId = newBatchId();
         $('doneBox').hidden = true;
@@ -630,8 +628,27 @@
         await call('logout', { token: old });
       };
 
-      $('lang').onclick = () => {
-        lang = lang === 'pt' ? 'en' : 'pt';
+      /** One button per language, each written in its own language. */
+      function renderLangs() {
+        const box = $('langs');
+        box.textContent = '';
+        box.setAttribute('aria-label', t('lang.choose'));
+        LANGS.forEach((code, i) => {
+          if (i) box.append(document.createTextNode(' · '));
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'link';
+          b.lang = code;
+          b.textContent = BOOT.strings[code]['lang.name'];
+          if (code === lang) b.setAttribute('aria-current', 'true');
+          b.onclick = () => setLang(code);
+          box.append(b);
+        });
+      }
+
+      function setLang(code) {
+        if (code === lang) return;
+        lang = code;
         langChosen = true;
         try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* private mode: just not remembered */ }
         render();
@@ -639,7 +656,7 @@
         if (token && me && !sending) {
           call('me', { token, lang }).then((res) => { if (res.ok && token) { me = res.data.me; render(); } });
         }
-      };
+      }
 
       render();
       if (!BOOT.ready) {

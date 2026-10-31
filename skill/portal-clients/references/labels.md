@@ -6,39 +6,39 @@ The lawyer sees labels in their own language, so name things the way they appear
 
 ## The portal's own menu and buttons
 
-They follow the firm's `default_language` in Settings (`pt` or `en`).
+They follow the firm's `default_language` in Settings (`pt`, `en` or `es`).
 
-| Português | English | What it is |
-| --- | --- | --- |
-| Portal | Portal | The menu in the sheet's menu bar |
-| Configurar | Set up | Menu item: setup sidebar (also retries setup from Settings) |
-| Processar novas linhas | Process new rows | Menu item: create folders for new rows now |
-| Enviar convites pendentes | Send pending invitations | Menu item: send REQUESTED invitations now |
-| Atualizar portal | Update portal | Menu item: the update sidebar |
-| Verificar | Check | Button in the update sidebar |
-| Guardar | Save | Button in the setup sidebar |
+| Português | English | Español | What it is |
+| --- | --- | --- | --- |
+| Portal | Portal | Portal | The menu in the sheet's menu bar |
+| Configurar | Set up | Configurar | Menu item: setup sidebar (also retries setup from Settings) |
+| Processar novas linhas | Process new rows | Procesar filas nuevas | Menu item: create folders for new rows now |
+| Enviar convites pendentes | Send pending invitations | Enviar invitaciones pendientes | Menu item: send REQUESTED invitations now |
+| Atualizar portal | Update portal | Actualizar portal | Menu item: the update sidebar |
+| Verificar | Check | Comprobar | Button in the update sidebar |
+| Guardar | Save | Guardar | Button in the setup sidebar |
 
 ## Google's screens
 
 These follow the language of the lawyer's Google account, and Google rewords them now and then: **match by meaning**, not exact text.
 
-| English | Português (Portugal) | Português (Brasil) |
-| --- | --- | --- |
-| Make a copy | Fazer uma cópia | Fazer uma cópia |
-| Extensions → Apps Script | Extensões → Apps Script | Extensões → Apps Script |
-| Libraries | Bibliotecas | Bibliotecas |
-| Version | Versão | Versão |
-| Save | Guardar | Salvar |
-| Cancel | Cancelar | Cancelar |
-| Deploy | Implementar | Implantar |
-| New deployment | Nova implementação | Nova implantação |
-| Manage deployments | Gerir implementações | Gerenciar implantações |
-| Select type ⚙️ → Web app | Selecionar tipo ⚙️ → Aplicação Web | Selecionar tipo ⚙️ → App da Web |
-| Execute as → Me | Executar como → Eu | Executar como → Eu |
-| Who has access → Anyone | Quem tem acesso → Qualquer pessoa | Quem pode acessar → Qualquer pessoa |
-| Edit (pencil) | Editar (lápis) | Editar (lápis) |
-| New version | Nova versão | Nova versão |
-| Done | Concluído | Concluído |
-| Authorize access | Autorizar acesso | Autorizar acesso |
-| Advanced → Go to … (unsafe) | Avançadas → Aceder a … (não seguro) | Avançado → Acessar … (não seguro) |
-| Allow | Permitir | Permitir |
+| English | Português (Portugal) | Português (Brasil) | Español |
+| --- | --- | --- | --- |
+| Make a copy | Fazer uma cópia | Fazer uma cópia | Hacer una copia |
+| Extensions → Apps Script | Extensões → Apps Script | Extensões → Apps Script | Extensiones → Apps Script |
+| Libraries | Bibliotecas | Bibliotecas | Bibliotecas |
+| Version | Versão | Versão | Versión |
+| Save | Guardar | Salvar | Guardar |
+| Cancel | Cancelar | Cancelar | Cancelar |
+| Deploy | Implementar | Implantar | Implementar |
+| New deployment | Nova implementação | Nova implantação | Nueva implementación |
+| Manage deployments | Gerir implementações | Gerenciar implantações | Gestionar implementaciones |
+| Select type ⚙️ → Web app | Selecionar tipo ⚙️ → Aplicação Web | Selecionar tipo ⚙️ → App da Web | Seleccionar tipo ⚙️ → Aplicación web |
+| Execute as → Me | Executar como → Eu | Executar como → Eu | Ejecutar como → Yo |
+| Who has access → Anyone | Quem tem acesso → Qualquer pessoa | Quem pode acessar → Qualquer pessoa | Quién tiene acceso → Cualquier persona |
+| Edit (pencil) | Editar (lápis) | Editar (lápis) | Editar (lápiz) |
+| New version | Nova versão | Nova versão | Nueva versión |
+| Done | Concluído | Concluído | Hecho |
+| Authorize access | Autorizar acesso | Autorizar acesso | Autorizar acceso |
+| Advanced → Go to … (unsafe) | Avançadas → Aceder a … (não seguro) | Avançado → Acessar … (não seguro) | Configuración avanzada → Ir a … (no seguro) |
+| Allow | Permitir | Permitir | Permitir |

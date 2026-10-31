@@ -6,7 +6,7 @@ const Config = Object.freeze({
   LIBRARY_VERSION: '0.3.1',
   SCHEMA_VERSION: 3,  // bump with a step in admin/Migrations.js
 
-  LANGUAGES: ['pt', 'en'],
+  LANGUAGES: ['pt', 'en', 'es'],
   DEFAULT_LANGUAGE: 'pt',
   TIME_ZONE: 'Europe/Lisbon',
 
@@ -112,7 +112,7 @@ const Config = Object.freeze({
   VALIDATIONS: {
     Clients: {
       active: 'checkbox',
-      language: ['pt', 'en'],
+      language: ['pt', 'en', 'es'],
       invite_status: ['REQUESTED', 'SENT', 'ERROR'],
       provision_status: ['PENDING', 'ACTIVE', 'ERROR'],
     },
