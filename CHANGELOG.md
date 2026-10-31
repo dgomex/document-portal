@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 (library version 5, 2026-10-31)
+
+Automatic setup from a pre-filled Settings tab (onboarding skill), logo_url, ?portal=status
+
 ## 0.2.2 (library version 4, 2026-10-31)
 
 Security: throttle crons, cap wrong codes per email per 6 hours
