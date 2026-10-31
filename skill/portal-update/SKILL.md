@@ -73,7 +73,7 @@ The sheet's own `library_version` cell catches up within 5 minutes, so don't rel
 
 The portal's makers keep a catalog of the documents each visa needs. When a newer one is published, the portal **offers** it once a day, but nothing changes until the lawyer applies it. That choice is the lawyer's alone: the catalog is guidance, and the lawyer is responsible for what their firm asks clients for.
 
-1. Ask the lawyer to open **Portal → Atualizar portal (listas novas)** in their sheet. The sidebar has a **Listas de documentos** (EN: Document lists · ES: Listas de documentos) section with the new version and what changes, visa by visa ("PT-D7: novo documento – …"). With Claude in Chrome you can open it yourself and read the list from the screen.
+1. Ask the lawyer to open **Portal → Atualizar portal (listas novas)** (EN: Update portal (new lists) · ES: Actualizar portal (listas nuevas)) in their sheet. The sidebar has a **Listas de documentos** (EN: Document lists · ES: Listas de documentos) section with the new version and what changes, visa by visa ("PT-D7: novo documento – …"). With Claude in Chrome you can open it yourself and read the list from the screen.
 2. Explain the changes in plain words, especially any visa the firm actually uses (the `visa_type` values in Cases). Say clearly:
    - only **new** checklists use the new lists; existing cases keep theirs. To refresh one case, the lawyer clears that case's `checklist_version` cell, and nothing already received is lost;
    - the firm's own changes (the Adjustments tab) stay on top of the new lists.
