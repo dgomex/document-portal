@@ -10,7 +10,10 @@ const Settings = (function () {
     const out = {};
     table_(ss).rows().forEach(function (r) {
       const key = String(r.key).trim();
-      if (key) out[key] = r.value === null || r.value === undefined ? '' : r.value;
+      if (!key) return;
+      const v = r.value === null || r.value === undefined ? '' : r.value;
+      // Sheets hides the leading apostrophe that marks text; the fakes in tests don't.
+      out[key] = typeof v === 'string' && v.charAt(0) === "'" ? v.slice(1) : v;
     });
     return out;
   }
@@ -20,7 +23,13 @@ const Settings = (function () {
     return v === undefined ? '' : v;
   }
 
+  /**
+   * Strings Sheets would turn into a number or a date ("0.3.1" became the date
+   * 2000-03-01, "2026.10" the number 2026.1) are written as text, with the
+   * leading apostrophe Sheets uses for that.
+   */
   function set(ss, key, value) {
+    if (typeof value === 'string' && /^[\d][\d.\-\/: ]*$/.test(value) && /[.\-\/:]/.test(value)) value = "'" + value;
     const t = table_(ss);
     const existing = t.rows().filter(function (r) { return String(r.key).trim() === key; })[0];
     if (existing) t.update(existing._row, { value: value });

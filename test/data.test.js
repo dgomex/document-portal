@@ -88,6 +88,19 @@ describe('Table', () => {
 });
 
 describe('Settings', () => {
+  test('version-like values are written as text, so Sheets keeps them as typed', () => {
+    const ss = firm();
+    lib.Settings.set(ss, 'library_version', '0.3.1');
+    lib.Settings.set(ss, 'catalog_version', '2026.10');
+    lib.Settings.set(ss, 'max_file_mb', '100');
+    const raw = (k) => ss.getSheetByName('Settings').data.find((r) => r[0] === k)[1];
+    expect(raw('library_version')).toBe("'0.3.1");
+    expect(raw('catalog_version')).toBe("'2026.10");
+    expect(raw('max_file_mb')).toBe('100');
+    expect(lib.Settings.get(ss, 'library_version')).toBe('0.3.1');
+    expect(lib.Settings.get(ss, 'catalog_version')).toBe('2026.10');
+  });
+
   test('read, get, set and language', () => {
     const ss = firm();
     expect(lib.Settings.get(ss, 'firm_name')).toBe('Silva & Costa');

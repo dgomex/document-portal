@@ -107,3 +107,11 @@ test('a newer bundled catalog (after a portal update) is offered, not used', () 
   expect(s.lib.Catalog.version()).toBe('2026.10');
   expect(s.lib.CatalogUpdates.check(s.ctx)).toBe(s.lib.CATALOG_DATA.version);
 });
+
+test('a stale notice (version not newer than the one in use) is cleared when the catalog loads', () => {
+  const { lib, ss } = setup();
+  lib.CatalogUpdates.load(ss);
+  lib.Settings.set(ss, 'catalog_pending', lib.CATALOG_DATA.version);
+  lib.CatalogUpdates.load(ss);
+  expect(lib.Settings.get(ss, 'catalog_pending')).toBe('');
+});

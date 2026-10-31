@@ -78,7 +78,14 @@ const CatalogUpdates = (function () {
   function load(ss) {
     if (!ss.getSheetByName(Config.TABS.SETTINGS)) return Catalog.use(null);
     const stored = readStored_(ss);
-    if (stored) return Catalog.use(stored.version === CATALOG_DATA.version ? null : stored);
+    if (stored) {
+      // Repair a version that Sheets turned into a date or number before it was written as text.
+      if (String(Settings.get(ss, 'catalog_version')) !== stored.version) Settings.set(ss, 'catalog_version', stored.version);
+      // A notice for a version that isn't newer than the one in use is stale.
+      const pending = Settings.get(ss, 'catalog_pending');
+      if (pending !== '' && !(compare(String(pending), stored.version) > 0)) Settings.set(ss, 'catalog_pending', '');
+      return Catalog.use(stored.version === CATALOG_DATA.version ? null : stored);
+    }
     store_(ss, CATALOG_DATA);
     Catalog.use(null);
   }
@@ -133,7 +140,8 @@ const CatalogUpdates = (function () {
   function check(ctx, opts) {
     opts = opts || {};
     const ss = ctx.ss;
-    const current = String(Settings.get(ss, 'catalog_version') || CATALOG_DATA.version);
+    const stored = readStored_(ss);
+    const current = stored ? stored.version : String(Settings.get(ss, 'catalog_version') || CATALOG_DATA.version);
     const ignored = String(ctx.props.getProperty(IGNORED_KEY) || '');
     const candidates = [{ data: CATALOG_DATA, source: 'bundled' }];
     if (String(Settings.get(ss, 'catalog_check') || 'on').trim().toLowerCase() !== 'off') {
@@ -149,7 +157,7 @@ const CatalogUpdates = (function () {
       return '';
     }
     const lang = Settings.language(ss);
-    const from = readStored_(ss) || CATALOG_DATA;
+    const from = stored || CATALOG_DATA;
     const summary = changes(from, best.data, lang).slice(0, 60);
     ctx.props.setProperty(PENDING_KEY, JSON.stringify({ version: best.data.version, source: best.source, changes: summary }));
     Settings.set(ss, 'catalog_pending', best.data.version);
