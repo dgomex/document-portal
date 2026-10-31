@@ -103,6 +103,53 @@ const Setup = (function () {
     return { rootFolderId: rootId, portalUrl: url };
   }
 
+  /**
+   * True when Settings was filled in from outside (the onboarding skill writes
+   * it through the lawyer's Sheets connector) but setup hasn't run yet.
+   */
+  function pendingFromSettings(settings) {
+    const s = settings || {};
+    return !String(s.root_folder_id || '').trim() &&
+      !!String(s.firm_name || '').trim() && !!String(s.notification_email || '').trim();
+  }
+
+  /** Runs setup with the values already in Settings, fetching the logo from logo_url if given. */
+  function fromSettings(ctx, opts) {
+    const s = Settings.read(ctx.ss);
+    const pick = function (k) { return s[k] === undefined || s[k] === null ? '' : String(s[k]); };
+    const form = {
+      firm_name: pick('firm_name'), notification_email: pick('notification_email'), send_as_alias: pick('send_as_alias'),
+      default_language: pick('default_language'), privacy_contact: pick('privacy_contact'),
+      privacy_policy_url: pick('privacy_policy_url'), max_file_mb: pick('max_file_mb'),
+    };
+    const logoUrl = pick('logo_url').trim();
+    if (logoUrl) form.logo = fetchLogo_(logoUrl, opts || {});
+    return save(ctx, form);
+  }
+
+  /** The logo at an https address, as the sidebar would send it: { mimeType, base64 }. */
+  function fetchLogo_(url, opts) {
+    const bad = function (why) {
+      return Errors.make('invalid', 'logo_url: ' + why, { fields: { logo_url: 'setup.err.logoUrl' } });
+    };
+    if (!/^https:\/\/[^\s"'<>]+$/.test(url)) throw bad('not https');
+    let res;
+    try {
+      res = (opts.fetch || UrlFetchApp.fetch)(url, { muteHttpExceptions: true, followRedirects: true });
+    } catch (err) {
+      throw bad(String(err));
+    }
+    if (res.getResponseCode() !== 200) throw bad('HTTP ' + res.getResponseCode());
+    const blob = res.getBlob();
+    const bytes = blob.getBytes();
+    if (bytes.length > LOGO_MAX_BYTES) throw bad('too big');
+    // The type is taken from the bytes, not the server's header: checkLogo checks them again.
+    const hex = bytes.slice(0, 4).map(function (b) { return ('0' + (b & 0xff).toString(16)).slice(-2); }).join('');
+    const mimeType = hex.indexOf(LOGO_MIME['image/png']) === 0 ? 'image/png' : hex.indexOf(LOGO_MIME['image/jpeg']) === 0 ? 'image/jpeg' : '';
+    if (!mimeType) throw bad('not a PNG or JPEG');
+    return { name: 'logo', mimeType: mimeType, base64: Utilities.base64Encode(bytes) };
+  }
+
   function ensureRootFolder_(ctx, token, firmName) {
     const existing = String(Settings.get(ctx.ss, 'root_folder_id') || '').trim();
     if (DriveRest.exists(token, existing)) return existing;
@@ -154,5 +201,6 @@ const Setup = (function () {
     }
   }
 
-  return { validate: validate, checkLogo: checkLogo, state: state, save: save, recordPortalUrl: recordPortalUrl, SALT_KEY: SALT_KEY };
+  return { validate: validate, checkLogo: checkLogo, state: state, save: save, recordPortalUrl: recordPortalUrl,
+    pendingFromSettings: pendingFromSettings, fromSettings: fromSettings, SALT_KEY: SALT_KEY };
 })();

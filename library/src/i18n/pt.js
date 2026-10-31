@@ -97,6 +97,7 @@ const I18N_PT = {
   'setup.deployNext': 'Próximo passo: em Extensões → Apps Script, Implementar → Nova implementação → Aplicação web (executar como Eu, acesso Qualquer pessoa). Depois abra o URL que aparece uma vez; o endereço fica registado sozinho.',
   'setup.err.portalUrl': 'Cole o URL da aplicação web, que começa por https://script.google.com/ e termina em /exec.',
   'setup.err.portalDead': 'Este endereço não abre. Confirme que copiou o URL de uma implementação com acesso Qualquer pessoa.',
+  'setup.err.logoUrl': 'Não foi possível obter o logótipo nesse endereço (tem de ser https, PNG ou JPEG, até 1 MB).',
   'setup.fixFields': 'Corrija os campos assinalados.',
   'setup.err.firmName': 'Indique o nome do escritório (até 120 caracteres).',
   'setup.err.email': 'Indique um endereço de e-mail válido.',
@@ -144,6 +145,7 @@ const I18N_PT = {
   'settings.privacy_policy_url': 'Endereço da política de privacidade do escritório',
   'settings.max_file_mb': 'Tamanho máximo por ficheiro, em MB (até 100)',
   'settings.daily_email_limit': 'Máximo de e-mails enviados por dia (Gmail gratuito: 95; Google Workspace: até 1500)',
+  'settings.logo_url': 'Opcional: endereço https de um logótipo PNG ou JPEG (até 1 MB), usado na configuração automática',
   'settings.schema_version': 'Não alterar',
   'settings.library_version': 'Não alterar',
 

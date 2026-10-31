@@ -55,6 +55,35 @@ The spike settled these decisions; full results are in [spike/README.md](../spik
   - spike cleanup;
   - the pilot firm.
 
+## Onboarding skill (2026-10-31): built; release 0.3.0 and dry run pending
+- **Portal changes (for 0.3.0):**
+  - `Setup.fromSettings` runs setup from a Settings tab filled in through the connector.
+  - The `logo_url` setting: the portal fetches the logo itself. It must be https, its bytes must be PNG or JPEG, up to 1 MB.
+  - The first portal visit runs that setup once, under the auth lock, with failures kept as field names.
+  - `?portal=status` returns `{libraryVersion, ready, setupError}`.
+  - Configurar retries it too.
+- **Skill:** `skill/portal-onboarding/SKILL.md`:
+  1. ask for the firm's details;
+  2. copy the template (Drive connector);
+  3. write Settings (Sheets connector);
+  4. deploy (Claude in Chrome), with the Allow handoff;
+  5. `?portal=status`;
+  6. test client and phone test;
+  7. handover.
+  Drift tests check the template ID and the Settings keys.
+- **Tests:** 212.
+
+## Onboarding automation feasibility (2026-10-31)
+- **Goal:** a "portal-onboarding" skill the firm runs in its own Claude (Google connectors plus Claude in Chrome), acting in its own account. We never touch it.
+- **Test A, passed:** copying the template with the Drive connector (as the test lawyer) keeps the bound script: the Portal menu, the shell, the library and the advanced services all come with it. No browser needed.
+- **Test B, passed:**
+  - In the copy's editor, Deploy → New deployment opens **already filled in** (Web app, Execute as Me, Anyone), because the manifest's `webapp` section sets them. The automation only types a description and clicks Deploy.
+  - Google then asks for authorisation, and the lawyer clicks Allow (the handoff).
+  - The deployment URL can be read from the dialog, and `?portal=version` answered 0.2.2.
+- **Consequence:** the single permission click can happen at deploy time. One authorisation covers the menus and the portal.
+- **Remaining manual steps by design:** Google sign-in, Allow, and the phone test.
+- **Test copy:** "Portal - Onboarding Test" in danielddg96's Drive, deployed but not configured.
+
 ## Phase 7 status (2026-10-31): done (live test: the skill wrote client and case rows into a portal sheet through a Google Sheets connector)
 - **Skill:** `skill/portal-clients/`: `SKILL.md`, `references/schema.md` (columns, allowed values, what each `provision_error` means), and `scripts/portal_rows.py` (IDs and checks matching the portal's rules; 7 Python tests).
 - **Rules beyond §6:**

@@ -58,6 +58,7 @@ const Config = Object.freeze({
     ['privacy_policy_url', ''],
     ['max_file_mb', '100'],
     ['daily_email_limit', '95'],
+    ['logo_url', ''],
     ['schema_version', ''],
     ['library_version', ''],
   ],

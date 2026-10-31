@@ -97,6 +97,7 @@ const I18N_EN = {
   'setup.deployNext': 'Next step: in Extensions → Apps Script, Deploy → New deployment → Web app (execute as Me, access Anyone). Then open the URL it shows once; the address is recorded automatically.',
   'setup.err.portalUrl': 'Paste the web app URL, which starts with https://script.google.com/ and ends in /exec.',
   'setup.err.portalDead': 'This address does not open. Check you copied the URL of a deployment with access Anyone.',
+  'setup.err.logoUrl': 'Could not get the logo from that address (it must be https, PNG or JPEG, up to 1 MB).',
   'setup.fixFields': 'Please fix the highlighted fields.',
   'setup.err.firmName': 'Enter the firm name (up to 120 characters).',
   'setup.err.email': 'Enter a valid email address.',
@@ -144,6 +145,7 @@ const I18N_EN = {
   'settings.privacy_policy_url': "Address of the firm's privacy policy",
   'settings.max_file_mb': 'Maximum size per file, in MB (up to 100)',
   'settings.daily_email_limit': 'Maximum emails sent per day (free Gmail: 95; Google Workspace: up to 1500)',
+  'settings.logo_url': 'Optional: https address of a PNG or JPEG logo (up to 1 MB), used by automatic setup',
   'settings.schema_version': 'Do not change',
   'settings.library_version': 'Do not change',
 

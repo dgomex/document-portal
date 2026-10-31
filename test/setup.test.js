@@ -83,3 +83,42 @@ describe('Setup.checkLogo', () => {
     expect(lib.Setup.checkLogo({ mimeType: 'image/png', base64: big })).toEqual({ error: 'setup.err.logoSize' });
   });
 });
+
+describe('setup from a pre-filled Settings tab (onboarding skill)', () => {
+  const { FakeSpreadsheet } = require('./harness');
+  const settingsSheet = (pairs) => new FakeSpreadsheet({ Settings: [['key', 'value', 'description'], ...pairs.map(([k, v]) => [k, v, ''])] });
+  const blob = (bytes) => ({ getResponseCode: () => 200, getBlob: () => ({ getBytes: () => bytes }) });
+  const PNG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2].map((b) => (b > 127 ? b - 256 : b));
+  const lib2 = load({ Utilities: { base64Encode: (b) => Buffer.from(b.map((x) => x & 0xff)).toString('base64'),
+    base64Decode: (s) => Array.from(Buffer.from(s, 'base64'), (b) => (b > 127 ? b - 256 : b)) } });
+
+  test('pending only when name and notice email are filled and setup has not run', () => {
+    expect(lib.Setup.pendingFromSettings({ firm_name: 'X', notification_email: 'a@b.pt' })).toBe(true);
+    expect(lib.Setup.pendingFromSettings({ firm_name: 'X', notification_email: 'a@b.pt', root_folder_id: 'F' })).toBe(false);
+    expect(lib.Setup.pendingFromSettings({ firm_name: 'X' })).toBe(false);
+    expect(lib.Setup.pendingFromSettings({})).toBe(false);
+  });
+
+  test('invalid Settings values come back as field errors, before anything is created', () => {
+    const ss = settingsSheet([['firm_name', 'Silva'], ['notification_email', 'nope'], ['default_language', 'fr']]);
+    expect(() => lib2.Setup.fromSettings({ ss })).toThrow(expect.objectContaining({
+      code: 'invalid', details: { fields: { notification_email: 'setup.err.email', default_language: 'setup.err.language' } },
+    }));
+  });
+
+  test.each([
+    ['an http address', 'http://x.pt/logo.png', () => blob(PNG)],
+    ['a page that is not an image', 'https://x.pt/logo.png', () => blob([0x3c, 0x68, 0x74, 0x6d, 0x6c])],
+    ['a missing file', 'https://x.pt/logo.png', () => ({ getResponseCode: () => 404 })],
+    ['a network error', 'https://x.pt/logo.png', () => { throw new Error('dns'); }],
+  ])('a bad logo_url (%s) is a logo_url field error', (_, url, fetch) => {
+    const ss = settingsSheet([['firm_name', 'Silva'], ['notification_email', 'a@b.pt'], ['logo_url', url]]);
+    expect(() => lib2.Setup.fromSettings({ ss }, { fetch })).toThrow(expect.objectContaining({ details: { fields: { logo_url: 'setup.err.logoUrl' } } }));
+  });
+
+  test('a good PNG at logo_url passes (only the other bad field is reported)', () => {
+    const ss = settingsSheet([['firm_name', 'Silva'], ['notification_email', 'nope'], ['logo_url', 'https://x.pt/logo.png']]);
+    expect(() => lib2.Setup.fromSettings({ ss }, { fetch: () => blob(PNG) }))
+      .toThrow(expect.objectContaining({ details: { fields: { notification_email: 'setup.err.email' } } }));
+  });
+});

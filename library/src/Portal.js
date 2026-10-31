@@ -29,6 +29,10 @@ function onOpen(e) {
 /** Builds the sheet structure, then opens the setup sidebar. */
 function menuSetup(ctx) {
   sheetAction_(ctx, function (lang) {
+    if (ctx.ss.getSheetByName(Config.TABS.SETTINGS) && Setup.pendingFromSettings(Settings.read(ctx.ss))) {
+      ctx.props.deleteProperty(SETUP_ERROR_KEY_);  // the owner is here: retry now
+      autoSetup_(ctx);
+    }
     Migrations.run(ctx);
     const template = HtmlService.createTemplateFromFile('html/setup');
     template.boot = bootJson_({ state: Setup.state(ctx), strings: I18n.bundle()[lang] });
@@ -107,6 +111,33 @@ function cronSlot_(ctx, name) {
   return true;
 }
 
+const SETUP_ERROR_KEY_ = 'SETUP_ERROR';
+
+/**
+ * Setup from a pre-filled Settings tab, once. Under the auth lock so two
+ * first visits can't create two root folders; a failure is kept (code and
+ * field names only) for ?portal=status, and retried at most once a minute.
+ */
+function autoSetup_(ctx) {
+  const last = safe_(function () { return JSON.parse(ctx.props.getProperty(SETUP_ERROR_KEY_) || 'null'); });
+  if (last && Date.now() - Date.parse(last.at) < 60000) return;
+  if (!ctx.authLock.tryLock(30000)) return;
+  try {
+    if (!Setup.pendingFromSettings(Settings.read(ctx.ss))) return;
+    Setup.fromSettings(ctx);
+    ctx.props.deleteProperty(SETUP_ERROR_KEY_);
+  } catch (err) {
+    console.error('auto setup: ' + (err && err.stack || err));
+    ctx.props.setProperty(SETUP_ERROR_KEY_, JSON.stringify({
+      code: (err && err.code) || 'generic',
+      fields: Object.keys((err && err.details && err.details.fields) || {}),
+      at: new Date().toISOString(),
+    }));
+  } finally {
+    ctx.authLock.releaseLock();
+  }
+}
+
 /** Once a day: drop security-log rows past their retention. */
 function pruneDaily_(ctx) {
   const day = Utilities.formatDate(new Date(), Config.TIME_ZONE, 'yyyy-MM-dd');
@@ -117,13 +148,23 @@ function pruneDaily_(ctx) {
 
 function doGet(e, ctx) {
   Context.check(ctx);
-  // Lets "Portal > Update" confirm which version the live portal serves. Public, and only that.
-  if (e && e.parameter && e.parameter.portal === 'version') {
-    return ContentService.createTextOutput(JSON.stringify({ libraryVersion: Config.LIBRARY_VERSION }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
   const ready = !!ctx.ss.getSheetByName(Config.TABS.SETTINGS);
-  const settings = ready ? Settings.read(ctx.ss) : {};
+  let settings = ready ? Settings.read(ctx.ss) : {};
+  // Onboarding skill path: Settings filled through the connector, then the
+  // first visit (as the owner's deployment) finishes the setup.
+  if (ready && Setup.pendingFromSettings(settings)) {
+    autoSetup_(ctx);
+    settings = Settings.read(ctx.ss);
+  }
+  // Lets "Portal > Update" and the onboarding skill check the live portal.
+  // Public, so only the version, whether setup is done, and which fields failed.
+  if (e && e.parameter && (e.parameter.portal === 'version' || e.parameter.portal === 'status')) {
+    return ContentService.createTextOutput(JSON.stringify({
+      libraryVersion: Config.LIBRARY_VERSION,
+      ready: !!String(settings.root_folder_id || '').trim(),
+      setupError: safe_(function () { return JSON.parse(ctx.props.getProperty(SETUP_ERROR_KEY_) || 'null'); }),
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
   if (ready) Setup.recordPortalUrl(ctx, settings);
   const template = HtmlService.createTemplateFromFile('html/index');
   template.boot = bootJson_({
