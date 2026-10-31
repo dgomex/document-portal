@@ -75,3 +75,13 @@ test('the stylesheet never lets a display rule override the hidden attribute', (
   const css = fs.readFileSync(path.join(SRC, 'html', 'styles.html'), 'utf8');
   expect(css).toMatch(/\[hidden\]\s*\{\s*display:\s*none\s*!important;?\s*\}/);
 });
+
+// api('me') answers { ok, data: <me> } (auth.test checks the server side); the
+// page once read res.data.me, lost the client on a language switch and kept
+// the old checklist.
+test('the page reads the me refetch as res.data', () => {
+  const page = fs.readFileSync(path.join(SRC, 'html', 'index.html'), 'utf8');
+  const refetch = page.match(/call\('me',[^\n]*/);
+  expect(refetch).not.toBeNull();
+  expect(refetch[0]).toMatch(/me = res\.data;/);
+});

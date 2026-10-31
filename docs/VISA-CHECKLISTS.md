@@ -62,10 +62,15 @@ All six build steps are done on `feature/visa-checklists`, with unit tests (274 
 5. **Catalog updates:** the firm's catalog is kept in its sheet; a newer one is offered daily and applied only by the lawyer.
 6. **Spanish:** the portal, emails, setup, menus and skills; a language picker on the page.
 
-**To verify before release:**
-- run the DEV sheet through the schema 3 migration;
-- set a family case's visa and check the list builds;
-- upload into items from a phone;
-- reject an item and see the reason on the portal;
+**Tried on the DEV sheet (2026-10-31):**
+- the schema 3 migration;
+- a family case (PT-D7, spouse and two children) builds its list, per person, ages included;
+- an upload into an item lands in the person's folder and marks the item received;
+- a rejection shows its reason on the portal;
+- a fact (`cplp`) waives the items it should, and clearing it brings them back;
+- an ad-hoc request and a firm adjustment (the adjustment waits for the case to change);
+- Spanish on the portal and in the login email; switching language reloads the checklist.
+
+**Still to verify:**
 - reminders after `reminder_days`;
 - once on main, a catalog notice from the feed.

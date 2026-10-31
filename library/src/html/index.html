@@ -126,6 +126,7 @@
 
       function busy(button, key) {
         button.disabled = !!key;
+        if (key) button.dataset.busy = key; else delete button.dataset.busy;
         button.textContent = t(key || button.dataset.t);
       }
 
@@ -548,7 +549,7 @@
           $('logo').alt = t('app.logoAlt', { firm: BOOT.firmName || t('app.title') });
           $('logo').hidden = false;
         }
-        document.querySelectorAll('[data-t]').forEach((el) => { if (!el.disabled) el.textContent = t(el.dataset.t); });
+        document.querySelectorAll('[data-t]').forEach((el) => { el.textContent = t(el.dataset.busy || el.dataset.t); });
         renderLangs();
         renderPrivacy();
         if (me) renderHome();
@@ -654,7 +655,7 @@
         render();
         // Checklist texts come from the server in the chosen language.
         if (token && me && !sending) {
-          call('me', { token, lang }).then((res) => { if (res.ok && token) { me = res.data.me; render(); } });
+          call('me', { token, lang }).then((res) => { if (res.ok && res.data && token) { me = res.data; render(); } });
         }
       }
 
