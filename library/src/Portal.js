@@ -43,10 +43,12 @@ function menuSetup(ctx) {
 function menuProvision(ctx) {
   sheetAction_(ctx, function (lang) {
     const r = Provision.run(ctx, { retryErrors: true });
+    const c = r.skipped ? null : CaseChecklist.sync(ctx);
     SpreadsheetApp.getUi().alert(I18n.t(lang, r.skipped ? 'provision.busy' : 'provision.done', {
       clients: r.clients.active, clientErrors: r.clients.error,
       cases: r.cases.active, caseErrors: r.cases.error, waiting: r.cases.waiting,
-    }) + (r.timedOut ? '\n' + I18n.t(lang, 'provision.more') : ''));
+    }) + (r.timedOut ? '\n' + I18n.t(lang, 'provision.more') : '') +
+      (c && (c.built || c.rebuilt || c.requests || c.stale) ? '\n' + I18n.t(lang, 'provision.checklists', c) : ''));
   });
 }
 
@@ -91,6 +93,7 @@ function cronProvision(ctx) {
     Settings.set(ctx.ss, 'library_version', Config.LIBRARY_VERSION);
   }
   if (Provision.hasWork(ctx.ss)) Provision.run(ctx, {});
+  safe_(function () { CaseChecklist.sync(ctx); });
   if (Invite.hasWork(ctx.ss) && Settings.get(ctx.ss, 'portal_url')) safe_(function () { Invite.run(ctx); });
 }
 

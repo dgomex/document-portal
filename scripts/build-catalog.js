@@ -48,6 +48,7 @@ function build(opts) {
   if (!/^\d{4}\.\d{1,2}(\.\d+)?$/.test(String(meta.version))) err('catalog.yaml', 'version must look like 2026.11');
   if (!Number.isInteger(meta.format)) err('catalog.yaml', 'format must be an integer');
   i18n('catalog.yaml disclaimer', meta.disclaimer);
+  RULES.forEach((r) => i18n('catalog.yaml rule_texts.' + r, (meta.rule_texts || {})[r]));
 
   const facts = load(path.join(DIR, 'facts.yaml')) || [];
   const factIds = new Set();
@@ -143,6 +144,7 @@ function build(opts) {
 
   const data = {
     version: String(meta.version), format: meta.format, languages: langs, disclaimer: meta.disclaimer,
+    ruleTexts: meta.rule_texts,
     facts: facts.map((f) => ({ id: f.id, name: f.name, derived: f.derived || null })),
     documentTypes: documentTypes, countries: countries,
   };

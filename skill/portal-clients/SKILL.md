@@ -25,7 +25,7 @@ If no Google Sheets tool is available, tell the lawyer to connect Google Drive/S
 ## 1. Preflight: every time, before reading or writing anything else
 
 1. Read the **Settings** tab (key/value). Check `schema_version`:
-   - **1 or 2:** supported.
+   - **1 to 3:** supported. (3 adds visa types, people and document checklists.)
    - **Empty:** the portal isn't set up yet. Tell them to run Portal → Configurar (EN: Set up) in the sheet first, and stop.
    - **Anything higher:** stop. The portal is newer than this skill, so writing could break it. Tell them to get an updated skill.
 2. Read the **header row** (row 1) of Clients and Cases, and build a map from column name to column letter. **Always address columns by header name.** Lawyers add their own columns and reorder things, so position means nothing. If a column you need is missing, stop and say which one. Never create columns: the portal's setup does that.

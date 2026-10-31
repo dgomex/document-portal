@@ -1,7 +1,7 @@
 /** Stable record IDs: PREFIX-XXXXXX in Crockford base32 (no I, L, O, U). */
 const Ids = (function () {
   const ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
-  const PATTERN = /^(CL|CS|UP)-[0-9A-HJKMNP-TV-Z]{6}$/;
+  const PATTERN = /^(CL|CS|UP|PE|IT)-[0-9A-HJKMNP-TV-Z]{6}$/;
 
   /** existing: array or Set of IDs already in use. */
   function generate(prefix, existing) {

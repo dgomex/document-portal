@@ -109,6 +109,7 @@ const I18N_EN = {
   'setup.err.logoSize': 'The logo must be 1 MB or smaller.',
 
   'provision.done': 'Processing finished.\nClients: {clients} ready, {clientErrors} with errors.\nCases: {cases} ready, {caseErrors} with errors, {waiting} waiting for their client.\nErrors are in the provision_error column.',
+  'provision.checklists': 'Document lists: {built} created, {rebuilt} updated, {requests} new requests. {stale} case(s) with an out-of-date list (clear checklist_version to rebuild).',
   'provision.busy': 'Processing is already running. Please try again in a minute.',
   'provision.more': 'Some rows are left; they will be handled automatically within 5 minutes.',
 
@@ -132,6 +133,7 @@ const I18N_EN = {
   'update.missingDeploy': 'The sheet is on the new version but the portal is not yet. Do steps 3 and 4.',
   'update.noPortal': 'Could not reach the portal. Check the web app is deployed with access for Anyone.',
   'update.migrated': 'The sheet structure was updated for the new version.',
+  'checklist.noLongerApplies': 'No longer applies to this case (list updated).',
   'notYet': 'This feature is not available in this version yet.',
 
   'settings.firm_name': 'Firm name, as shown on the portal and in emails',
@@ -146,6 +148,10 @@ const I18N_EN = {
   'settings.max_file_mb': 'Maximum size per file, in MB (up to 100)',
   'settings.daily_email_limit': 'Maximum emails sent per day (free Gmail: 95; Google Workspace: up to 1500)',
   'settings.logo_url': 'Optional: https address of a PNG or JPEG logo (up to 1 MB), used by automatic setup',
+  'settings.countries': 'Countries whose visas the firm handles (e.g. PT)',
+  'settings.catalog_version': 'Version of the document lists in use (filled in by the portal)',
+  'settings.catalog_check': 'on: tell me when new document lists are available; off: never check',
+  'settings.reminder_days': 'Days between reminders to clients about missing documents (0 = never)',
   'settings.schema_version': 'Do not change',
   'settings.library_version': 'Do not change',
 

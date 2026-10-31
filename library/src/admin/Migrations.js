@@ -12,6 +12,9 @@ const Migrations = (function () {
       ctx.props.deleteProperty('OTP_DAILY');
       ctx.props.deleteProperty('DIGEST_DAILY');
     },
+    // 3: People, Checklist and Adjustments tabs, and new columns in Cases and
+    // Uploads (visa checklists). All additive: Schema.ensure adds them.
+    3: function () {},
   };
 
   function current_(ss) {

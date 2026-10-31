@@ -109,6 +109,7 @@ const I18N_PT = {
   'setup.err.logoSize': 'O logótipo tem de ter até 1 MB.',
 
   'provision.done': 'Processamento concluído.\nClientes: {clients} prontos, {clientErrors} com erro.\nProcessos: {cases} prontos, {caseErrors} com erro, {waiting} à espera do cliente.\nOs erros estão na coluna provision_error.',
+  'provision.checklists': 'Listas de documentos: {built} criadas, {rebuilt} atualizadas, {requests} pedidos novos. {stale} processo(s) com lista desatualizada (apague checklist_version para refazer).',
   'provision.busy': 'Já está a decorrer um processamento. Tente novamente dentro de um minuto.',
   'provision.more': 'Ficaram linhas por processar; serão tratadas automaticamente dentro de 5 minutos.',
 
@@ -132,6 +133,7 @@ const I18N_PT = {
   'update.missingDeploy': 'A folha já está na versão nova, mas o portal ainda não. Faça os passos 3 e 4.',
   'update.noPortal': 'Não foi possível contactar o portal. Confirme que a aplicação web está implementada e aberta a Qualquer pessoa.',
   'update.migrated': 'A estrutura da folha foi atualizada para a versão nova.',
+  'checklist.noLongerApplies': 'Deixou de se aplicar a este processo (lista atualizada).',
   'notYet': 'Esta função ainda não está disponível nesta versão.',
 
   'settings.firm_name': 'Nome do escritório, tal como aparece no portal e nos e-mails',
@@ -146,6 +148,10 @@ const I18N_PT = {
   'settings.max_file_mb': 'Tamanho máximo por ficheiro, em MB (até 100)',
   'settings.daily_email_limit': 'Máximo de e-mails enviados por dia (Gmail gratuito: 95; Google Workspace: até 1500)',
   'settings.logo_url': 'Opcional: endereço https de um logótipo PNG ou JPEG (até 1 MB), usado na configuração automática',
+  'settings.countries': 'Países cujos vistos o escritório trata (ex.: PT)',
+  'settings.catalog_version': 'Versão das listas de documentos em uso (preenchido pelo portal)',
+  'settings.catalog_check': 'on: avisar quando houver listas de documentos novas; off: nunca verificar',
+  'settings.reminder_days': 'Dias entre lembretes ao cliente sobre documentos em falta (0 = nunca)',
   'settings.schema_version': 'Não alterar',
   'settings.library_version': 'Não alterar',
 

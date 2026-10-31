@@ -64,6 +64,23 @@ const Table = (function () {
       return target;
     }
 
+    /** Several rows in one write, after the last real row. Returns the first row number. */
+    function appendMany(objs) {
+      if (!objs.length) return 0;
+      objs.forEach(function (obj) {
+        Object.keys(obj).forEach(function (k) {
+          if (!(k in index)) throw new Error(sheet.getName() + ': unknown column ' + k);
+        });
+      });
+      const target = lastDataRow_() + 1;
+      const end = target + objs.length - 1;
+      if (end > sheet.getMaxRows()) sheet.insertRowsAfter(sheet.getMaxRows(), end - sheet.getMaxRows());
+      sheet.getRange(target, 1, objs.length, headers.length).setValues(objs.map(function (obj) {
+        return headers.map(function (h) { return h in obj ? Sanitize.cell(obj[h]) : ''; });
+      }));
+      return target;
+    }
+
     function lastDataRow_() {
       const n = sheet.getLastRow();
       if (n < 2 || !headers.length) return 1;
@@ -80,7 +97,7 @@ const Table = (function () {
     }
 
     return { sheet: sheet, headers: headers, column: function (h) { return h in index ? index[h] + 1 : 0; },
-      require: require, rows: rows, append: append, update: update };
+      require: require, rows: rows, append: append, appendMany: appendMany, update: update };
   }
 
   /** An untouched checkbox (FALSE) doesn't make a row real. */

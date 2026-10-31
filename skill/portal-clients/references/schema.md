@@ -1,6 +1,6 @@
 # Portal sheet: columns, values, errors
 
-Schema versions 1 and 2 (Settings `schema_version`). Version 2 added `Clients.invited_at` and the Settings key `daily_email_limit`. Columns are only ever appended, never renamed. Always find a column by its header text in row 1.
+Schema versions 1 to 3 (Settings `schema_version`). Version 2 added `Clients.invited_at` and the Settings key `daily_email_limit`. Version 3 added visa checklists: `Cases.visa_type`, `Cases.facts`, `Cases.checklist_version`, and the People, Checklist and Adjustments tabs. Columns are only ever appended, never renamed. Always find a column by its header text in row 1.
 
 ## Settings (key | value | description)
 
@@ -42,6 +42,9 @@ Read-only for this skill. Useful keys:
 | `provision_status` | skill (PENDING only), portal | `PENDING`, `ACTIVE`, `ERROR` |
 | `provision_error`, `folder_id` | portal only | |
 | `created_at`, `created_by` | skill (new rows) | as for Clients |
+| `visa_type` | skill | a visa ID from the catalog, e.g. `PT-D7` (schema 3). Setting it builds the case's document checklist |
+| `facts` | skill | yes/no facts that switch documents on, `;`-separated: `cplp`, `other_residence`, `sole_custody` (`married` and `children` come from People) |
+| `checklist_version` | portal only | which catalog version the checklist was built from; clear it to rebuild the checklist |
 
 ## Tabs the skill never opens
 

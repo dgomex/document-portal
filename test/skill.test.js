@@ -20,7 +20,7 @@ test('the schema reference documents every Clients and Cases column', () => {
 });
 
 test('the skill supports the portal\'s current schema version', () => {
-  const m = /\*\*1 or (\d+):\*\* supported/.exec(skill);
+  const m = /\*\*1 to (\d+):\*\* supported/.exec(skill);
   expect(m).not.toBeNull();
   expect(Number(m[1])).toBe(Config.SCHEMA_VERSION);
 });

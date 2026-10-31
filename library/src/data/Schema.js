@@ -21,7 +21,7 @@ const Schema = (function () {
 
     Object.keys(Config.SCHEMA).forEach(function (name) {
       const sheet = ensureTab_(ss, name, Config.SCHEMA[name], report);
-      applyValidations_(sheet, name);
+      applyValidations_(sheet, name, ss);
       protectScriptOwned_(sheet, name);
     });
 
@@ -63,7 +63,7 @@ const Schema = (function () {
     });
   }
 
-  function applyValidations_(sheet, name) {
+  function applyValidations_(sheet, name, ss) {
     const rules = Config.VALIDATIONS[name];
     if (!rules) return;
     const t = Table.wrap(sheet);
@@ -72,6 +72,12 @@ const Schema = (function () {
       const col = t.column(column);
       if (!col) return;
       const builder = SpreadsheetApp.newDataValidation();
+      if (rules[column] === 'visa_types') {
+        const ids = Catalog.visas(Catalog.countriesOf(ss)).map(function (v) { return v.id; });
+        if (!ids.length) return;
+        sheet.getRange(2, col, rows, 1).setDataValidation(builder.requireValueInList(ids, true).setAllowInvalid(false).build());
+        return;
+      }
       const rule = rules[column] === 'checkbox'
         ? builder.requireCheckbox().build()
         : builder.requireValueInList(rules[column], true).setAllowInvalid(false).build();

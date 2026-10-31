@@ -15,6 +15,28 @@ const CATALOG_DATA = {
   "en": "Guidance list, based on official sources as of the date shown. The lawyer is responsible for each case's final list.",
   "es": "Lista orientativa, basada en fuentes oficiales a la fecha indicada. El abogado es responsable de la lista final de cada expediente."
  },
+ "ruleTexts": {
+  "max_age_days": {
+   "pt": "Emitido há menos de {n} dias.",
+   "en": "Issued within the last {n} days.",
+   "es": "Emitido hace menos de {n} días."
+  },
+  "valid_months": {
+   "pt": "Válido pelo menos {n} meses além da estadia.",
+   "en": "Valid at least {n} months beyond the stay.",
+   "es": "Válido al menos {n} meses más allá de la estancia."
+  },
+  "apostille": {
+   "pt": "Com Apostila de Haia ou legalizado.",
+   "en": "With the Hague Apostille or legalised.",
+   "es": "Con Apostilla de La Haya o legalizado."
+  },
+  "translation": {
+   "pt": "Com tradução certificada se não estiver em português, inglês ou espanhol.",
+   "en": "With a certified translation if not in Portuguese, English or Spanish.",
+   "es": "Con traducción jurada si no está en portugués, inglés o español."
+  }
+ },
  "facts": [
   {
    "id": "married",

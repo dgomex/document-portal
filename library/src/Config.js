@@ -4,7 +4,7 @@
  */
 const Config = Object.freeze({
   LIBRARY_VERSION: '0.3.1',
-  SCHEMA_VERSION: 2,  // bump with a step in admin/Migrations.js
+  SCHEMA_VERSION: 3,  // bump with a step in admin/Migrations.js
 
   LANGUAGES: ['pt', 'en'],
   DEFAULT_LANGUAGE: 'pt',
@@ -38,12 +38,19 @@ const Config = Object.freeze({
   SESSION_MAX_SECONDS: 8 * 3600,
   EVENTS_RETENTION_DAYS: 90,
 
-  ID_PREFIX: { CLIENT: 'CL', CASE: 'CS', UPLOAD: 'UP' },
+  ID_PREFIX: { CLIENT: 'CL', CASE: 'CS', UPLOAD: 'UP', PERSON: 'PE', ITEM: 'IT' },
   PROVISION: { PENDING: 'PENDING', ACTIVE: 'ACTIVE', ERROR: 'ERROR' },
   CASE_STATUS: { OPEN: 'open', CLOSED: 'closed' },
   INVITE: { NONE: '', REQUESTED: 'REQUESTED', SENT: 'SENT', ERROR: 'ERROR' },
 
-  TABS: { SETTINGS: 'Settings', CLIENTS: 'Clients', CASES: 'Cases', UPLOADS: 'Uploads', EVENTS: 'Events' },
+  TABS: { SETTINGS: 'Settings', CLIENTS: 'Clients', CASES: 'Cases', PEOPLE: 'People', CHECKLIST: 'Checklist',
+    ADJUSTMENTS: 'Adjustments', UPLOADS: 'Uploads', EVENTS: 'Events' },
+
+  // People in a case, and what each checklist item is (docs/VISA-CHECKLISTS.md).
+  ROLES: ['main_applicant', 'spouse', 'child', 'dependant'],
+  APPLIES_TO: ['main_applicant', 'spouse', 'each_child', 'each_adult', 'each_person', 'case'],
+  ITEM_LEVEL: { REQUIRED: 'required', OPTIONAL: 'optional', REQUESTED: 'requested', WAIVED: 'waived' },
+  ITEM_STATUS: { MISSING: 'missing', RECEIVED: 'received', ACCEPTED: 'accepted', REJECTED: 'rejected' },
 
   SETTINGS_HEADERS: ['key', 'value', 'description'],
   SETTINGS_DEFAULTS: [
@@ -59,6 +66,10 @@ const Config = Object.freeze({
     ['max_file_mb', '100'],
     ['daily_email_limit', '95'],
     ['logo_url', ''],
+    ['countries', 'PT'],
+    ['catalog_version', ''],
+    ['catalog_check', 'on'],
+    ['reminder_days', '7'],
     ['schema_version', ''],
     ['library_version', ''],
   ],
@@ -68,9 +79,18 @@ const Config = Object.freeze({
       'provision_status', 'provision_error', 'folder_id', 'created_at', 'created_by', 'notes',
       'invited_at'],  // added in schema 2: columns are only ever appended
     Cases: ['case_id', 'client_id', 'case_name', 'firm_reference', 'status', 'responsible_email',
-      'provision_status', 'provision_error', 'folder_id', 'created_at', 'created_by'],
+      'provision_status', 'provision_error', 'folder_id', 'created_at', 'created_by',
+      'visa_type', 'facts', 'checklist_version'],  // schema 3
+    // schema 3: the people in each case (the main applicant is added automatically)
+    People: ['person_id', 'case_id', 'name', 'role', 'birth_date', 'notes', 'folder_id', 'created_at', 'created_by'],
+    // schema 3: one row per document per person, frozen when the case's list is built
+    Checklist: ['item_id', 'case_id', 'person_id', 'person_name', 'title', 'instructions', 'level', 'status', 'reason',
+      'due_date', 'upload_ids', 'doc_type', 'key', 'source', 'updated_at', 'text_json'],
+    // schema 3: the firm's changes to the catalog (differences, not a copy)
+    Adjustments: ['visa_type', 'applies_to', 'doc_type', 'action', 'level', 'title', 'note'],
     Uploads: ['upload_id', 'timestamp', 'client_id', 'client_name', 'case_id', 'case_name', 'stored_name',
-      'original_name', 'mime_type', 'size_bytes', 'md5', 'drive_link', 'uploader_email', 'note', 'status'],
+      'original_name', 'mime_type', 'size_bytes', 'md5', 'drive_link', 'uploader_email', 'note', 'status',
+      'item_id', 'person_id'],  // schema 3
     Events: ['timestamp', 'type', 'email_hash', 'detail'],
   },
 
@@ -78,7 +98,10 @@ const Config = Object.freeze({
   // the sheet, so hard protection would not bind them anyway.
   SCRIPT_OWNED: {
     Clients: ['provision_error', 'folder_id', 'invited_at'],
-    Cases: ['provision_error', 'folder_id'],
+    Cases: ['provision_error', 'folder_id', 'checklist_version'],
+    People: ['person_id', 'folder_id'],
+    // The lawyer edits level, status, reason, due date and wording; adds rows for ad-hoc requests.
+    Checklist: ['item_id', 'person_id', 'upload_ids', 'doc_type', 'key', 'source', 'updated_at', 'text_json'],
     Uploads: '*',
     Events: '*',
   },
@@ -93,6 +116,19 @@ const Config = Object.freeze({
     Cases: {
       status: ['open', 'closed'],
       provision_status: ['PENDING', 'ACTIVE', 'ERROR'],
+      visa_type: 'visa_types',  // filled from the catalog for the firm's countries
+    },
+    People: {
+      role: ['main_applicant', 'spouse', 'child', 'dependant'],
+    },
+    Checklist: {
+      level: ['required', 'optional', 'requested', 'waived'],
+      status: ['missing', 'received', 'accepted', 'rejected'],
+    },
+    Adjustments: {
+      action: ['add', 'change', 'hide'],
+      applies_to: ['main_applicant', 'spouse', 'each_child', 'each_adult', 'each_person', 'case'],
+      level: ['required', 'optional'],
     },
   },
 });

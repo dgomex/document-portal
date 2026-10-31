@@ -100,7 +100,7 @@ describe('Invite', () => {
 });
 
 describe('Migrations', () => {
-  test('a v1 sheet gets the new column, the new setting and step 2, then schema_version 2', () => {
+  test('a v1 sheet gets the new columns, the new settings and every step, up to the current schema', () => {
     const ss = firm({ settings: [['schema_version', '1', '']] });
     const ctx = { ss, props: new FakeProps({ OTP_DAILY: '{}', DIGEST_DAILY: '{}', OTP_SALT: 's' }), lock: lock() };
     lib.Schema.ensure = ((orig) => (s) => { /* the fake sheet lacks formatting APIs: add columns only */
@@ -113,11 +113,11 @@ describe('Migrations', () => {
       Config.SETTINGS_DEFAULTS.forEach(([k, v]) => { if (!(k in lib.Settings.read(s))) lib.Settings.set(s, k, v); });
     })(lib.Schema.ensure);
     expect(lib.Migrations.needed(ss)).toBe(true);
-    expect(lib.Migrations.run(ctx)).toEqual({ from: 1, to: 2 });
+    expect(lib.Migrations.run(ctx)).toEqual({ from: 1, to: Config.SCHEMA_VERSION });
     expect(lib.Table.readHeaders(ss.getSheetByName('Clients'))).toContain('invited_at');
     expect(lib.Settings.get(ss, 'daily_email_limit')).toBe('95');
     expect(Object.keys(ctx.props.m)).toEqual(['OTP_SALT']);
-    expect(String(lib.Settings.get(ss, 'schema_version'))).toBe('2');
+    expect(String(lib.Settings.get(ss, 'schema_version'))).toBe(String(Config.SCHEMA_VERSION));
     expect(lib.Migrations.needed(ss)).toBe(false);
   });
 
