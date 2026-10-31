@@ -1,0 +1,244 @@
+# Reusable document types. `name` is what the client sees; `instructions` say
+# exactly what to send. `rules` add standard notes (validity, apostille…).
+# rules: max_age_days (issued within), apostille (true), translation (true =
+# certified translation if not in Portuguese, English or Spanish), valid_months
+# (beyond the stay).
+
+- id: APPLICATION_FORM
+  name: { pt: "Formulário de pedido de visto nacional", en: "National visa application form", es: "Formulario de solicitud de visado nacional" }
+  instructions:
+    pt: "Preenchido na íntegra e assinado (assinatura igual à do passaporte). Para menores, assinado pelo representante legal."
+    en: "Fully completed and signed (signature as in the passport). For minors, signed by the legal guardian."
+    es: "Completo y firmado (firma igual a la del pasaporte). Para menores, firmado por el representante legal."
+
+- id: PHOTOS
+  name: { pt: "Fotografias tipo passe (2)", en: "Passport photos (2)", es: "Fotografías tipo carné (2)" }
+  instructions:
+    pt: "Duas fotografias iguais, recentes, a cores, com fundo claro."
+    en: "Two identical, recent colour photos on a light background."
+    es: "Dos fotografías iguales, recientes, en color, con fondo claro."
+
+- id: PASSPORT
+  name: { pt: "Passaporte", en: "Passport", es: "Pasaporte" }
+  instructions:
+    pt: "Cópia da página de identificação. O passaporte deve ser válido pelo menos 3 meses além da estadia pedida."
+    en: "Copy of the identification page. The passport must be valid at least 3 months beyond the requested stay."
+    es: "Copia de la página de identificación. El pasaporte debe ser válido al menos 3 meses más allá de la estancia solicitada."
+  rules: { valid_months: 3 }
+
+- id: LEGAL_RESIDENCE_ELSEWHERE
+  name: { pt: "Comprovativo de residência legal no país onde vive", en: "Proof of legal residence in the country where you live", es: "Prueba de residencia legal en el país donde vive" }
+  instructions:
+    pt: "Autorização de residência do país onde vive, válida para além do fim do visto pedido."
+    en: "Residence permit of the country where you live, valid beyond the end of the requested visa."
+    es: "Permiso de residencia del país donde vive, válido más allá del fin del visado solicitado."
+
+- id: TRAVEL_INSURANCE
+  name: { pt: "Seguro de viagem / saúde", en: "Travel / health insurance", es: "Seguro de viaje / salud" }
+  instructions:
+    pt: "Válido durante o visto, cobrindo despesas médicas, assistência urgente e repatriamento. Brasileiros podem usar o certificado PB4."
+    en: "Valid for the visa period, covering medical costs, urgent care and repatriation. Brazilians may use the PB4 certificate."
+    es: "Válido durante el visado, cubriendo gastos médicos, asistencia urgente y repatriación. Los brasileños pueden usar el certificado PB4."
+
+- id: CRIMINAL_RECORD
+  name: { pt: "Registo criminal", en: "Criminal record certificate", es: "Certificado de antecedentes penales" }
+  instructions:
+    pt: "Do país da nacionalidade e de qualquer país onde tenha vivido mais de um ano. Emitido há menos de 3 meses, com Apostila de Haia ou legalizado."
+    en: "From your country of nationality and any country where you lived for over a year. Issued within the last 3 months, with the Hague Apostille or legalised."
+    es: "Del país de su nacionalidad y de cualquier país donde haya vivido más de un año. Emitido hace menos de 3 meses, con Apostilla de La Haya o legalizado."
+  rules: { max_age_days: 90, apostille: true, translation: true }
+
+- id: PROPERTY_DEED
+  name: { pt: "Escritura de imóvel em Portugal", en: "Deed of a property in Portugal", es: "Escritura de un inmueble en Portugal" }
+  instructions:
+    pt: "Em nome do requerente."
+    en: "In the applicant's name."
+    es: "A nombre del solicitante."
+
+- id: RENTAL_AGREEMENT
+  name: { pt: "Contrato de arrendamento em Portugal", en: "Rental agreement in Portugal", es: "Contrato de alquiler en Portugal" }
+  instructions:
+    pt: "Mínimo de 1 ano, com comprovativo de registo nas Finanças (AT)."
+    en: "At least 1 year, with proof of registration with the tax authority (AT)."
+    es: "Mínimo 1 año, con justificante de registro en la autoridad tributaria (AT)."
+
+- id: HOST_TERM
+  name: { pt: "Termo de responsabilidade de alojamento", en: "Accommodation term of responsibility", es: "Término de responsabilidad de alojamiento" }
+  instructions:
+    pt: "Assinado pelo anfitrião com assinatura reconhecida por notário, com cópia do documento de identificação e do título do imóvel do anfitrião."
+    en: "Signed by the host with a notarised signature, with a copy of the host's ID and of the property deed or lease."
+    es: "Firmado por el anfitrión con firma reconocida ante notario, con copia de su documento de identidad y del título del inmueble."
+
+- id: BANK_STATEMENTS
+  name: { pt: "Extratos bancários (últimos 3 meses)", en: "Bank statements (last 3 months)", es: "Extractos bancarios (últimos 3 meses)" }
+  instructions:
+    pt: "Com saldo disponível de pelo menos o salário mínimo português por cada mês de estadia (até 12 meses)."
+    en: "Showing an available balance of at least the Portuguese minimum wage for each month of stay (up to 12 months)."
+    es: "Con saldo disponible de al menos el salario mínimo portugués por cada mes de estancia (hasta 12 meses)."
+
+- id: SPONSOR_TERM
+  name: { pt: "Termo de responsabilidade de meios de subsistência", en: "Financial sponsorship term of responsibility", es: "Término de responsabilidad de medios de subsistencia" }
+  instructions:
+    pt: "Assinado pelo responsável com assinatura reconhecida por notário, com o seu documento de identificação, extratos bancários de 3 meses e última declaração de IRS."
+    en: "Signed by the sponsor with a notarised signature, with their ID, 3 months of bank statements and latest tax return."
+    es: "Firmado por el responsable con firma reconocida ante notario, con su documento de identidad, extractos de 3 meses y última declaración de la renta."
+
+- id: PT_BANK_ACCOUNT
+  name: { pt: "Conta bancária portuguesa", en: "Portuguese bank account", es: "Cuenta bancaria portuguesa" }
+  instructions:
+    pt: "Comprovativo de titularidade de uma conta num banco português."
+    en: "Proof of an account at a Portuguese bank."
+    es: "Justificante de una cuenta en un banco portugués."
+
+- id: EMPLOYMENT_CONTRACT
+  name: { pt: "Contrato de trabalho ou promessa", en: "Employment contract or promise of contract", es: "Contrato de trabajo o promesa" }
+  instructions:
+    pt: "Com identificação das partes, funções, remuneração acima do salário mínimo, local, horário e data de início; assinaturas reconhecidas."
+    en: "Identifying both parties, the role, pay above the minimum wage, place, hours and start date; signatures certified."
+    es: "Con identificación de las partes, funciones, salario superior al mínimo, lugar, horario y fecha de inicio; firmas legitimadas."
+
+- id: PROFESSIONAL_CERTIFICATE
+  name: { pt: "Certificado profissional / diplomas", en: "Professional certificate / diplomas", es: "Certificado profesional / títulos" }
+  instructions:
+    pt: "Quando a profissão é regulada em Portugal. Legalizados por Apostila ou consulado."
+    en: "When the profession is regulated in Portugal. Legalised by Apostille or consulate."
+    es: "Cuando la profesión está regulada en Portugal. Legalizados por Apostilla o consulado."
+  rules: { apostille: true }
+
+- id: CV
+  name: { pt: "Curriculum vitae", en: "Curriculum vitae (CV)", es: "Currículum vitae" }
+
+- id: COMPANY_REGISTRATION
+  name: { pt: "Registo da empresa / atividade em Portugal", en: "Company or activity registration in Portugal", es: "Registro de la empresa o actividad en Portugal" }
+  instructions:
+    pt: "Certidão permanente do registo comercial, início de atividade, pacto social e RCBE, quando aplicável."
+    en: "Permanent commercial registry certificate, self-employment registration, articles of association and RCBE, as applicable."
+    es: "Certificado permanente del registro mercantil, alta de actividad, estatutos y RCBE, según corresponda."
+
+- id: SERVICE_CONTRACT
+  name: { pt: "Contrato ou proposta de prestação de serviços", en: "Service contract or proposal", es: "Contrato o propuesta de prestación de servicios" }
+
+- id: BUSINESS_PLAN
+  name: { pt: "Declaração de investimento / plano de negócios", en: "Investment declaration / business plan", es: "Declaración de inversión / plan de negocio" }
+  instructions:
+    pt: "Natureza, valor, duração e meios do investimento realizado ou pretendido em Portugal."
+    en: "Nature, amount, duration and means of the investment made or intended in Portugal."
+    es: "Naturaleza, importe, duración y medios de la inversión realizada o prevista en Portugal."
+
+- id: INVESTMENT_PROOF
+  name: { pt: "Comprovativo de investimento realizado", en: "Proof of investment made", es: "Prueba de la inversión realizada" }
+
+- id: FUNDS_IN_PORTUGAL
+  name: { pt: "Comprovativo de meios financeiros em Portugal", en: "Proof of funds available in Portugal", es: "Prueba de fondos disponibles en Portugal" }
+
+- id: IAPMEI_DECLARATION
+  name: { pt: "Declaração do IAPMEI (contrato de incubação)", en: "IAPMEI declaration (incubation contract)", es: "Declaración del IAPMEI (contrato de incubación)" }
+
+- id: INVITATION_LETTER
+  name: { pt: "Carta convite (ensino, investigação ou cultura)", en: "Invitation letter (teaching, research or culture)", es: "Carta de invitación (docencia, investigación o cultura)" }
+
+- id: ADMISSION_PROOF
+  name: { pt: "Comprovativo de admissão em instituição de ensino", en: "Proof of admission to an education institution", es: "Prueba de admisión en un centro de enseñanza" }
+
+- id: SCHOLARSHIP_PROOF
+  name: { pt: "Comprovativo de bolsa", en: "Proof of scholarship or grant", es: "Prueba de beca" }
+
+- id: RESEARCH_HOSTING
+  name: { pt: "Acordo de acolhimento do centro de investigação", en: "Hosting agreement with the research centre", es: "Acuerdo de acogida del centro de investigación" }
+
+- id: PENSION_PROOF
+  name: { pt: "Comprovativo do valor da reforma", en: "Proof of pension amount", es: "Prueba del importe de la pensión" }
+  instructions:
+    pt: "Carta ou extratos da pensão, ou declaração de impostos, mostrando valor acima do salário mínimo português."
+    en: "Pension letter or statements, or tax return, showing an amount above the Portuguese minimum wage."
+    es: "Carta o extractos de la pensión, o declaración de impuestos, con un importe superior al salario mínimo portugués."
+
+- id: PASSIVE_INCOME_PROOF
+  name: { pt: "Comprovativo de rendimentos passivos", en: "Proof of passive income", es: "Prueba de ingresos pasivos" }
+  instructions:
+    pt: "Rendas, dividendos, investimentos ou propriedade intelectual, com pelo menos 3 meses de histórico e valor acima do salário mínimo português."
+    en: "Rents, dividends, investments or intellectual property, with at least 3 months of history and an amount above the Portuguese minimum wage."
+    es: "Alquileres, dividendos, inversiones o propiedad intelectual, con al menos 3 meses de historial e importe superior al salario mínimo portugués."
+
+- id: RELIGIOUS_STATUS
+  name: { pt: "Comprovativo de ministro do culto / vida consagrada", en: "Proof of status as minister of religion", es: "Prueba de condición de ministro de culto" }
+  instructions:
+    pt: "Emitido pela igreja ou comunidade religiosa reconhecida em Portugal, com termo de responsabilidade."
+    en: "Issued by the church or religious community recognised in Portugal, with a term of responsibility."
+    es: "Emitido por la iglesia o comunidad religiosa reconocida en Portugal, con término de responsabilidad."
+
+- id: EMPLOYER_DECLARATION
+  name: { pt: "Declaração do empregador", en: "Employer's declaration", es: "Declaración del empleador" }
+  instructions:
+    pt: "Confirma o vínculo laboral e que o trabalho pode ser feito à distância."
+    en: "Confirms the employment and that the work can be done remotely."
+    es: "Confirma la relación laboral y que el trabajo puede realizarse a distancia."
+
+- id: REMOTE_WORK_PROOF
+  name: { pt: "Comprovativo de trabalho remoto", en: "Proof the work is done remotely", es: "Prueba de trabajo a distancia" }
+
+- id: INCOME_3_MONTHS
+  name: { pt: "Rendimentos dos últimos 3 meses", en: "Income for the last 3 months", es: "Ingresos de los últimos 3 meses" }
+  instructions:
+    pt: "Recibos de vencimento ou faturas, com média mensal de pelo menos 4 salários mínimos portugueses."
+    en: "Payslips or invoices, averaging at least 4 times the Portuguese minimum wage per month."
+    es: "Nóminas o facturas, con una media mensual de al menos 4 salarios mínimos portugueses."
+
+- id: TAX_RESIDENCE_ABROAD
+  name: { pt: "Certificado de residência fiscal fora de Portugal", en: "Tax residence certificate outside Portugal", es: "Certificado de residencia fiscal fuera de Portugal" }
+
+- id: AIMA_REUNIFICATION
+  name: { pt: "Notificação de autorização de reagrupamento familiar (AIMA)", en: "Family reunification authorisation notice (AIMA)", es: "Notificación de autorización de reagrupación familiar (AIMA)" }
+
+- id: FAMILY_MEMBER_ID
+  name: { pt: "Documento de identificação do familiar residente", en: "ID of the family member living in Portugal", es: "Documento de identidad del familiar residente" }
+
+- id: MAIN_APPLICANT_VISA_REQUEST
+  name: { pt: "Comprovativo do pedido de visto do requerente principal", en: "Proof of the main applicant's visa request", es: "Prueba de la solicitud de visado del solicitante principal" }
+
+- id: RELATIONSHIP_PROOF
+  name: { pt: "Certidão de casamento ou união de facto", en: "Marriage or civil partnership certificate", es: "Certificado de matrimonio o pareja de hecho" }
+  instructions:
+    pt: "Original ou cópia certificada, apostilada. União de facto não registada: provas de vida em comum há mais de 2 anos."
+    en: "Original or certified copy, apostilled. Unregistered partnership: evidence of living together for over 2 years."
+    es: "Original o copia certificada, apostillada. Pareja no registrada: pruebas de convivencia de más de 2 años."
+  rules: { apostille: true, translation: true }
+
+- id: BIRTH_CERTIFICATE
+  name: { pt: "Certidão de nascimento (completa)", en: "Full birth certificate", es: "Certificado de nacimiento (literal)" }
+  instructions:
+    pt: "Com o nome dos pais, apostilada; traduzida se não estiver em português ou inglês."
+    en: "Showing both parents' names, apostilled; translated if not in Portuguese or English."
+    es: "Con el nombre de los padres, apostillado; traducido si no está en portugués o inglés."
+  rules: { apostille: true, translation: true }
+
+- id: PARENTS_IDS
+  name: { pt: "Passaportes de ambos os pais", en: "Both parents' passports", es: "Pasaportes de ambos padres" }
+  instructions:
+    pt: "Originais ou cópia certificada da página de identificação."
+    en: "Originals or certified copy of the identification page."
+    es: "Originales o copia certificada de la página de identificación."
+
+- id: PARENTAL_CONSENT
+  name: { pt: "Autorização dos pais / representante legal", en: "Parental or guardian consent", es: "Autorización de los padres / tutor legal" }
+  instructions:
+    pt: "Com assinatura reconhecida, sempre que o menor não viaja com ambos os pais."
+    en: "With a certified signature, whenever the minor doesn't travel with both parents."
+    es: "Con firma legitimada, siempre que el menor no viaje con ambos padres."
+
+- id: SOLE_CUSTODY_PROOF
+  name: { pt: "Comprovativo de guarda exclusiva", en: "Proof of sole custody", es: "Prueba de custodia exclusiva" }
+  instructions:
+    pt: "Certidão de nascimento com um só progenitor, certidão de óbito do outro progenitor ou decisão judicial."
+    en: "Birth certificate naming one parent, death certificate of the other parent, or court ruling."
+    es: "Certificado de nacimiento con un solo progenitor, certificado de defunción del otro o resolución judicial."
+
+- id: IEFP_DECLARATION
+  name: { pt: "Declaração de manifestação de interesse no IEFP", en: "IEFP expression-of-interest declaration", es: "Declaración de interés en el IEFP" }
+  instructions:
+    pt: "Submetida online em iefp.pt (declaração para visto de procura de trabalho)."
+    en: "Submitted online at iefp.pt (job seeker visa declaration)."
+    es: "Presentada en línea en iefp.pt (declaración para visado de búsqueda de empleo)."
+
+- id: STAY_CONDITIONS
+  name: { pt: "Declaração das condições da estadia", en: "Declaration of the conditions of stay", es: "Declaración de las condiciones de la estancia" }

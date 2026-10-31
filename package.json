@@ -9,10 +9,12 @@
     "test": "jest",
     "release": "node scripts/release.js",
     "push:template": "cd template && clasp push --force",
-    "skills": "node scripts/skill-labels.js && cd skill && rm -f *.skill && for s in portal-clients portal-onboarding portal-update; do zip -qr $s.skill $s -x \"$s/evals/*\" \"*/__pycache__/*\" \"*.pyc\" \"*/.DS_Store\"; done && ls -1 *.skill"
+    "skills": "node scripts/skill-labels.js && cd skill && rm -f *.skill && for s in portal-clients portal-onboarding portal-update; do zip -qr $s.skill $s -x \"$s/evals/*\" \"*/__pycache__/*\" \"*.pyc\" \"*/.DS_Store\"; done && ls -1 *.skill",
+    "catalog": "node scripts/build-catalog.js"
   },
   "devDependencies": {
     "@google/clasp": "^3.0.0",
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "js-yaml": "^4.1.0"
   }
 }

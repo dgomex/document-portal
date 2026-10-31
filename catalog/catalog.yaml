@@ -1,0 +1,10 @@
+# Catalog of visas and required documents, maintained by us (no personal data).
+# Built by scripts/build-catalog.js into library/src/catalog/CatalogData.js and
+# dist/catalog.json. IDs never change; retire entries with `active: false`.
+version: "2026.11"   # bump on every change; firms see it in the update notice
+format: 1            # bump only when the shape changes (the portal checks it)
+languages: [pt, en, es]
+disclaimer:
+  pt: "Lista de orientação, baseada em fontes oficiais à data indicada. O advogado é responsável pela lista final de cada processo."
+  en: "Guidance list, based on official sources as of the date shown. The lawyer is responsible for each case's final list."
+  es: "Lista orientativa, basada en fuentes oficiales a la fecha indicada. El abogado es responsable de la lista final de cada expediente."

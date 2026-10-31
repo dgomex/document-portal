@@ -1,0 +1,141 @@
+# Portugal: national (long-stay) residence visas.
+# Sources: the Portuguese consular checklists (vistos.mne.gov.pt, as published
+# by the posts' visa centres). Lists vary slightly between consular posts, so
+# firms adjust them; the lawyer owns the final list.
+country:
+  code: PT
+  name: { pt: "Portugal", en: "Portugal", es: "Portugal" }
+
+# requirement fields:
+#   doc: a document type, or any_of: [doc, doc, …] (either/or group with an id)
+#   applies_to: main_applicant | spouse | each_child | each_adult | each_person | case
+#   level: required (default) | optional
+#   only_if / unless: [fact ids]
+#   min_age: for each_adult (default 16)
+sets:
+  PT-GENERAL:
+    - { doc: APPLICATION_FORM, applies_to: each_person }
+    - { doc: PHOTOS, applies_to: each_person }
+    - { doc: PASSPORT, applies_to: each_person }
+    - { doc: LEGAL_RESIDENCE_ELSEWHERE, applies_to: each_person, only_if: [other_residence] }
+    - { doc: TRAVEL_INSURANCE, applies_to: each_person, unless: [cplp] }
+    - { doc: CRIMINAL_RECORD, applies_to: each_adult, min_age: 16 }
+    - { id: ACCOMMODATION, any_of: [PROPERTY_DEED, RENTAL_AGREEMENT, HOST_TERM], applies_to: case,
+        name: { pt: "Alojamento em Portugal (1 ano)", en: "Accommodation in Portugal (1 year)", es: "Alojamiento en Portugal (1 año)" } }
+    - { id: MEANS, any_of: [BANK_STATEMENTS, SPONSOR_TERM], applies_to: case,
+        name: { pt: "Meios de subsistência (12 meses)", en: "Means of subsistence (12 months)", es: "Medios de subsistencia (12 meses)" } }
+  PT-FAMILY:
+    - { doc: RELATIONSHIP_PROOF, applies_to: case, only_if: [married] }
+    - { doc: BIRTH_CERTIFICATE, applies_to: each_child }
+    - { doc: PARENTS_IDS, applies_to: case, only_if: [children] }
+    - { doc: PARENTAL_CONSENT, applies_to: each_child, level: optional }
+    - { doc: SOLE_CUSTODY_PROOF, applies_to: case, only_if: [children, sole_custody] }
+
+sources:
+  - https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia
+  - https://vistos.mne.gov.pt/en/national-visas/national-legislation
+
+visas:
+  - id: PT-D1
+    name: { pt: "D1 – Trabalho subordinado", en: "D1 – Employed work", es: "D1 – Trabajo por cuenta ajena" }
+    last_reviewed: 2026-10-31
+    include: [PT-GENERAL, PT-FAMILY]
+    requirements:
+      - { doc: EMPLOYMENT_CONTRACT, applies_to: main_applicant, unless: [cplp] }
+      - { doc: PROFESSIONAL_CERTIFICATE, applies_to: main_applicant, level: optional }
+
+  - id: PT-D2-INDEPENDENT
+    name: { pt: "D2 – Trabalho independente", en: "D2 – Self-employed work", es: "D2 – Trabajo por cuenta propia" }
+    last_reviewed: 2026-10-31
+    include: [PT-GENERAL, PT-FAMILY]
+    requirements:
+      - { doc: SERVICE_CONTRACT, applies_to: main_applicant, unless: [cplp] }
+      - { doc: COMPANY_REGISTRATION, applies_to: main_applicant, level: optional }
+      - { doc: PROFESSIONAL_CERTIFICATE, applies_to: main_applicant, level: optional }
+
+  - id: PT-D2-ENTREPRENEUR
+    name: { pt: "D2 – Empreendedor imigrante", en: "D2 – Migrant entrepreneur", es: "D2 – Emprendedor inmigrante" }
+    last_reviewed: 2026-10-31
+    include: [PT-GENERAL, PT-FAMILY]
+    requirements:
+      - { doc: COMPANY_REGISTRATION, applies_to: main_applicant, unless: [cplp] }
+      - { doc: BUSINESS_PLAN, applies_to: main_applicant, unless: [cplp] }
+      - { id: INVESTMENT, any_of: [INVESTMENT_PROOF, FUNDS_IN_PORTUGAL], applies_to: main_applicant, unless: [cplp],
+          name: { pt: "Investimento ou meios em Portugal", en: "Investment or funds in Portugal", es: "Inversión o fondos en Portugal" } }
+
+  - id: PT-D2-STARTUP
+    name: { pt: "D2 – Startup Visa", en: "D2 – Startup visa", es: "D2 – Startup visa" }
+    last_reviewed: 2026-10-31
+    include: [PT-GENERAL, PT-FAMILY]
+    requirements:
+      - { doc: IAPMEI_DECLARATION, applies_to: main_applicant }
+      - { doc: COMPANY_REGISTRATION, applies_to: main_applicant }
+
+  - id: PT-D3
+    name: { pt: "D3 – Atividade altamente qualificada, docente ou cultural", en: "D3 – Highly qualified, teaching or cultural work", es: "D3 – Actividad altamente cualificada, docente o cultural" }
+    last_reviewed: 2026-10-31
+    include: [PT-GENERAL, PT-FAMILY]
+    requirements:
+      - { id: HOST, any_of: [EMPLOYMENT_CONTRACT, INVITATION_LETTER, SERVICE_CONTRACT], applies_to: main_applicant, unless: [cplp],
+          name: { pt: "Contrato ou convite", en: "Contract or invitation", es: "Contrato o invitación" } }
+      - { doc: CV, applies_to: main_applicant }
+      - { doc: PROFESSIONAL_CERTIFICATE, applies_to: main_applicant }
+
+  - id: PT-D4-STUDY
+    name: { pt: "D4 – Ensino superior", en: "D4 – Higher education", es: "D4 – Estudios superiores" }
+    last_reviewed: 2026-10-31
+    include: [PT-GENERAL, PT-FAMILY]
+    requirements:
+      - { doc: ADMISSION_PROOF, applies_to: main_applicant }
+      - { doc: SCHOLARSHIP_PROOF, applies_to: main_applicant, level: optional }
+
+  - id: PT-D4-RESEARCH
+    name: { pt: "D4 – Investigação", en: "D4 – Research", es: "D4 – Investigación" }
+    last_reviewed: 2026-10-31
+    include: [PT-GENERAL, PT-FAMILY]
+    requirements:
+      - { id: RESEARCH, any_of: [RESEARCH_HOSTING, INVITATION_LETTER, SCHOLARSHIP_PROOF], applies_to: main_applicant,
+          name: { pt: "Acolhimento ou bolsa de investigação", en: "Research hosting or grant", es: "Acogida o beca de investigación" } }
+
+  - id: PT-D6
+    name: { pt: "D6 – Reagrupamento familiar", en: "D6 – Family reunification", es: "D6 – Reagrupación familiar" }
+    last_reviewed: 2026-10-31
+    include: [PT-GENERAL, PT-FAMILY]
+    requirements:
+      - { doc: AIMA_REUNIFICATION, applies_to: case }
+      - { doc: FAMILY_MEMBER_ID, applies_to: case }
+
+  - id: PT-D7
+    name: { pt: "D7 – Reformados e rendimentos próprios", en: "D7 – Retirees and passive income", es: "D7 – Jubilados e ingresos propios" }
+    last_reviewed: 2026-10-31
+    include: [PT-GENERAL, PT-FAMILY]
+    requirements:
+      - { id: D7_INCOME, any_of: [PENSION_PROOF, PASSIVE_INCOME_PROOF, RELIGIOUS_STATUS], applies_to: main_applicant, unless: [cplp],
+          name: { pt: "Origem dos rendimentos", en: "Source of income", es: "Origen de los ingresos" } }
+      - { doc: PT_BANK_ACCOUNT, applies_to: main_applicant }
+
+  - id: PT-D8
+    name: { pt: "D8 – Trabalho remoto (nómadas digitais)", en: "D8 – Remote work (digital nomads)", es: "D8 – Trabajo remoto (nómadas digitales)" }
+    last_reviewed: 2026-10-31
+    include: [PT-GENERAL, PT-FAMILY]
+    requirements:
+      - { id: WORK_LINK, any_of: [EMPLOYMENT_CONTRACT, EMPLOYER_DECLARATION, SERVICE_CONTRACT, COMPANY_REGISTRATION], applies_to: main_applicant,
+          name: { pt: "Vínculo de trabalho", en: "Work relationship", es: "Relación laboral" } }
+      - { doc: REMOTE_WORK_PROOF, applies_to: main_applicant }
+      - { doc: INCOME_3_MONTHS, applies_to: main_applicant }
+      - { doc: TAX_RESIDENCE_ABROAD, applies_to: main_applicant }
+
+  - id: PT-FAMILY-ACCOMPANY
+    name: { pt: "Acompanhamento de familiar requerente de visto", en: "Accompanying a family member applying for a visa", es: "Acompañamiento de familiar solicitante de visado" }
+    last_reviewed: 2026-10-31
+    include: [PT-GENERAL, PT-FAMILY]
+    requirements:
+      - { doc: MAIN_APPLICANT_VISA_REQUEST, applies_to: case }
+
+  - id: PT-JOB-SEEKER
+    name: { pt: "Visto para procura de trabalho", en: "Job seeker visa", es: "Visado de búsqueda de empleo" }
+    last_reviewed: 2026-10-31
+    include: [PT-GENERAL, PT-FAMILY]
+    requirements:
+      - { doc: IEFP_DECLARATION, applies_to: main_applicant, unless: [cplp] }
+      - { doc: STAY_CONDITIONS, applies_to: main_applicant, unless: [cplp] }

@@ -1,0 +1,14 @@
+# Yes/no facts about a case that switch requirements on or off.
+# `derived` facts come from the people in the case; the lawyer ticks the others.
+- id: married
+  derived: spouse            # true when the case has a spouse or partner
+  name: { pt: "Cônjuge ou companheiro(a) no processo", en: "Spouse or partner in the case", es: "Cónyuge o pareja en el expediente" }
+- id: children
+  derived: child             # true when the case has at least one child
+  name: { pt: "Filhos no processo", en: "Children in the case", es: "Hijos en el expediente" }
+- id: cplp
+  name: { pt: "Nacional de país da CPLP", en: "CPLP national (Portuguese-speaking country)", es: "Nacional de un país de la CPLP" }
+- id: other_residence
+  name: { pt: "Reside num país que não o da sua nacionalidade", en: "Lives in a country other than their nationality", es: "Reside en un país distinto al de su nacionalidad" }
+- id: sole_custody
+  name: { pt: "Guarda exclusiva de um dos pais", en: "Sole custody by one parent", es: "Custodia exclusiva de uno de los padres" }
