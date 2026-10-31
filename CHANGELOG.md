@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 (library version 6, 2026-10-31)
+
+Maintenance release: target for the first skill-driven update
+
 ## 0.3.0 (library version 5, 2026-10-31)
 
 Automatic setup from a pre-filled Settings tab (onboarding skill), logo_url, ?portal=status
