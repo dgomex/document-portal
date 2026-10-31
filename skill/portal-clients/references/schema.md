@@ -46,6 +46,48 @@ Read-only for this skill. Useful keys:
 | `facts` | skill | yes/no facts that switch documents on, `;`-separated: `cplp`, `other_residence`, `sole_custody` (`married` and `children` come from People) |
 | `checklist_version` | portal only | which catalog version the checklist was built from; clear it to rebuild the checklist |
 
+## People (schema 3)
+
+| Column | Who writes | Values |
+|---|---|---|
+| `person_id` | portal only | `PE-` + 6 characters |
+| `case_id` | skill | the case this person belongs to |
+| `name` | skill | the person's name |
+| `role` | skill | `main_applicant` (added automatically from the client), `spouse`, `child`, `dependant` |
+| `birth_date` | skill | YYYY-MM-DD. Decides age-based documents (criminal record from 16) |
+| `notes` | skill | free text for the lawyer |
+| `folder_id` | portal only | the person's Drive folder, created on their first upload |
+| `created_at`, `created_by` | skill (new rows) | as for Clients |
+
+## Checklist (schema 3)
+
+| Column | Who writes | Values |
+|---|---|---|
+| `item_id` | portal only | `IT-` + 6 characters |
+| `case_id` | skill (ad-hoc rows only) | the case |
+| `person_id` | portal only | which person the document is for (empty = the case) |
+| `person_name` | skill (ad-hoc rows only) | the person's name as in People; empty for the case |
+| `title`, `instructions` | skill | what the client sees. Written by the portal for catalog items; the skill writes them for ad-hoc requests |
+| `level` | skill | `required`, `optional`, `requested` (ad-hoc), `waived` (not needed for this case) |
+| `status` | skill, portal | `missing`, `received` (the portal sets this on upload), `accepted`, `rejected` |
+| `reason` | skill | why a document was rejected; the client sees it |
+| `due_date` | skill | YYYY-MM-DD, optional |
+| `upload_ids`, `doc_type`, `key`, `source`, `updated_at`, `text_json` | portal only | |
+
+## Adjustments (schema 3)
+
+The firm's changes to the catalog, as differences. They apply to lists built from then on.
+
+| Column | Values |
+|---|---|
+| `visa_type` | a visa ID, or `*` for every visa |
+| `applies_to` | `main_applicant`, `spouse`, `each_child`, `each_adult`, `each_person`, `case` (empty = all, for hide/change) |
+| `doc_type` | a document type or group from `catalog.md`; for `add`, also the firm's own name for a new document |
+| `action` | `add`, `change` (level, title or note), `hide` |
+| `level` | `required` or `optional` |
+| `title` | the firm's own wording for the document (optional) |
+| `note` | an extra line shown to the client (optional) |
+
 ## Tabs the skill never opens
 
 - `Uploads`: the log of documents clients sent.

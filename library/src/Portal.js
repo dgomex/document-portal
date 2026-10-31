@@ -102,6 +102,7 @@ function cronDigest(ctx) {
   Context.check(ctx);
   if (!cronSlot_(ctx, 'digest')) return;
   pruneDaily_(ctx);
+  remindDaily_(ctx);
   if (!ctx.props.getProperty('DIGEST_QUEUE') || ctx.props.getProperty('DIGEST_QUEUE') === '{}') return;
   Upload.flush(ctx);
 }
@@ -143,6 +144,14 @@ function autoSetup_(ctx) {
   } finally {
     ctx.authLock.releaseLock();
   }
+}
+
+/** Once a day: remind clients of missing documents (Reminders decides which cases are due). */
+function remindDaily_(ctx) {
+  const day = Utilities.formatDate(new Date(), Config.TIME_ZONE, 'yyyy-MM-dd');
+  if (ctx.props.getProperty('REMINDERS_RUN') === day) return;
+  ctx.props.setProperty('REMINDERS_RUN', day);
+  safe_(function () { Reminders.run(ctx); });
 }
 
 /** Once a day: drop security-log rows past their retention. */

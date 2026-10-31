@@ -12,8 +12,8 @@ const DIR = path.join(__dirname, '..', 'skill', 'portal-clients');
 const skill = fs.readFileSync(path.join(DIR, 'SKILL.md'), 'utf8');
 const schema = fs.readFileSync(path.join(DIR, 'references', 'schema.md'), 'utf8');
 
-test('the schema reference documents every Clients and Cases column', () => {
-  ['Clients', 'Cases'].forEach((tab) => {
+test('the schema reference documents every column of the tabs the skill writes', () => {
+  ['Clients', 'Cases', 'People', 'Checklist', 'Adjustments'].forEach((tab) => {
     const missing = Config.SCHEMA[tab].filter((col) => !schema.includes('`' + col + '`'));
     expect([tab, missing]).toEqual([tab, []]);
   });

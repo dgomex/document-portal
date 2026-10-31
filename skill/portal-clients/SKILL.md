@@ -46,8 +46,17 @@ Write only these, never anything else:
 | Change emails | That row's `email` and/or `additional_emails` |
 | Invite | That row's `invite_status` = REQUESTED |
 | Retry a row in error | That row's `provision_status` = PENDING, after the cause is fixed |
+| Set or change a case's visa | That Cases row's `visa_type`: an ID from `references/catalog.md`, e.g. `PT-D7` |
+| Set the case's facts | That Cases row's `facts`: `;`-separated IDs from `references/catalog.md` (`married` and `children` are automatic) |
+| Add a person to a case | A new People row: `case_id`, `name`, `role` (spouse, child or dependant), `birth_date` (YYYY-MM-DD), `notes`, `created_by`=claude-skill |
+| Accept or reject a document | That Checklist row's `status` (accepted / rejected) and, when rejecting, `reason` in words the client understands |
+| Waive a document for this case | That Checklist row's `level` = waived (and `reason` for the record) |
+| Ask for something not on the list | A new Checklist row: `case_id`, `person_name` (empty = the case), `title`, `instructions`, `level` = requested, `due_date` if given |
+| Change how the firm works for a visa | A new Adjustments row: `visa_type` (or `*` for all), `applies_to`, `doc_type` (from `references/catalog.md`, or the firm's own name for a new document), `action` (add / change / hide), `level`, `title`, `note` |
 
 The portal's script owns `folder_id`, `provision_error` and `invited_at`, and the Uploads and Events tabs. Never write them, and never read Uploads or Events: they hold the clients' documents and a security log, which you don't need for any of these tasks. Never delete rows. To remove someone, deactivate them, which keeps the history the firm may be legally required to keep.
+
+The People tab's `person_id` and the Checklist tab's `item_id`, `person_id`, `upload_ids`, `doc_type`, `key`, `source`, `updated_at` and `text_json` are the portal's too: it fills them in within 5 minutes (or with Processar novas linhas). The main applicant is added to People automatically when the case gets a visa. Don't add them yourself.
 
 **Always set `active` and `created_by` explicitly on new client rows.** The portal treats a row with an empty `created_by` as typed by hand and ticks `active` itself. Writing both means the lawyer gets exactly what they asked for, including a deliberately inactive client.
 
@@ -83,6 +92,18 @@ If the lawyer has already said to go ahead without asking ("podes escrever", "co
 - **A closed case** disappears from the client's portal at once, and a deactivated client can no longer log in.
 
 If the lawyer asks later ("já está?", "did it work?"), read the rows back: `provision_status`, `provision_error`, `invite_status`. Explain any error in plain words using the table in `references/schema.md`. Fix the cause with the lawyer (for example, correct the email), then set `provision_status` back to PENDING so the portal retries.
+
+## Visas and document checklists
+
+Each case is a visa application. When a case gets a `visa_type`, the portal builds its **checklist**: one row per document per person, from the catalog, changed by the firm's Adjustments, filtered by the case's facts and people. The client sees it on the portal, and sends each document into its own slot.
+
+- **Choosing the visa is the lawyer's decision.** If they ask what fits, you may lay out the candidates from `references/catalog.md` with the reasons, but say clearly that the choice is theirs, and write `visa_type` only once they confirm.
+- **The catalog is guidance.** Every list in it comes from official sources on a review date, and the lawyer is responsible for each case's final list. Say so when it matters, for example when a lawyer asks "is this everything?".
+- **Family:** add each family member to People with their role and date of birth. Criminal records are asked from 16, so birth dates matter. Adding or removing a person, or changing the facts, rebuilds the list within 5 minutes. Documents already received stay received.
+- **"What's missing for Ana?":** read the case's Checklist rows (not Uploads). Group them by `person_name`, and show the ones with `status` missing or rejected and `level` required or requested. Mention optional ones separately.
+- **Reviewing:** "aceita o passaporte da Ana" sets `status` accepted. "rejeita o registo criminal do Pedro, tem mais de 90 dias" sets `status` rejected and `reason`. The client sees the reason at once, and gets reminded about it.
+- **The firm's way of working:** "no D7 pedimos sempre o CV do cônjuge" becomes an Adjustments row (`visa_type` PT-D7, `applies_to` spouse, `doc_type` CV, `action` add). This affects **new** lists. Existing cases keep theirs until the lawyer asks to refresh one: then clear that case's `checklist_version`. Nothing already received is lost.
+- **Reminders:** the portal emails clients about missing documents every `reminder_days` days (Settings).
 
 ## Listing
 
