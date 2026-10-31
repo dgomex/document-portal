@@ -3,3 +3,5 @@ node_modules/
 .DS_Store
 *.log
 spike/testfiles/
+skill/portal-clients-workspace/
+skill/*.skill

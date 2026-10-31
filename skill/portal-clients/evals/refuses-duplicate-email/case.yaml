@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: refuses-duplicate-email
+expected_outcome: |
+  No new client is created, because marido.ferreira@gmail.com is already an additional email of Ana Ferreira (CL-7K3Q9X). The reply points this out and offers to add the case to the existing client instead, asking before doing so.
+context:
+  scaffold_script: place-files.sh

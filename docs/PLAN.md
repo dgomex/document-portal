@@ -41,6 +41,16 @@ The spike settled these decisions; full results are in [spike/README.md](../spik
   - The `active` checkbox column puts FALSE in every row, so `appendRow` wrote below row 1000. Rows now go to the first free row, and unticked boxes or script-written columns never make a row count as real.
 - **Tests:** 105.
 
+## Phase 7 status (2026-10-31): done (live test: the skill wrote client and case rows into a portal sheet through a Google Sheets connector)
+- **Skill:** `skill/portal-clients/`: `SKILL.md`, `references/schema.md` (columns, allowed values, what each `provision_error` means), and `scripts/portal_rows.py` (IDs and checks matching the portal's rules; 7 Python tests).
+- **Rules beyond §6:**
+  - Never "append": find the last real row and write at an explicit range. A checkbox column makes appends land below row 1000.
+  - Always set `active` and `created_by`.
+  - A lawyer's explicit pre-approval lets the skill write first and show what it wrote, but never overrides a validation stop.
+- **Drift guard:** `test/skill.test.js` fails if the skill's reference misses a sheet column, if the skill doesn't support the portal's schema version, or if its ID alphabet differs.
+- **Test cases:** `skill/portal-clients/evals/` holds 3 cases with CSV copies of a sheet: add a client with two cases, refuse a duplicate email, close a case and neutralise a formula. 11 of 11 checks pass. They were run inline (no independent agent), so this is a sanity check only.
+- **Connector:** the live test used a Google Sheets connector with write tools. Onboarding must check that the lawyer's connector can write (a read-only Drive connector isn't enough).
+
 ## Phase 6 status (2026-10-30): done
 - **Part A, on DEV:** schema 2 migration, the update sidebar and its check, the invite email.
 - **Part B:**

@@ -1,0 +1,4 @@
+case_id,client_id,case_name,firm_reference,status,responsible_email,provision_status,provision_error,folder_id,created_at,created_by
+CS-1A2B3C,CL-7K3Q9X,Divórcio,,open,,ACTIVE,,1AbcCaseDiv,2026-10-20 10:01,claude-skill
+CS-4D5E6F,CL-7K3Q9X,Herança,P-2026/14,open,,ACTIVE,,1AbcCaseHer,2026-10-20 10:02,claude-skill
+CS-7G8H9J,CL-M2WT8B,Contrato de arrendamento,,open,,ACTIVE,,1AbcCaseArr,2026-10-21 09:31,sheet
