@@ -27,7 +27,12 @@ const PORTAL = [
   ['menu.provision', 'Menu item: create folders for new rows now'],
   ['menu.invite', 'Menu item: send REQUESTED invitations now'],
   ['menu.update', 'Menu item: the update sidebar'],
+  ['menu.updateLists', 'The same menu item while new document lists are waiting'],
   ['update.check', 'Button in the update sidebar'],
+  ['catalog.title', 'Update sidebar: the document lists section'],
+  ['catalog.apply', 'Button: use the new document lists (the lawyer\'s decision)'],
+  ['catalog.ignore', 'Button: keep the current lists'],
+  ['catalog.checkLabel', 'Checkbox: the daily check for new lists (catalog_check)'],
   ['setup.save', 'Button in the setup sidebar'],
 ];
 

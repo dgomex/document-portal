@@ -1,6 +1,6 @@
 ---
 name: portal-update
-description: Update a law firm's document upload portal ("Portal" for Google Sheets/Drive) to the newest released version, in the firm's own Google account, keeping the same portal address. Use it whenever the lawyer says the portal should be updated, upgraded, "atualizado", "pôr na versão nova", or forwards an announcement of a new portal version, or when Portal → Atualizar portal (EN: Update portal · ES: Actualizar portal) shows the sheet and the portal on different versions. Not for first-time installation (portal-onboarding) or for clients and cases (portal-clients).
+description: Update a law firm's document upload portal ("Portal" for Google Sheets/Drive) to the newest released version, in the firm's own Google account, keeping the same portal address. Use it whenever the lawyer says the portal should be updated, upgraded, "atualizado", "pôr na versão nova", or forwards an announcement of a new portal version, or when Portal → Atualizar portal (EN: Update portal · ES: Actualizar portal) shows the sheet and the portal on different versions. Also when the menu reads "Atualizar portal (listas novas)" (new document lists): then it walks the lawyer through reviewing the new visa lists, which only they may apply. Not for first-time installation (portal-onboarding) or for clients and cases (portal-clients).
 ---
 
 # Portal update
@@ -10,7 +10,7 @@ You update the firm's portal **in the firm's own Google account**, acting for th
 1. **the library version:** what the sheet's menus and background jobs run;
 2. **the web app deployment:** what the portal serves to clients. You edit the existing deployment, never create a new one, so the portal address stays the same.
 
-The sheet upgrades its own structure afterwards (within 5 minutes), so you don't touch any tab.
+The sheet upgrades its own structure afterwards (within 5 minutes), so you don't touch any tab. For example, going from 0.3.x to 0.4.0 adds the visa checklist tabs (People, Checklist, Adjustments) and new columns in Cases and Uploads by themselves.
 
 It usually needs no clicks from the lawyer. The exception: if the new version needs new Google permissions, Google asks them to **Allow** (see step 3).
 
@@ -23,6 +23,15 @@ It usually needs no clicks from the lawyer. The exception: if the new version ne
 - The portal address: the `portal_url` key in the sheet's **Settings** tab (Sheets connector), or ask the lawyer.
 
 If Claude in Chrome isn't available, guide the lawyer through **Portal → Atualizar portal** (EN: Update portal · ES: Actualizar portal) in their sheet, which lists the same steps. Then use step 4 to check.
+
+## 0. Which update is it?
+
+There are two kinds, and they're handled differently. Read the **Settings** tab (Sheets connector), or ask the lawyer what the menu says.
+
+- **A new portal version** (the release announcement, or the menu reads plain **Atualizar portal**): steps 1–4 below.
+- **New document lists** (`catalog_pending` in Settings holds a version such as `2026.12`, and the menu reads **Atualizar portal (listas novas)** · EN: Update portal (new lists) · ES: Actualizar portal (listas nuevas)): this is the visa catalog, not the portal. Don't touch the script editor. Go to "New document lists" at the end.
+
+Both can be true at once. Do the portal version first: a new release may also bring newer lists.
 
 ## 1. Note where it stands
 
@@ -59,6 +68,23 @@ Open `<portal_url>?portal=status` again.
 - **An error page, or `ready: false`:** ask the lawyer to open the sheet and run **Portal → Atualizar portal → Verificar (EN: Portal → Update portal → Check · ES: Portal → Actualizar portal → Comprobar)**. It shows the version the sheet and the portal each run, and points to the missing step.
 
 The sheet's own `library_version` cell catches up within 5 minutes, so don't rely on it right after updating.
+
+## New document lists
+
+The portal's makers keep a catalog of the documents each visa needs. When a newer one is published, the portal **offers** it once a day, but nothing changes until the lawyer applies it. That choice is the lawyer's alone: the catalog is guidance, and the lawyer is responsible for what their firm asks clients for.
+
+1. Ask the lawyer to open **Portal → Atualizar portal (listas novas)** in their sheet. The sidebar has a **Listas de documentos** (EN: Document lists · ES: Listas de documentos) section with the new version and what changes, visa by visa ("PT-D7: novo documento – …"). With Claude in Chrome you can open it yourself and read the list from the screen.
+2. Explain the changes in plain words, especially any visa the firm actually uses (the `visa_type` values in Cases). Say clearly:
+   - only **new** checklists use the new lists; existing cases keep theirs. To refresh one case, the lawyer clears that case's `checklist_version` cell, and nothing already received is lost;
+   - the firm's own changes (the Adjustments tab) stay on top of the new lists.
+3. The lawyer decides:
+   - **Aplicar** (EN: Apply): use the new lists from now on;
+   - **Ignorar esta versão** (EN: Ignore this version): keep the current lists; a later version will be offered again.
+
+   Click a button only when the lawyer has told you which one, in this conversation, after seeing the changes. Never decide for them.
+4. Afterwards `catalog_version` in Settings shows the version in use, and `catalog_pending` is empty.
+
+If the lawyer doesn't want these notices at all, they untick **Verificar diariamente se há listas novas** (EN: Check daily for new lists) in the same section. New lists then come only with portal updates, and still need **Aplicar**.
 
 ## When a release changes the sheet's own script
 

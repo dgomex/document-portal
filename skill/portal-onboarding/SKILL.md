@@ -32,6 +32,7 @@ The template to copy, always the latest release: Google Sheets file `1qSIabs0k2A
 - Optional: an https link to their logo (PNG or JPEG, up to 1 MB). Their website's logo often works: right-click it → copy image address.
 - Is the Google account a paid **Google Workspace** account or a free Gmail? Workspace can send many more emails a day.
 - An email of their own to use as the first test client (e.g. their personal address).
+- How often clients with missing documents get a reminder email: every 7 days by default, or another number of days, or 0 for never.
 
 Check the emails look valid and the links start with `https://` before going on.
 
@@ -55,8 +56,12 @@ The copy has a single empty tab. Rename it to `Settings` and write, from A1:
 | logo_url | https link to the logo, or leave empty | |
 | max_file_mb | 100 | |
 | daily_email_limit | 95 for free Gmail; 1000 for Workspace | |
+| countries | PT | |
+| reminder_days | 7, or what the lawyer chose (0 = no reminders) | |
 
-The header row is exactly `key`, `value`, `description`. Leave the descriptions empty: the portal fills them in. Don't create other tabs or columns: the portal builds Clients, Cases, Uploads and the rest itself.
+`countries` picks which visa lists the firm sees. The catalog covers Portugal (`PT`) today; more countries come with later releases.
+
+The header row is exactly `key`, `value`, `description`. Leave the descriptions empty: the portal fills them in. Don't create other tabs or columns: the portal builds Clients, Cases, People, Checklist, Uploads and the rest itself.
 
 Values starting with `=`, `+`, `-` or `@` get a leading `'`.
 
@@ -105,14 +110,15 @@ Then read the Settings tab back: `root_folder_id`, `portal_url` and `schema_vers
 
 ## 6. First test client
 
-If the portal-clients skill is available, use it to add the lawyer's test email as a client with a case called `Teste`. Otherwise write the row as that skill describes:
+If the portal-clients skill is available, use it to add the lawyer's test email as a client with a case called `Teste` and visa **PT-D7** (any visa works; D7 is a short, familiar list). Otherwise write the rows as that skill describes:
 - **Clients:** a new row with `client_id` CL- plus 6 characters from `0123456789ABCDEFGHJKMNPQRSTVWXYZ`, `name`, `email`, `language`, `active` TRUE, `provision_status` PENDING, `created_by` claude-skill.
-- **Cases:** a matching row with `status` open.
+- **Cases:** a matching row with `status` open and `visa_type` PT-D7.
 
-The folders appear within 5 minutes.
+The folders and the case's document checklist appear within 5 minutes: the lawyer is added to People as the main applicant, and the Checklist tab gets one row per document.
 
-Then ask the lawyer to open the portal URL **on their phone**, log in with the code that arrives by email, and upload a PDF and a photo. Check together:
-- the files are in Drive under "Portal - <firm>" → the client → Teste;
+Then ask the lawyer to open the portal URL **on their phone** and log in with the code that arrives by email. They see the D7 checklist. Ask them to send a PDF into one item (its **Enviar** button · EN: Send) and a photo under **Outros documentos** (EN: Other documents). Check together:
+- the files are in Drive under "Portal - <firm>" → the client → Teste (the item's file in the person's own folder);
+- that item's row in Checklist now says `received`;
 - there's a row in Uploads;
 - one "Novos documentos" email arrived.
 
@@ -126,6 +132,10 @@ Tell the lawyer, briefly:
 - **Portal address:** the `/exec` URL. Put it on the website and in the email signature.
 - **Adding clients and cases:** ask Claude (portal-clients skill), or type rows in the sheet and use **Portal → Processar novas linhas** (EN: Process new rows · ES: Procesar filas nuevas).
 - **Inviting a client:** set `invite_status` to REQUESTED. The email goes out within 5 minutes.
+- **Visa checklists:** set a case's `visa_type` (and its family members in People, with birth dates) and the portal builds each person's document list. In the Checklist tab the lawyer sets an item to `accepted` or `rejected` (with a `reason` the client sees), sets `level` to `waived` for items they don't need, or adds a row of their own to ask for something extra. The portal-clients skill does all of this on request.
+- **The lists are guidance; the lawyer decides.** The visa lists come from a catalog the portal's makers maintain, with sources and review dates. Requirements change, and consulates differ, so the lawyer remains responsible for what their firm asks for. The **Adjustments** tab changes the lists for the whole firm (add, hide or change a document for a visa).
+- **New lists:** when a newer catalog is published, the menu shows **Atualizar portal (listas novas)**. Nothing changes until the lawyer reviews the changes there and clicks **Aplicar**. Existing cases keep their list. The daily check can be switched off in the same place.
+- **Reminders:** clients with missing documents get a reminder email every `reminder_days` days (0 turns them off).
 - **Updates:** when a new version is announced, **Portal → Atualizar portal** (EN: Update portal · ES: Actualizar portal) walks them through it (about 3 minutes; the address stays the same).
 - **Privacy:** their privacy policy should mention the portal. There are templates in Portuguese and English. If they use Claude to manage clients, it should also say client names and emails are processed by Anthropic.
 
