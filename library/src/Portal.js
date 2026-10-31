@@ -222,9 +222,9 @@ const API_ = {
   },
   verifyCode: function (data, ctx) {
     const s = Otp.verify(ctx, { email: data.email, code: data.code });
-    return { token: s.token, me: me_(ctx, Clients.byId(ctx.ss, s.clientId)) };
+    return { token: s.token, me: me_(ctx, Clients.byId(ctx.ss, s.clientId), data.lang) };
   },
-  me: function (data, ctx) { return me_(ctx, Sessions.resolve(ctx, data.token)); },
+  me: function (data, ctx) { return me_(ctx, Sessions.resolve(ctx, data.token), data.lang); },
   logout: function (data, ctx) { Sessions.end(ctx, data.token); return {}; },
   startUpload: function (data, ctx) { return Upload.start(ctx, Sessions.resolve(ctx, data.token), data); },
   finishUpload: function (data, ctx) { return Upload.finish(ctx, Sessions.resolve(ctx, data.token), data); },
@@ -238,12 +238,19 @@ const API_ = {
 };
 
 /** What the page may know about the logged-in client: never IDs of other clients or folder IDs. */
-function me_(ctx, client) {
+function me_(ctx, client, lang) {
+  const language = Catalog.data().languages.indexOf(lang) !== -1 ? lang : I18n.lang(String(client.language || ''));
+  const withChecklists = !!ctx.ss.getSheetByName(Config.TABS.CHECKLIST);
   return {
     name: String(client.name || ''),
     language: I18n.lang(String(client.language || '')),
     cases: Cases.uploadableForClient(ctx.ss, client.client_id).map(function (c) {
-      return { id: c.case_id, name: String(c.case_name || ''), reference: String(c.firm_reference || '') };
+      const visa = String(c.visa_type || '').trim() ? Catalog.visa(String(c.visa_type).trim()) : null;
+      return {
+        id: c.case_id, name: String(c.case_name || ''), reference: String(c.firm_reference || ''),
+        visa: visa ? Catalog.text(visa.name, language) : '',
+        checklist: withChecklists && visa ? CaseChecklist.view(ctx.ss, c.case_id, language) : [],
+      };
     }),
   };
 }

@@ -23,7 +23,7 @@ const I18n = (function () {
   }
 
   /** Only what the public page shows: no setup or menu text for clients' browsers. */
-  const PUBLIC = /^(app|lang|login|home|upload|error|privacy)\./;
+  const PUBLIC = /^(app|lang|login|home|upload|error|privacy|checklist)\./;
   function publicBundle() {
     const pick = function (table) {
       const out = {};

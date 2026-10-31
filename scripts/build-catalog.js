@@ -68,6 +68,12 @@ function build(opts) {
     i18n(where + ' name', d.name);
     i18n(where + ' instructions', d.instructions, true);
     Object.keys(d.rules || {}).forEach((r) => { if (!RULES.includes(r)) err(where, 'unknown rule ' + r); });
+    // A rule's note is added automatically: the instructions mustn't say it again.
+    const en = String((d.instructions || {}).en || '').toLowerCase();
+    if ((d.rules || {}).apostille && /apostil/.test(en)) err(where, 'instructions repeat the apostille rule');
+    if ((d.rules || {}).max_age_days && /issued within/.test(en)) err(where, 'instructions repeat the max_age_days rule');
+    if ((d.rules || {}).valid_months && /valid at least|valid for at least/.test(en)) err(where, 'instructions repeat the valid_months rule');
+    if ((d.rules || {}).translation && /translat/.test(en)) err(where, 'instructions repeat the translation rule');
     documentTypes[d.id] = { name: d.name, instructions: d.instructions || null, rules: d.rules || {}, active: d.active !== false };
   });
 

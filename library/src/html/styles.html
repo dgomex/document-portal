@@ -101,6 +101,33 @@
   .item progress { width: 100%; height: 6px; margin-top: 6px; accent-color: var(--accent); }
   .item .link { margin-right: 12px; font-size: .875rem; }
   #sendFiles { width: 100%; margin-top: 8px; }
+  .checklist { margin: 8px 0 24px; }
+  .checklist progress { width: 100%; height: 8px; accent-color: var(--accent); }
+  .progress-line { margin: 4px 0; font-weight: 600; }
+  .group { margin-top: 20px; }
+  .group h2 { font-size: 1.1rem; margin: 0; }
+  .group > p { margin: 2px 0 8px; }
+  .citems { list-style: none; padding: 0; margin: 0; }
+  .citem { padding: 12px; margin-bottom: 8px; border: 1px solid var(--border); border-radius: 10px; }
+  .citem.received, .citem.accepted { opacity: .85; }
+  .citem p { margin: 6px 0 0; }
+  .chead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+  .badge { font-size: .8rem; padding: 2px 8px; border-radius: 999px; background: var(--border); color: var(--text); }
+  .badge.accepted { background: #e7f4ea; color: #1e7b34; }
+  .badge.received { background: #e8eef7; color: #1f4e8c; }
+  .badge.rejected { background: #fbe9e7; color: #b3261e; }
+  .tag { font-size: .8rem; color: var(--muted); }
+  .reason { color: #b3261e; font-weight: 600; }
+  .secondary-btn { margin-top: 10px; background: var(--surface); color: var(--accent); border: 2px solid var(--accent); }
+  .citem .link { margin-top: 8px; font-size: .9rem; }
+  .finish { margin-top: 16px; }
+  .finish button { width: 100%; }
+  @media (prefers-color-scheme: dark) {
+    .badge.accepted { background: #1f3a26; color: #7fd38f; }
+    .badge.received { background: #1d2a3f; color: #9ec1f2; }
+    .badge.rejected { background: #3a1f1f; color: #ff8a80; }
+    .reason { color: #ff8a80; }
+  }
   .ok { padding: 12px; border-radius: 8px; background: #e7f4ea; color: #1d2433; }
   @media (prefers-color-scheme: dark) {
     .item.done .meta { color: #7fd38f; }

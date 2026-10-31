@@ -53,6 +53,7 @@ test.each([
   ['an unknown fact', 'countries/PT.yaml', 'only_if: [other_residence]', 'only_if: [martian]', /unknown fact martian/],
   ['a bad applies_to', 'countries/PT.yaml', '{ doc: CV, applies_to: main_applicant }', '{ doc: CV, applies_to: cousin }', /applies_to must be one of/],
   ['a visa without a review date', 'countries/PT.yaml', '    last_reviewed: 2026-10-31\n    include: [PT-GENERAL, PT-FAMILY]\n    requirements:\n      - { doc: EMPLOYMENT_CONTRACT', '    include: [PT-GENERAL, PT-FAMILY]\n    requirements:\n      - { doc: EMPLOYMENT_CONTRACT', /PT-D1: needs last_reviewed/],
+  ['instructions that repeat a rule', 'document-types.yaml', 'en: "Copy of the identification page."', 'en: "Copy of the identification page. Valid at least 3 months beyond the stay."', /PASSPORT: instructions repeat the valid_months rule/],
   ['a group with one option', 'countries/PT.yaml', 'any_of: [INVESTMENT_PROOF, FUNDS_IN_PORTUGAL]', 'any_of: [INVESTMENT_PROOF]', /at least two options/],
 ])('rejects %s', (_, file, from, to, message) => {
   const { errors } = variant((dir) => replaceIn(dir, file, from, to));

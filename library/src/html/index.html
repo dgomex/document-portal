@@ -46,7 +46,20 @@
           <p id="caseOnly" class="case-only" hidden></p>
           <select id="caseSelect" hidden></select>
 
-          <span class="label" data-t="upload.files"></span>
+          <!-- The case's document checklist (immigration: per visa, per person) -->
+          <div id="checklist" class="checklist" hidden>
+            <p id="visaName" class="muted small"></p>
+            <p class="progress-line" id="progressText"></p>
+            <progress id="progressBar" max="100" value="0"></progress>
+            <div id="groups"></div>
+            <input id="itemFile" type="file" multiple class="visually-hidden" tabindex="-1" aria-hidden="true"
+                   accept="application/pdf,image/jpeg,image/png,image/heic,image/heif,.pdf,.jpg,.jpeg,.png,.heic,.heif">
+            <div id="finishBox" class="finish" hidden>
+              <button id="finishNow" type="button" data-t="checklist.finish"></button>
+            </div>
+          </div>
+
+          <span class="label" id="filesLabel" data-t="upload.files"></span>
           <div id="drop" class="drop">
             <input id="files" type="file" multiple class="visually-hidden"
                    accept="application/pdf,image/jpeg,image/png,image/heic,image/heif,.pdf,.jpg,.jpeg,.png,.heic,.heif">
@@ -149,10 +162,19 @@
         return me.cases.length === 1 ? me.cases[0].id : $('caseSelect').value;
       }
 
-      function addFiles(list) {
+      function currentCase() {
+        const id = selectedCase();
+        return (me && me.cases.find((c) => c.id === id)) || null;
+      }
+
+      /** target: a checklist item the files are for, or none for "other documents". */
+      function addFiles(list, target) {
         Array.from(list).forEach((file) => {
           const mime = mimeOf(file);
-          const item = { key: Math.random().toString(36).slice(2), file, mime, status: 'waiting', pct: 0, error: '' };
+          const item = {
+            key: Math.random().toString(36).slice(2), file, mime, status: 'waiting', pct: 0, error: '',
+            itemId: target ? target.id : '', label: target ? target.title + (target.personName ? ' (' + target.personName + ')' : '') : '',
+          };
           if (!mime) Object.assign(item, { status: 'invalid', error: t('upload.badType') });
           else if (!file.size) Object.assign(item, { status: 'invalid', error: t('upload.empty') });
           else if (file.size > MAX_BYTES) Object.assign(item, { status: 'invalid', error: t('upload.tooBig', { mb: BOOT.maxFileMb }) });
@@ -170,7 +192,7 @@
           li.className = 'item ' + item.status;
           const name = document.createElement('span');
           name.className = 'name';
-          name.textContent = item.file.name;
+          name.textContent = (item.label ? item.label + ' · ' : '') + item.file.name;
           const meta = document.createElement('span');
           meta.className = 'meta';
           meta.textContent = sizeText(item.file.size) + ' · ' + ({
@@ -206,6 +228,86 @@
         $('sendFiles').disabled = sending || !n || !selectedCase();
         $('files').disabled = sending;
         $('caseSelect').disabled = sending;
+        renderChecklist();
+      }
+
+      /** Required and requested items count; optional ones don't. */
+      function progressOf(items) {
+        const counted = items.filter((i) => i.level !== 'optional');
+        return { done: counted.filter((i) => i.status === 'received' || i.status === 'accepted').length, total: counted.length };
+      }
+
+      let pendingTarget = null;
+
+      function renderChecklist() {
+        const c = currentCase();
+        const has = !!(c && c.checklist && c.checklist.length);
+        $('checklist').hidden = !has;
+        $('filesLabel').dataset.t = has ? 'checklist.other' : 'upload.files';
+        $('filesLabel').textContent = t($('filesLabel').dataset.t);
+        if (!has) return;
+        $('visaName').textContent = c.visa || '';
+        const all = [].concat(...c.checklist.map((g) => g.items));
+        const p = progressOf(all);
+        $('progressText').textContent = t('checklist.progress', p);
+        $('progressBar').value = p.total ? Math.round((p.done / p.total) * 100) : 0;
+        $('progressBar').setAttribute('aria-label', t('checklist.progress', p));
+        const box = $('groups');
+        box.textContent = '';
+        c.checklist.forEach((g) => {
+          const section = document.createElement('section');
+          section.className = 'group';
+          const h = document.createElement('h2');
+          h.textContent = g.name || t('checklist.role.case');
+          const gp = progressOf(g.items);
+          const sub = document.createElement('p');
+          sub.className = 'muted small';
+          sub.textContent = (g.name ? t('checklist.role.' + g.role) + ' · ' : '') + t('checklist.progress', gp);
+          const ul = document.createElement('ul');
+          ul.className = 'citems';
+          g.items.forEach((i) => {
+            const li = document.createElement('li');
+            li.className = 'citem ' + i.status;
+            const head = document.createElement('div');
+            head.className = 'chead';
+            const title = document.createElement('strong');
+            title.textContent = i.title;
+            const badge = document.createElement('span');
+            badge.className = 'badge ' + i.status;
+            badge.textContent = t('checklist.status.' + i.status);
+            head.append(title, badge);
+            if (i.level === 'optional' || i.level === 'requested') {
+              const tag = document.createElement('span');
+              tag.className = 'tag';
+              tag.textContent = t('checklist.' + i.level);
+              head.append(tag);
+            }
+            li.append(head);
+            const line = (text, cls) => {
+              if (!text) return;
+              const el = document.createElement('p');
+              el.className = cls;
+              el.textContent = text;
+              li.append(el);
+            };
+            line(i.reason ? t('checklist.reason', { reason: i.reason }) : '', 'reason');
+            line(i.instructions, 'muted small');
+            line(i.options && i.options.length ? t('checklist.oneOf') + ' ' + i.options.join(' · ') : '', 'muted small');
+            line(i.due ? t('checklist.due', { date: i.due }) : '', 'small');
+            const send = document.createElement('button');
+            send.type = 'button';
+            send.className = i.status === 'missing' || i.status === 'rejected' ? 'secondary-btn' : 'link';
+            send.textContent = t(i.status === 'missing' || i.status === 'rejected' ? 'checklist.send' : 'checklist.sendAgain');
+            send.disabled = sending;
+            send.setAttribute('aria-label', send.textContent + ': ' + i.title + (g.name ? ' (' + g.name + ')' : ''));
+            send.onclick = () => { pendingTarget = Object.assign({ personName: g.name }, i); $('itemFile').click(); };
+            li.append(send);
+            ul.append(li);
+          });
+          section.append(h, sub, ul);
+          box.append(section);
+        });
+        $('finishBox').hidden = !queue.some((q) => q.status === 'done' && !q.notified);
       }
 
       function renderHome() {
@@ -281,6 +383,7 @@
         renderQueue();
         const s = await call('startUpload', {
           token, caseId, batchId, name: item.file.name, mimeType: item.mime, size: item.file.size, origin: location.origin,
+          itemId: item.itemId || undefined,
         });
         if (!s.ok) return s;
         let fileId;
@@ -315,6 +418,17 @@
           renderQueue();
         }
         sending = false;
+        // With a checklist the client sends item by item: mark them received here,
+        // and tell the firm once, when they press "finish" (or the 10-minute job does).
+        const c = currentCase();
+        if (c && c.checklist && c.checklist.length) {
+          queue.filter((q) => q.status === 'done' && q.itemId).forEach((q) => {
+            c.checklist.forEach((g) => g.items.forEach((i) => { if (i.id === q.itemId) { i.status = 'received'; i.reason = ''; } }));
+          });
+          renderQueue();
+          if (queue.some((q) => q.status === 'failed')) return status(t('upload.someFailed'), true);
+          return status(t('checklist.uploaded'));
+        }
         const done = queue.filter((q) => q.status === 'done' && !q.notified);
         if (done.length) {
           const fin = await call('finishBatch', { token, batchId });
@@ -343,6 +457,8 @@
         queue = [];
         $('caseSelect').textContent = '';
         $('caseOnly').textContent = '';
+        $('groups').textContent = '';
+        $('checklist').hidden = true;
         $('hello').textContent = '';
         $('note').value = '';
         $('queue').textContent = '';
@@ -357,6 +473,23 @@
 
       $('files').onchange = () => addFiles($('files').files);
       $('caseSelect').onchange = renderQueue;
+      $('itemFile').onchange = () => {
+        if (!pendingTarget || sending) return;
+        addFiles($('itemFile').files, pendingTarget);
+        $('itemFile').value = '';
+        pendingTarget = null;
+        sendAll();
+      };
+      $('finishNow').onclick = async () => {
+        $('finishNow').disabled = true;
+        const fin = await call('finishBatch', { token, batchId });
+        $('finishNow').disabled = false;
+        if (!fin.ok && fin.error === 'session') return expired();
+        queue.forEach((q) => { if (q.status === 'done') q.notified = true; });
+        batchId = newBatchId();
+        renderChecklist();
+        status(t('checklist.finished'));
+      };
       $('uploadForm').onsubmit = (ev) => { ev.preventDefault(); sendAll(); };
       $('more').onclick = () => {
         queue = [];
@@ -456,7 +589,7 @@
         const code = $('code').value.replace(/\s+/g, '');
         if (!/^\d{6}$/.test(code)) { invalid('code', true); return status(t('error.badCode'), true); }
         busy($('verify'), 'login.verifying');
-        const res = await call('verifyCode', { email, code });
+        const res = await call('verifyCode', { email, code, lang: langChosen ? lang : undefined });
         busy($('verify'));
         if (!res.ok) {
           invalid('code', true);
@@ -502,6 +635,10 @@
         langChosen = true;
         try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* private mode: just not remembered */ }
         render();
+        // Checklist texts come from the server in the chosen language.
+        if (token && me && !sending) {
+          call('me', { token, lang }).then((res) => { if (res.ok && token) { me = res.data.me; render(); } });
+        }
       };
 
       render();

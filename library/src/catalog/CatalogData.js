@@ -120,9 +120,9 @@ const CATALOG_DATA = {
     "es": "Pasaporte"
    },
    "instructions": {
-    "pt": "Cópia da página de identificação. O passaporte deve ser válido pelo menos 3 meses além da estadia pedida.",
-    "en": "Copy of the identification page. The passport must be valid at least 3 months beyond the requested stay.",
-    "es": "Copia de la página de identificación. El pasaporte debe ser válido al menos 3 meses más allá de la estancia solicitada."
+    "pt": "Cópia da página de identificação.",
+    "en": "Copy of the identification page.",
+    "es": "Copia de la página de identificación."
    },
    "rules": {
     "valid_months": 3
@@ -164,9 +164,9 @@ const CATALOG_DATA = {
     "es": "Certificado de antecedentes penales"
    },
    "instructions": {
-    "pt": "Do país da nacionalidade e de qualquer país onde tenha vivido mais de um ano. Emitido há menos de 3 meses, com Apostila de Haia ou legalizado.",
-    "en": "From your country of nationality and any country where you lived for over a year. Issued within the last 3 months, with the Hague Apostille or legalised.",
-    "es": "Del país de su nacionalidad y de cualquier país donde haya vivido más de un año. Emitido hace menos de 3 meses, con Apostilla de La Haya o legalizado."
+    "pt": "Do país da nacionalidade e de qualquer país onde tenha vivido mais de um ano.",
+    "en": "From your country of nationality and any country where you lived for over a year.",
+    "es": "Del país de su nacionalidad y de cualquier país donde haya vivido más de un año."
    },
    "rules": {
     "max_age_days": 90,
@@ -280,9 +280,9 @@ const CATALOG_DATA = {
     "es": "Certificado profesional / títulos"
    },
    "instructions": {
-    "pt": "Quando a profissão é regulada em Portugal. Legalizados por Apostila ou consulado.",
-    "en": "When the profession is regulated in Portugal. Legalised by Apostille or consulate.",
-    "es": "Cuando la profesión está regulada en Portugal. Legalizados por Apostilla o consulado."
+    "pt": "Quando a profissão é regulada em Portugal.",
+    "en": "When the profession is regulated in Portugal.",
+    "es": "Cuando la profesión está regulada en Portugal."
    },
    "rules": {
     "apostille": true
@@ -534,9 +534,9 @@ const CATALOG_DATA = {
     "es": "Certificado de matrimonio o pareja de hecho"
    },
    "instructions": {
-    "pt": "Original ou cópia certificada, apostilada. União de facto não registada: provas de vida em comum há mais de 2 anos.",
-    "en": "Original or certified copy, apostilled. Unregistered partnership: evidence of living together for over 2 years.",
-    "es": "Original o copia certificada, apostillada. Pareja no registrada: pruebas de convivencia de más de 2 años."
+    "pt": "Original ou cópia certificada. União de facto não registada: provas de vida em comum há mais de 2 anos.",
+    "en": "Original or certified copy. Unregistered partnership: evidence of living together for over 2 years.",
+    "es": "Original o copia certificada. Pareja no registrada: pruebas de convivencia de más de 2 años."
    },
    "rules": {
     "apostille": true,
@@ -551,9 +551,9 @@ const CATALOG_DATA = {
     "es": "Certificado de nacimiento (literal)"
    },
    "instructions": {
-    "pt": "Com o nome dos pais, apostilada; traduzida se não estiver em português ou inglês.",
-    "en": "Showing both parents' names, apostilled; translated if not in Portuguese or English.",
-    "es": "Con el nombre de los padres, apostillado; traducido si no está en portugués o inglés."
+    "pt": "Com o nome de ambos os pais.",
+    "en": "Showing both parents' names.",
+    "es": "Con el nombre de ambos padres."
    },
    "rules": {
     "apostille": true,

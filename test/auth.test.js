@@ -239,7 +239,7 @@ describe('Portal api', () => {
     lib.Otp.request(s.ctx, { email: 'ana@x.pt' }, s.opts({ now: Date.now() }));  // api() uses the real clock
     const res = lib.api('verifyCode', { email: 'ana@x.pt', code: s.codeOf() }, s.ctx);
     expect(res.ok).toBe(true);
-    expect(res.data.me).toEqual({ name: 'Ana', language: 'pt', cases: [{ id: 'CS-111111', name: 'Divórcio', reference: '' }] });
+    expect(res.data.me).toEqual({ name: 'Ana', language: 'pt', cases: [{ id: 'CS-111111', name: 'Divórcio', reference: '', visa: '', checklist: [] }] });
     expect(lib.api('me', { token: res.data.token }, s.ctx).data.name).toBe('Ana');
     expect(lib.api('me', { token: 'x' }, s.ctx)).toEqual({ ok: false, error: 'session' });
   });
