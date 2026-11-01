@@ -85,3 +85,14 @@ test('the page reads the me refetch as res.data', () => {
   expect(refetch).not.toBeNull();
   expect(refetch[0]).toMatch(/me = res\.data;/);
 });
+
+// A file sent from a checklist item once showed its progress only in the file
+// list further down, so the page looked frozen: the item itself shows it now.
+test('a checklist item shows its own upload in progress, with a spinner', () => {
+  const page = fs.readFileSync(path.join(SRC, 'html', 'index.html'), 'utf8');
+  const styles = fs.readFileSync(path.join(SRC, 'html', 'styles.html'), 'utf8');
+  const checklist = page.slice(page.indexOf('function renderChecklist'), page.indexOf('function renderHome'));
+  expect(checklist).toMatch(/q\.itemId === i\.id/);
+  expect(checklist).toContain("spin.className = 'spinner'");
+  expect(styles).toMatch(/\.spinner \{[^}]*animation: spin/);
+});
