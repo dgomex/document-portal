@@ -13,6 +13,7 @@ const Upload = (function () {
   const BATCH = /^[A-Za-z0-9]{8,40}$/;
   const ORIGIN = /^https:\/\/[a-z0-9-]+\.googleusercontent\.com$/;
   const QUEUE_KEY = 'DIGEST_QUEUE';
+  const CLOCK_SKEW_MS = 5 * 60 * 1000;  // Drive's clock vs Apps Script's
 
   function maxBytes_(ss) {
     const mb = Number(Settings.get(ss, 'max_file_mb')) || 0;
@@ -56,7 +57,7 @@ const Upload = (function () {
     const uploadId = Ids.generate(Config.ID_PREFIX.UPLOAD, []);
     ctx.cache.put('up:' + uploadId, JSON.stringify({
       c: client.client_id, k: c.case_id, f: parentId, n: name, s: stored, m: mime, z: size, b: input.batchId,
-      i: item ? item.item_id : '', pp: item ? String(item.person_id || '') : '',
+      i: item ? item.item_id : '', pp: item ? String(item.person_id || '') : '', t: now,
     }), Config.UPLOAD.PENDING_TTL_SECONDS);
     return { uploadId: uploadId, uri: uri, chunkBytes: Config.CHUNK_BYTES };
   }
@@ -74,17 +75,20 @@ const Upload = (function () {
     const fileId = String(input.fileId || '');
     if (!/^[\w-]{10,200}$/.test(fileId)) throw Errors.make('invalid', 'Bad file id');
 
-    const meta = drive.get(token, fileId, 'id,name,size,mimeType,md5Checksum,parents,webViewLink,trashed');
+    const meta = drive.get(token, fileId, 'id,name,size,mimeType,md5Checksum,parents,webViewLink,trashed,createdTime');
     const problems = [];
     if ((meta.parents || []).indexOf(p.f) === -1) problems.push('folder');
+    // A file from before this upload started isn't this upload's: an earlier
+    // file of the client's, for one. Refuse it, and never trash it.
+    if (!(Date.parse(meta.createdTime || '') >= p.t - CLOCK_SKEW_MS)) problems.push('older');
     if (Number(meta.size) !== p.z) problems.push('size ' + meta.size + '/' + p.z);
     if (meta.mimeType !== p.m) problems.push('type ' + meta.mimeType);
     if (meta.name !== p.s) problems.push('name');
     if (!problems.length && !FileType.matches(p.m, drive.head(token, fileId, 16))) problems.push('content is not ' + p.m);
     ctx.cache.remove(key);  // one finish per upload
     if (problems.length) {
-      // Only trash what this upload created: a file in the expected folder.
-      if (problems.indexOf('folder') === -1) {
+      // Only trash what this upload created: a new file in the expected folder.
+      if (problems.indexOf('folder') === -1 && problems.indexOf('older') === -1) {
         try { drive.trash(token, fileId); } catch (err) { console.error('trash ' + fileId + ': ' + err); }
       }
       Events.log(ctx.ss, 'upload_rejected', '', [client.client_id, p.k, p.n, problems.join(', ')].join(' | '));
@@ -143,6 +147,59 @@ const Upload = (function () {
     Table.open(ss, Config.TABS.CHECKLIST).update(row._row, {
       status: Config.ITEM_STATUS.RECEIVED, reason: '', upload_ids: ids.join(';'), updated_at: new Date(nowMs || Date.now()),
     });
+  }
+
+  // ---------- abandoned uploads ----------
+
+  /**
+   * Daily: trashes files in open cases' folders that never finished an upload
+   * (started, then abandoned, so never checked). The portal only sees files it
+   * created itself (drive.file), so the lawyer's own files are never touched.
+   * A file stays if Uploads knows it (by Drive ID or stored name) or if it's
+   * younger than a started upload may live. Returns { folders, trashed }.
+   */
+  function sweep(ctx, opts) {
+    opts = opts || {};
+    const drive = opts.drive || DriveRest;
+    const token = opts.token || ctx.script.getOAuthToken();
+    const now = opts.now || Date.now();
+    const deadline = Date.now() + 2 * 60 * 1000;  // shares the 10-minute job with reminders
+    const cutoff = now - Config.UPLOAD.PENDING_TTL_SECONDS * 1000 - CLOCK_SKEW_MS;
+    const report = { folders: 0, trashed: 0 };
+    const known = new Set();
+    Table.open(ctx.ss, Config.TABS.UPLOADS).rows().forEach(function (r) {
+      const m = /\/d\/([\w-]+)/.exec(String(r.drive_link || ''));
+      if (m) known.add(m[1]);
+      if (String(r.stored_name || '')) known.add('name:' + String(r.stored_name));
+    });
+    const open = Cases.list(ctx.ss).filter(function (c) {
+      return c.status === Config.CASE_STATUS.OPEN && String(c.folder_id || '').trim();
+    });
+    const caseIds = new Set(open.map(function (c) { return c.case_id; }));
+    const folders = open.map(function (c) { return { id: String(c.folder_id).trim(), caseId: c.case_id }; });
+    if (ctx.ss.getSheetByName(Config.TABS.PEOPLE)) {
+      CaseChecklist.people(ctx.ss).forEach(function (p) {
+        if (caseIds.has(p.case_id) && String(p.folder_id || '').trim()) folders.push({ id: String(p.folder_id).trim(), caseId: p.case_id });
+      });
+    }
+    folders.forEach(function (f) {
+      if (Date.now() > deadline) return;
+      let files;
+      try { files = drive.listFiles(token, f.id); } catch (err) { return console.error('sweep ' + f.id + ': ' + err); }
+      report.folders++;
+      files.forEach(function (file) {
+        if (known.has(file.id) || known.has('name:' + file.name)) return;
+        if (!(Date.parse(file.createdTime || '') < cutoff)) return;
+        try {
+          drive.trash(token, file.id);
+          report.trashed++;
+          Events.log(ctx.ss, 'upload_abandoned_trashed', '', f.caseId + ' | ' + String(file.name).slice(0, 120));
+        } catch (err) {
+          console.error('sweep trash ' + file.id + ': ' + err);
+        }
+      });
+    });
+    return report;
   }
 
   // ---------- digest ----------
@@ -292,5 +349,5 @@ const Upload = (function () {
     return { subject: I18n.t(lang, 'mail.digest.subject', p), text: text, html: html };
   }
 
-  return { start: start, finish: finish, finishBatch: finishBatch, flush: flush, digestMessage: digestMessage };
+  return { start: start, finish: finish, finishBatch: finishBatch, flush: flush, sweep: sweep, digestMessage: digestMessage };
 })();

@@ -30,3 +30,26 @@ Scope: library 0.2.x, the shell, the public page, the setup sidebar and the Clau
 - **Updates are manual:** a firm can lag behind on releases. That's mitigated by announcing releases and the 2-week check-in.
 - **Code by email:** the account is only as safe as the client's mailbox. That's normal for passwordless login.
 - **Library owner account:** a compromise could ship malicious code in a new library version. But firms only run a version they pick, nothing reaches them on its own. Keep 2FA (ideally a hardware key) on gddataai.
+
+# Security review (2026-11-01, library 0.4.1)
+
+Question: can anyone using the portal get documents out of the firm's Drive? Scope: every function the public page can reach (`doGet`, `api`, the crons, and the owner-only `admin` and menus), uploads, login, sessions, what reaches the browser and emails, secrets, Drive sharing and the catalog feed.
+
+## Holds
+
+- **No read path.** Without login the page reaches `requestCode`, `verifyCode` and `ping`; with a session, `me`, `startUpload`, `finishUpload`, `finishBatch` and `logout`. None returns file contents, Drive links, file IDs or file names. A client gets only their own case names and checklist text.
+- **Owner-only functions refuse anonymous visitors:** all 6 `admin` actions and all 5 menus (checked with an anonymous session). Action names like `__proto__` or `constructor` give `unknownAction`.
+- **Uploads:** the browser gets a single-use Drive address for one file of a fixed size in one folder, never a token. The server checks folder, size, type, name, first bytes and (new) creation time.
+- **Drive:** `drive.file` only; nothing creates sharing permissions; the firm's folders stay private to its account.
+- **No secrets** in the library, the scripts or the git history. Test endpoints used during development are removed (they answer with the normal page).
+
+## Fixed in this review
+
+1. **A client could trash an earlier file of their own.** Starting a new upload and reporting the ID of an older file in the same folder failed the size check, and the portal trashed that older file. `finish` now refuses any file created before the upload started, and never trashes it.
+2. **Abandoned uploads were never checked.** A file whose upload started but never finished stayed in the case folder unverified. A daily sweep (`Upload.sweep`, in the 10-minute job once a day) trashes files in open cases' folders that Uploads doesn't know (by Drive ID or stored name) and that are older than an upload may live (6 hours). The portal only sees files it created, so the lawyer's own files are never touched. Dry run on DEV: 8 folders checked, nothing to trash.
+
+## Accepted risks (added)
+
+- **Lockouts:** anyone can use up the hourly code budget (300) or lock one client out for a while by guessing codes for their email. This blocks logins temporarily and exposes nothing.
+- **Content:** a genuine PDF or image can still carry harmful content. Types and first bytes are checked; lawyers should keep normal caution opening files.
+- **Accounts outside the portal:** the lawyer's Google account (2-step verification; share the sheet only with trusted staff), gddataai (hardware key: it publishes library versions) and the GitHub account behind the catalog feed (it can change list text, applied only when the lawyer clicks Apply).

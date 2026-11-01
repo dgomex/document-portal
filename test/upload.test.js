@@ -49,6 +49,8 @@ function setup({ settings = {} } = {}) {
   const drive = {
     startResumable: (token, f) => { started.push(f); return 'https://upload.example/session/' + started.length; },
     get: (token, id) => files[id].meta,
+    listFiles: (token, folderId) => Object.values(files).filter((f) => f.meta.parents.includes(folderId) && !trashed.includes(f.meta.id))
+      .map((f) => ({ id: f.meta.id, name: f.meta.name, createdTime: f.meta.createdTime })),
     head: (token, id) => files[id].head,
     trash: (token, id) => trashed.push(id),
   };
@@ -65,12 +67,13 @@ function setup({ settings = {} } = {}) {
     const f = started.at(-1);
     const id = 'file' + started.length + 'xxxxxxxx';
     files[id] = { meta: { id, name: f.name, size: String(f.size), mimeType: f.mimeType, parents: [f.parentId],
-      md5Checksum: 'md5', webViewLink: 'https://drive.google.com/file/d/' + id, ...fileOverride }, head };
+      md5Checksum: 'md5', webViewLink: 'https://drive.google.com/file/d/' + id + '/view', createdTime: new Date(now).toISOString(),
+      ...fileOverride }, head };
     return { start: s, fileId: id };
   }
   const uploads = () => lib.Table.open(ss, 'Uploads').rows();
   const events = () => ss.getSheetByName('Events').data.slice(1).map((r) => r[1]);
-  return { ss, ctx, drive, mail, sent, started, trashed, ana, opts, upload, uploads, events, tick: (min) => { now += min * 60000; } };
+  return { ss, ctx, drive, mail, sent, started, trashed, files, ana, opts, upload, uploads, events, tick: (min) => { now += min * 60000; } };
 }
 
 describe('Upload.start', () => {
@@ -155,6 +158,18 @@ describe('Upload.finish', () => {
     expect(() => lib.Upload.finish(s.ctx, s.ana(), { uploadId: start.uploadId, fileId }, s.opts()))
       .toThrow(expect.objectContaining({ code: 'badFile' }));
     expect(s.trashed).toEqual([]);
+  });
+
+  test('an earlier file of the client\'s, passed off as a new upload, is refused and never trashed', () => {
+    const s = setup();
+    const first = s.upload({}, {});
+    lib.Upload.finish(s.ctx, s.ana(), { uploadId: first.start.uploadId, fileId: first.fileId }, s.opts());
+    s.tick(30);
+    const second = s.upload({ size: 2000 });
+    expect(() => lib.Upload.finish(s.ctx, s.ana(), { uploadId: second.start.uploadId, fileId: first.fileId }, s.opts()))
+      .toThrow(expect.objectContaining({ code: 'badFile' }));
+    expect(s.trashed).toEqual([]);
+    expect(s.events()).toEqual(['upload_rejected']);
   });
 
   test('another client cannot finish Ana\'s upload', () => {
@@ -293,5 +308,36 @@ describe('checklist items', () => {
     lib.Upload.finish(s.ctx, s.ana(), { uploadId: a.start.uploadId, fileId: a.fileId }, s.opts());
     lib.Upload.finishBatch(s.ctx, s.ana(), 'batch0001', s.opts());
     expect(s.sent[0].text).toContain('- Passaporte (Ana): scan.pdf');
+  });
+});
+
+describe('abandoned uploads', () => {
+  test('a file that never finished is trashed once it is older than an upload may live; nothing else is touched', () => {
+    const s = setup();
+    const done = s.upload({}, {});
+    lib.Upload.finish(s.ctx, s.ana(), { uploadId: done.start.uploadId, fileId: done.fileId }, s.opts());
+    const abandoned = s.upload({ name: 'virus.pdf' }, {}, [0x4d, 0x5a]);       // started, never finished
+    const closedCase = s.upload({}, { parents: ['F-OLD'] });                     // in a closed case: left alone
+    s.tick(60);
+    const young = s.upload({ name: 'a-caminho.pdf' });                           // still within its 6 hours
+
+    expect(lib.Upload.sweep(s.ctx, s.opts()).trashed).toBe(0);                   // too soon for all of them
+    s.tick(6 * 60);
+    const r = lib.Upload.sweep(s.ctx, s.opts());
+    expect(s.trashed).toEqual([abandoned.fileId]);
+    expect(r.trashed).toBe(1);
+    expect(s.trashed).not.toContain(done.fileId);
+    expect(s.trashed).not.toContain(closedCase.fileId);
+    expect(s.trashed).not.toContain(young.fileId);
+    expect(s.events()).toContain('upload_abandoned_trashed');
+  });
+
+  test('a registered file is kept even if its Drive link is missing (matched by stored name)', () => {
+    const s = setup();
+    const done = s.upload({}, { webViewLink: '' });
+    lib.Upload.finish(s.ctx, s.ana(), { uploadId: done.start.uploadId, fileId: done.fileId }, s.opts());
+    s.tick(7 * 60);
+    lib.Upload.sweep(s.ctx, s.opts());
+    expect(s.trashed).toEqual([]);
   });
 });

@@ -108,6 +108,21 @@ const DriveRest = (function () {
     return { bytes: blob.getBytes(), mimeType: String(blob.getContentType() || '').split(';')[0] };
   }
 
+  /** Files (not folders) directly in a folder that this app can see: { id, name, createdTime }. */
+  function listFiles(token, folderId) {
+    const q = "'" + String(folderId).replace(/['\\]/g, '') + "' in parents and trashed = false and mimeType != '" + FOLDER_MIME + "'";
+    const out = [];
+    let page = '';
+    do {
+      const res = request_(token, 'get', FILES + '?supportsAllDrives=true&includeItemsFromAllDrives=true&pageSize=1000' +
+        '&fields=' + encodeURIComponent('nextPageToken,files(id,name,createdTime)') + '&q=' + encodeURIComponent(q) +
+        (page ? '&pageToken=' + encodeURIComponent(page) : ''));
+      (res.files || []).forEach(function (f) { out.push(f); });
+      page = res.nextPageToken || '';
+    } while (page);
+    return out;
+  }
+
   function rename(token, fileId, name) {
     return request_(token, 'patch', FILES + '/' + encodeURIComponent(fileId) + '?supportsAllDrives=true&fields=id,name',
       { json: { name: name } });
@@ -119,5 +134,5 @@ const DriveRest = (function () {
   }
 
   return { createFolder: createFolder, get: get, exists: exists, uploadSmall: uploadSmall,
-    startResumable: startResumable, head: head, download: download, rename: rename, trash: trash };
+    startResumable: startResumable, head: head, download: download, listFiles: listFiles, rename: rename, trash: trash };
 })();

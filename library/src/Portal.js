@@ -157,12 +157,13 @@ function remindDaily_(ctx) {
   safe_(function () { Reminders.run(ctx); });
 }
 
-/** Once a day: drop security-log rows past their retention. */
+/** Once a day: drop security-log rows past their retention, and trash abandoned uploads. */
 function pruneDaily_(ctx) {
   const day = Utilities.formatDate(new Date(), Config.TIME_ZONE, 'yyyy-MM-dd');
   if (ctx.props.getProperty('EVENTS_PRUNED') === day) return;
   safe_(function () { Events.prune(ctx.ss); });
   ctx.props.setProperty('EVENTS_PRUNED', day);
+  safe_(function () { Upload.sweep(ctx); });
 }
 
 function doGet(e, ctx) {
