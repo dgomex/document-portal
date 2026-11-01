@@ -43,7 +43,7 @@ Read-only for this skill. Useful keys:
 | `provision_error`, `folder_id` | portal only | |
 | `created_at`, `created_by` | skill (new rows) | as for Clients |
 | `visa_type` | skill | a visa ID from the catalog, e.g. `PT-D7` (schema 3). Setting it builds the case's document checklist |
-| `facts` | skill | yes/no facts that switch documents on, `;`-separated: `cplp`, `other_residence`, `sole_custody` (`married` and `children` come from People) |
+| `facts` | skill | yes/no facts that change the list, `;`-separated, from the Facts table in `catalog.md` (`married` and `children` come from People). Ask only the ones in the visa's "Facts to ask" column |
 | `checklist_version` | portal only | which catalog version the checklist was built from; clear it to rebuild the checklist |
 
 ## People (schema 3)

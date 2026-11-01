@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: new-client-with-visa-and-family
+expected_outcome: |
+  The lawyer pre-approved and gave the visa and the family, so everything is written without asking first. A new Clients row for Joana Lima at Clients row 5 (fresh CL- ID, active TRUE, PENDING, created_by claude-skill). A new Cases row at Cases row 5 for that client with visa_type PT-D7 (not the text "D7"), status open, PENDING. Two People rows straight after the last real People row (rows 6 and 7), both with the new case_id: Rui Lima, role spouse, birth_date 1980-03-12; Tomás Lima, role child, birth_date 2012-06-01, created_by claude-skill. No main_applicant row is written and person_id is left empty. The reply shows what was written and then asks the D7 facts (CPLP national, living outside the country of nationality, sole custody), since D7 lists them under "Facts to ask".
+context:
+  scaffold_script: place-files.sh

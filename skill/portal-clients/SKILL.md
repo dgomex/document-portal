@@ -1,6 +1,6 @@
 ---
 name: portal-clients
-description: Manage the clients and cases of a law firm's document upload portal (a Google Sheet with Settings, Clients and Cases tabs, made from the "Portal" template). Use it whenever the lawyer wants to add a client, open or close a case, deactivate or reactivate a client, change a client's email, send a portal invitation, list who is registered, or check why a client or case shows ERROR or has no folder yet, even if they just say "add Ana Ferreira, ana@x.pt, divórcio", "fecha o processo da herança", "convida o Bruno para o portal" or "o portal está a recusar a Carla". Portuguese, English and Spanish requests all apply. Do not use it for reading uploaded documents or Drive files.
+description: Manage the clients and cases of a law firm's document upload portal (a Google Sheet with Settings, Clients and Cases tabs, made from the "Portal" template). Use it whenever the lawyer wants to add a client, open or close a case, deactivate or reactivate a client, change a client's email, send a portal invitation, list who is registered, or check why a client or case shows ERROR or has no folder yet, or set a case's visa, family members and documents, even if they just say "adiciona a Ana Ferreira, ana@x.pt, visto D7 com o marido", "fecha o processo de reagrupamento do Diogo", "convida o Bruno para o portal" or "o portal está a recusar a Carla". Portuguese, English and Spanish requests all apply. Do not use it for reading uploaded documents or Drive files.
 ---
 
 # Portal clients
@@ -40,7 +40,7 @@ Write only these, never anything else:
 | Action | Writes |
 |---|---|
 | New client | A new Clients row: `client_id`, `name`, `email`, `additional_emails` (if given), `language`, `active`=TRUE, `invite_status` (REQUESTED only if asked), `provision_status`=PENDING, `created_at`, `created_by`=claude-skill, `notes` (if given) |
-| New case | A new Cases row: `case_id`, `client_id`, `case_name`, `firm_reference` (if given), `status`=open, `responsible_email` (if given), `provision_status`=PENDING, `created_at`, `created_by`=claude-skill |
+| New case | A new Cases row: `case_id`, `client_id`, `case_name`, `firm_reference` (if given), `status`=open, `responsible_email` (if given), `visa_type` and `facts` (schema 3, see "New cases: visa and family"), `provision_status`=PENDING, `created_at`, `created_by`=claude-skill; plus a People row per family member |
 | Close or reopen a case | That row's `status` (closed / open) |
 | Deactivate or reactivate a client | That row's `active` (FALSE / TRUE) |
 | Change emails | That row's `email` and/or `additional_emails` |
@@ -59,6 +59,24 @@ The portal's script owns `folder_id`, `provision_error` and `invited_at`, and th
 The People tab's `person_id` and the Checklist tab's `item_id`, `person_id`, `upload_ids`, `doc_type`, `key`, `source`, `updated_at` and `text_json` are the portal's too: it fills them in within 5 minutes (or with Processar novas linhas). The main applicant is added to People automatically when the case gets a visa. Don't add them yourself.
 
 **Always set `active` and `created_by` explicitly on new client rows.** The portal treats a row with an empty `created_by` as typed by hand and ticks `active` itself. Writing both means the lawyer gets exactly what they asked for, including a deliberately inactive client.
+
+## New cases: visa and family (schema 3)
+
+Every case at an immigration firm is a visa or residence permit application, and the visa is what gives the client a document list. With `schema_version` 3, don't open a case without asking about it. Before the confirmation table, make sure you have:
+
+1. **The visa.** Ask "Qual é o tipo de visto ou autorização de residência deste processo?" unless the lawyer already named it.
+   - Match what they say ("D7", "nómada digital", "reagrupamento familiar") to a `visa_type` in `references/catalog.md`, and show its full name in the table so the lawyer can see you picked the right one. Several matches (for example "autorização de residência para trabalhar" fits 88-1, 88-7, 89-1 and others): list them with one line each and ask which.
+   - If the lawyer describes the client's situation instead of naming a visa, lay out the candidates and why each fits. **The lawyer chooses**; never write a visa they haven't confirmed.
+   - "Ainda não sei" is a fine answer: open the case without a visa, and tell them the client won't see a document list until one is set.
+   - Write the ID in `visa_type`. The case name is the lawyer's label: use theirs, or the visa's Portuguese name if they gave none.
+2. **The family**, when the visa's **Family documents** column says yes. Ask "Há familiares neste processo? Para cada um: nome, relação (cônjuge, filho ou dependente) e data de nascimento." Each becomes a People row (`case_id`, `name`, `role` spouse / child / dependant, `birth_date` YYYY-MM-DD, `created_by`=claude-skill). The birth date matters: some documents depend on age (criminal records from 16). Never add the main applicant: the portal does that.
+3. **The facts** in the visa's **Facts to ask** column, and only those. Ask each as a plain yes/no question in the lawyer's words (`cplp`: "O cliente é nacional de um país da CPLP?"; `no_visa`: "O pedido é feito sem visto de residência?"). Write the yes answers to `facts`, `;`-separated. A "–" means there's nothing to ask.
+
+Ask these together, in one message, alongside anything else that's missing (name, email). The lawyer can answer some and skip others.
+
+If the lawyer has already said to go ahead without asking and gave the visa, write straight away with what they gave (no family, no facts unless mentioned), then ask about family and facts afterwards. If they gave no visa, open the case without one and ask for it in the same reply. A missing visa never blocks the client and the case.
+
+With `schema_version` 1 or 2 there are no visas: open cases as before and don't ask.
 
 ## 3. Validate, then confirm
 

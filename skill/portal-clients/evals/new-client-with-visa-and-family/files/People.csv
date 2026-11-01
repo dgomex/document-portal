@@ -1,0 +1,5 @@
+person_id,case_id,name,role,birth_date,notes,folder_id,created_at,created_by
+PE-AB12CD,CS-1A2B3C,Ana Ferreira,main_applicant,1975-04-02,,,2026-10-20 10:06,portal
+PE-EF34GH,CS-1A2B3C,Paulo Ferreira,spouse,1973-09-15,,,2026-10-20 10:05,claude-skill
+PE-JK56MN,CS-4D5E6F,Ana Ferreira,main_applicant,1975-04-02,,,2026-10-20 10:06,portal
+PE-PQ78RS,CS-7G8H9J,Bruno Mendes,main_applicant,,,,2026-10-21 09:36,portal

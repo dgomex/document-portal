@@ -114,3 +114,11 @@ describe('labels in both languages', () => {
     expect(missing).toEqual([]);
   });
 });
+
+test('the skill asks about the columns the generated catalog actually has', () => {
+  const catalog = fs.readFileSync(path.join(DIR, 'references', 'catalog.md'), 'utf8');
+  ['Family documents', 'Facts to ask'].forEach((col) => {
+    expect(catalog).toContain('| ' + col + ' |');
+    expect(skill).toContain('**' + col + '**');
+  });
+});

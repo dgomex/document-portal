@@ -1,0 +1,4 @@
+case_id,client_id,case_name,firm_reference,status,responsible_email,provision_status,provision_error,folder_id,created_at,created_by,visa_type,facts,checklist_version
+CS-1A2B3C,CL-7K3Q9X,Visto D7 – família,,open,,ACTIVE,,1AbcCaseDiv,2026-10-20 10:01,claude-skill,PT-D7,,2026.11.1|4f53cda18c|c2364a0a91
+CS-4D5E6F,CL-7K3Q9X,Autorização de residência – trabalho,P-2026/14,open,,ACTIVE,,1AbcCaseHer,2026-10-20 10:02,claude-skill,PT-AR-88-1,,2026.11.1|4f53cda18c|521ef65851
+CS-7G8H9J,CL-M2WT8B,Visto D8 – nómada digital,,open,,ACTIVE,,1AbcCaseArr,2026-10-21 09:31,sheet,PT-D8,,2026.11.1|4f53cda18c|bee5b2598d

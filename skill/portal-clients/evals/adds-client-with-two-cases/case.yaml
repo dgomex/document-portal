@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: adds-client-with-two-cases
 expected_outcome: |
-  A new Clients row for Marta Sousa is written at sheet row 5 (the first truly empty row, not after row 1000), with a fresh CL- ID, email lowercased, language pt, active TRUE, provision_status PENDING, created_by claude-skill; two Cases rows (Partilhas, IMI 2025) at rows 5 and 6 of Cases with fresh CS- IDs, that client's new ID, status open and PENDING. Script-owned columns are left empty. The reply says folders appear within about 5 minutes or via Portal > Processar novas linhas.
+  A new Clients row for Marta Sousa is written at sheet row 5 (the first truly empty row, not after row 1000), with a fresh CL- ID, email lowercased, language pt, active TRUE, provision_status PENDING, created_by claude-skill; two Cases rows (Nacionalidade portuguesa, Renovação de autorização de residência) at rows 5 and 6 of Cases with fresh CS- IDs, that client's new ID, status open and PENDING. Script-owned columns are left empty. The reply says folders appear within about 5 minutes or via Portal > Processar novas linhas.
 context:
   scaffold_script: place-files.sh

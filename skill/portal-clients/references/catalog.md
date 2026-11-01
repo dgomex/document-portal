@@ -8,77 +8,77 @@
 
 ### Portugal (`PT`)
 
-| visa_type | Português | English | Reviewed |
-| --- | --- | --- | --- |
-| `PT-D1` | D1 – Trabalho subordinado | D1 – Employed work | 2026-10-31 |
-| `PT-D2-INDEPENDENT` | D2 – Trabalho independente | D2 – Self-employed work | 2026-10-31 |
-| `PT-D2-ENTREPRENEUR` | D2 – Empreendedor imigrante | D2 – Migrant entrepreneur | 2026-10-31 |
-| `PT-D2-STARTUP` | D2 – Startup Visa | D2 – Startup visa | 2026-10-31 |
-| `PT-D3` | D3 – Atividade altamente qualificada, docente ou cultural | D3 – Highly qualified, teaching or cultural work | 2026-10-31 |
-| `PT-D4-STUDY` | D4 – Ensino superior | D4 – Higher education | 2026-10-31 |
-| `PT-D4-RESEARCH` | D4 – Investigação | D4 – Research | 2026-10-31 |
-| `PT-D6` | D6 – Reagrupamento familiar | D6 – Family reunification | 2026-10-31 |
-| `PT-D7` | D7 – Reformados e rendimentos próprios | D7 – Retirees and passive income | 2026-10-31 |
-| `PT-D8` | D8 – Trabalho remoto (nómadas digitais) | D8 – Remote work (digital nomads) | 2026-10-31 |
-| `PT-FAMILY-ACCOMPANY` | Acompanhamento de familiar requerente de visto | Accompanying a family member applying for a visa | 2026-10-31 |
-| `PT-JOB-SEEKER` | Visto para procura de trabalho | Job seeker visa | 2026-10-31 |
-| `PT-AR-88-1` | AR – Trabalho subordinado, com visto de residência (art. 88.º, 1) | RP – Employed work, with residence visa (art. 88(1)) | 2026-10-31 |
-| `PT-AR-88-1-NOMAD` | AR – Trabalho remoto, nómadas digitais (art. 88.º, 1) | RP – Remote work, digital nomads (art. 88(1)) | 2026-10-31 |
-| `PT-AR-88-2` | AR – Trabalho subordinado, sem visto (art. 88.º, 2; pedidos até 03/06/2024) | RP – Employed work, without visa (art. 88(2); applications up to 3 June 2024) | 2026-10-31 |
-| `PT-AR-88-7` | AR – Trabalho subordinado, com visto de procura de trabalho (art. 88.º, 7) | RP – Employed work, with job seeker visa (art. 88(7)) | 2026-10-31 |
-| `PT-AR-89-1` | AR – Trabalho independente, com visto de residência (art. 89.º, 1) | RP – Self-employed work, with residence visa (art. 89(1)) | 2026-10-31 |
-| `PT-AR-89-2` | AR – Trabalho independente, sem visto (art. 89.º, 2; pedidos até 03/06/2024) | RP – Self-employed work, without visa (art. 89(2); applications up to 3 June 2024) | 2026-10-31 |
-| `PT-AR-90-TEACHING` | AR – Atividade de docência (art. 90.º) | RP – Teaching (art. 90) | 2026-10-31 |
-| `PT-AR-90-HQ` | AR – Atividade altamente qualificada (art. 90.º) | RP – Highly qualified work (art. 90) | 2026-10-31 |
-| `PT-AR-90-CULTURAL` | AR – Atividade cultural (art. 90.º) | RP – Cultural work (art. 90) | 2026-10-31 |
-| `PT-AR-90-TECH` | AR – Tech Visa, empresa certificada (art. 90.º) | RP – Tech Visa, certified company (art. 90) | 2026-10-31 |
-| `PT-AR-122-L` | AR – Agentes diplomáticos e consulares e familiares (art. 122.º, 1, l) | RP – Diplomatic and consular agents and family (art. 122(1)(l)) | 2026-10-31 |
-| `PT-AR-122-O` | AR – Trabalho após estudos secundários ou licenciatura (art. 122.º, 1, o) | RP – Work after secondary school or a bachelor's degree (art. 122(1)(o)) | 2026-10-31 |
-| `PT-AR-122-P` | AR – Trabalho após mestrado, doutoramento ou investigação (art. 122.º, 1, p) | RP – Work after a master's, PhD or research (art. 122(1)(p)) | 2026-10-31 |
-| `PT-AR-122-Q` | AR – Após visto de estada temporária para investigação ou atividade qualificada (art. 122.º, 1, q) | RP – After a temporary stay visa for research or qualified work (art. 122(1)(q)) | 2026-10-31 |
-| `PT-AR-123A` | AR – Empresas deslocalizadas para Portugal (art. 123.º-A) | RP – Companies relocated to Portugal (art. 123-A) | 2026-10-31 |
-| `PT-AR-124B` | AR – Transferência dentro da empresa, ICT (art. 124.º-B) | RP – Intra-company transfer, ICT (art. 124-B) | 2026-10-31 |
-| `PT-AR-124E` | AR – ICT móvel, com título ICT de outro Estado-Membro (art. 124.º-E) | RP – Mobile ICT, with an ICT permit from another member state (art. 124-E) | 2026-10-31 |
-| `PT-AR-91` | AR – Estudantes do ensino superior (art. 91.º) | RP – Higher education students (art. 91) | 2026-10-31 |
-| `PT-AR-91A` | AR – Mobilidade de estudantes do ensino superior (art. 91.º-A) | RP – Higher education student mobility (art. 91-A) | 2026-10-31 |
-| `PT-AR-91B` | AR – Investigadores (art. 91.º-B) | RP – Researchers (art. 91-B) | 2026-10-31 |
-| `PT-AR-91C` | AR – Investigadores em mobilidade de longa duração (art. 91.º-C) | RP – Researchers on long-term mobility (art. 91-C) | 2026-10-31 |
-| `PT-AR-92` | AR – Estudantes do ensino secundário e profissional (art. 92.º) | RP – Secondary and vocational students (art. 92) | 2026-10-31 |
-| `PT-AR-93` | AR – Estagiários (art. 93.º) | RP – Trainees (art. 93) | 2026-10-31 |
-| `PT-AR-94` | AR – Voluntários (art. 94.º) | RP – Volunteers (art. 94) | 2026-10-31 |
-| `PT-AR-89-4` | AR – Empreendedores imigrantes, Startup Visa (art. 89.º, 4) | RP – Migrant entrepreneurs, Startup Visa (art. 89(4)) | 2026-10-31 |
-| `PT-AR-77` | AR – Regime geral (art. 77.º) | RP – General regime (art. 77) | 2026-10-31 |
-| `PT-AR-80` | AR – Residência permanente (art. 80.º) | RP – Permanent residence (art. 80) | 2026-10-31 |
-| `PT-AR-90A-JOBS` | ARI – Investimento: criação de 10 postos de trabalho (art. 90.º-A) | ARI – Investment: creating 10 jobs (art. 90-A) | 2026-10-31 |
-| `PT-AR-90A-RESEARCH` | ARI – Investimento: 500 mil € em investigação científica (art. 90.º-A) | ARI – Investment: EUR 500,000 in scientific research (art. 90-A) | 2026-10-31 |
-| `PT-AR-90A-CULTURE` | ARI – Investimento: 250 mil € em cultura e património (art. 90.º-A) | ARI – Investment: EUR 250,000 in culture and heritage (art. 90-A) | 2026-10-31 |
-| `PT-AR-90A-FUNDS` | ARI – Investimento: 500 mil € em fundos de investimento (art. 90.º-A) | ARI – Investment: EUR 500,000 in investment funds (art. 90-A) | 2026-10-31 |
-| `PT-AR-90A-COMPANY` | ARI – Investimento: 500 mil € em sociedade com 5 postos de trabalho (art. 90.º-A) | ARI – Investment: EUR 500,000 in a company with 5 jobs (art. 90-A) | 2026-10-31 |
-| `PT-AR-98-1` | Reagrupamento familiar, familiar fora de Portugal (art. 98.º, 1) | Family reunification, family member abroad (art. 98(1)) | 2026-10-31 |
-| `PT-AR-98-2` | Reagrupamento familiar, familiar já em Portugal (art. 98.º, 2) | Family reunification, family member already in Portugal (art. 98(2)) | 2026-10-31 |
-| `PT-AR-109` | AR – Vítimas de tráfico de pessoas ou auxílio à imigração ilegal (art. 109.º) | RP – Victims of human trafficking or migrant smuggling (art. 109) | 2026-10-31 |
-| `PT-AR-116` | AR – Residentes de longa duração de outro Estado-Membro (art. 116.º) | RP – Long-term residents of another member state (art. 116) | 2026-10-31 |
-| `PT-AR-121A` | Cartão Azul UE (art. 121.º-A e seguintes) | EU Blue Card (art. 121-A ff.) | 2026-10-31 |
-| `PT-AR-122-A` | AR – Menores nascidos em Portugal, filhos de residentes (art. 122.º, 1, a) | RP – Children born in Portugal to residents (art. 122(1)(a)) | 2026-10-31 |
-| `PT-AR-122-B` | AR – Menores nascidos em Portugal a estudar cá (art. 122.º, 1, b) | RP – Children born in Portugal and in school here (art. 122(1)(b)) | 2026-10-31 |
-| `PT-AR-122-C` | AR – Filhos de residentes, maiores, em Portugal desde os 10 anos (art. 122.º, 1, c) | RP – Adult children of residents, in Portugal since age 10 (art. 122(1)(c)) | 2026-10-31 |
-| `PT-AR-122-D` | AR – Maiores nascidos em Portugal ou cá desde antes dos 10 anos (art. 122.º, 1, d) | RP – Adults born in Portugal or here since before age 10 (art. 122(1)(d)) | 2026-10-31 |
-| `PT-AR-122-E` | AR – Menores sujeitos a tutela (art. 122.º, 1, e) | RP – Minors under guardianship (art. 122(1)(e)) | 2026-10-31 |
-| `PT-AR-122-F` | AR – Fim da proteção internacional (art. 122.º, 1, f) | RP – End of international protection (art. 122(1)(f)) | 2026-10-31 |
-| `PT-AR-122-G` | AR – Doença que exige assistência prolongada (art. 122.º, 1, g) | RP – Illness needing long-term care (art. 122(1)(g)) | 2026-10-31 |
-| `PT-AR-122-H` | AR – Serviço militar nas Forças Armadas Portuguesas (art. 122.º, 1, h) | RP – Military service in the Portuguese Armed Forces (art. 122(1)(h)) | 2026-10-31 |
-| `PT-AR-122-I` | AR – Perda da nacionalidade portuguesa, 15 anos em Portugal (art. 122.º, 1, i) | RP – Lost Portuguese nationality, 15 years in Portugal (art. 122(1)(i)) | 2026-10-31 |
-| `PT-AR-122-J` | AR – Direito de residência caducado sem ausência de Portugal (art. 122.º, 1, j) | RP – Expired residence right without leaving Portugal (art. 122(1)(j)) | 2026-10-31 |
-| `PT-AR-122-K` | AR – Pais de menores residentes ou portugueses (art. 122.º, 1, k) | RP – Parents of resident or Portuguese children (art. 122(1)(k)) | 2026-10-31 |
-| `PT-AR-122-M` | AR – Vítimas de infrações laborais (art. 122.º, 1, m) | RP – Victims of labour offences (art. 122(1)(m)) | 2026-10-31 |
-| `PT-AR-122-N` | AR – Após autorização para vítimas de tráfico (art. 122.º, 1, n) | RP – After a trafficking-victim permit (art. 122(1)(n)) | 2026-10-31 |
-| `PT-AR-122-R` | AR – Atividade de investimento, sem prova de entrada legal (art. 122.º, 1, r) | RP – Investment activity, without proof of legal entry (art. 122(1)(r)) | 2026-10-31 |
-| `PT-AR-122-4` | AR – Pais de menores nascidos em Portugal a estudar cá (art. 122.º, 4) | RP – Parents of children born and in school in Portugal (art. 122(4)) | 2026-10-31 |
-| `PT-AR-122-8` | AR – Acompanhante ou cuidador informal de doente (art. 122.º, 8) | RP – Companion or informal carer of a patient (art. 122(8)) | 2026-10-31 |
-| `PT-AR-123` | AR – Regime excecional (art. 123.º) | RP – Exceptional regime (art. 123) | 2026-10-31 |
-| `PT-AR-125` | Estatuto de residente de longa duração (art. 125.º) | Long-term resident status (art. 125) | 2026-10-31 |
-| `PT-AR-131-11` | AR – Após perda do estatuto de residente de longa duração (art. 131.º, 11) | RP – After losing long-term resident status (art. 131(11)) | 2026-10-31 |
-| `PT-AR-BLUE-CARD-CANCELLED` | AR – Após cancelamento do Cartão Azul UE (DR, art. 61.º, 24) | RP – After an EU Blue Card was cancelled (DR art. 61(24)) | 2026-10-31 |
+| visa_type | Português | English | Family documents | Facts to ask | Reviewed |
+| --- | --- | --- | --- | --- | --- |
+| `PT-D1` | D1 – Trabalho subordinado | D1 – Employed work | yes | `other_residence`, `cplp`, `sole_custody` | 2026-10-31 |
+| `PT-D2-INDEPENDENT` | D2 – Trabalho independente | D2 – Self-employed work | yes | `other_residence`, `cplp`, `sole_custody` | 2026-10-31 |
+| `PT-D2-ENTREPRENEUR` | D2 – Empreendedor imigrante | D2 – Migrant entrepreneur | yes | `other_residence`, `cplp`, `sole_custody` | 2026-10-31 |
+| `PT-D2-STARTUP` | D2 – Startup Visa | D2 – Startup visa | yes | `other_residence`, `cplp`, `sole_custody` | 2026-10-31 |
+| `PT-D3` | D3 – Atividade altamente qualificada, docente ou cultural | D3 – Highly qualified, teaching or cultural work | yes | `other_residence`, `cplp`, `sole_custody` | 2026-10-31 |
+| `PT-D4-STUDY` | D4 – Ensino superior | D4 – Higher education | yes | `other_residence`, `cplp`, `sole_custody` | 2026-10-31 |
+| `PT-D4-RESEARCH` | D4 – Investigação | D4 – Research | yes | `other_residence`, `cplp`, `sole_custody` | 2026-10-31 |
+| `PT-D6` | D6 – Reagrupamento familiar | D6 – Family reunification | yes | `other_residence`, `cplp`, `sole_custody` | 2026-10-31 |
+| `PT-D7` | D7 – Reformados e rendimentos próprios | D7 – Retirees and passive income | yes | `other_residence`, `cplp`, `sole_custody` | 2026-10-31 |
+| `PT-D8` | D8 – Trabalho remoto (nómadas digitais) | D8 – Remote work (digital nomads) | yes | `other_residence`, `cplp`, `sole_custody` | 2026-10-31 |
+| `PT-FAMILY-ACCOMPANY` | Acompanhamento de familiar requerente de visto | Accompanying a family member applying for a visa | yes | `other_residence`, `cplp`, `sole_custody` | 2026-10-31 |
+| `PT-JOB-SEEKER` | Visto para procura de trabalho | Job seeker visa | yes | `other_residence`, `cplp`, `sole_custody` | 2026-10-31 |
+| `PT-AR-88-1` | AR – Trabalho subordinado, com visto de residência (art. 88.º, 1) | RP – Employed work, with residence visa (art. 88(1)) | no | – | 2026-10-31 |
+| `PT-AR-88-1-NOMAD` | AR – Trabalho remoto, nómadas digitais (art. 88.º, 1) | RP – Remote work, digital nomads (art. 88(1)) | no | – | 2026-10-31 |
+| `PT-AR-88-2` | AR – Trabalho subordinado, sem visto (art. 88.º, 2; pedidos até 03/06/2024) | RP – Employed work, without visa (art. 88(2); applications up to 3 June 2024) | no | – | 2026-10-31 |
+| `PT-AR-88-7` | AR – Trabalho subordinado, com visto de procura de trabalho (art. 88.º, 7) | RP – Employed work, with job seeker visa (art. 88(7)) | no | – | 2026-10-31 |
+| `PT-AR-89-1` | AR – Trabalho independente, com visto de residência (art. 89.º, 1) | RP – Self-employed work, with residence visa (art. 89(1)) | no | – | 2026-10-31 |
+| `PT-AR-89-2` | AR – Trabalho independente, sem visto (art. 89.º, 2; pedidos até 03/06/2024) | RP – Self-employed work, without visa (art. 89(2); applications up to 3 June 2024) | no | – | 2026-10-31 |
+| `PT-AR-90-TEACHING` | AR – Atividade de docência (art. 90.º) | RP – Teaching (art. 90) | no | – | 2026-10-31 |
+| `PT-AR-90-HQ` | AR – Atividade altamente qualificada (art. 90.º) | RP – Highly qualified work (art. 90) | no | `self_employed` | 2026-10-31 |
+| `PT-AR-90-CULTURAL` | AR – Atividade cultural (art. 90.º) | RP – Cultural work (art. 90) | no | – | 2026-10-31 |
+| `PT-AR-90-TECH` | AR – Tech Visa, empresa certificada (art. 90.º) | RP – Tech Visa, certified company (art. 90) | no | – | 2026-10-31 |
+| `PT-AR-122-L` | AR – Agentes diplomáticos e consulares e familiares (art. 122.º, 1, l) | RP – Diplomatic and consular agents and family (art. 122(1)(l)) | no | `diplomat_family` | 2026-10-31 |
+| `PT-AR-122-O` | AR – Trabalho após estudos secundários ou licenciatura (art. 122.º, 1, o) | RP – Work after secondary school or a bachelor's degree (art. 122(1)(o)) | no | – | 2026-10-31 |
+| `PT-AR-122-P` | AR – Trabalho após mestrado, doutoramento ou investigação (art. 122.º, 1, p) | RP – Work after a master's, PhD or research (art. 122(1)(p)) | no | – | 2026-10-31 |
+| `PT-AR-122-Q` | AR – Após visto de estada temporária para investigação ou atividade qualificada (art. 122.º, 1, q) | RP – After a temporary stay visa for research or qualified work (art. 122(1)(q)) | no | – | 2026-10-31 |
+| `PT-AR-123A` | AR – Empresas deslocalizadas para Portugal (art. 123.º-A) | RP – Companies relocated to Portugal (art. 123-A) | no | – | 2026-10-31 |
+| `PT-AR-124B` | AR – Transferência dentro da empresa, ICT (art. 124.º-B) | RP – Intra-company transfer, ICT (art. 124-B) | no | – | 2026-10-31 |
+| `PT-AR-124E` | AR – ICT móvel, com título ICT de outro Estado-Membro (art. 124.º-E) | RP – Mobile ICT, with an ICT permit from another member state (art. 124-E) | no | `certified_group` | 2026-10-31 |
+| `PT-AR-91` | AR – Estudantes do ensino superior (art. 91.º) | RP – Higher education students (art. 91) | no | – | 2026-10-31 |
+| `PT-AR-91A` | AR – Mobilidade de estudantes do ensino superior (art. 91.º-A) | RP – Higher education student mobility (art. 91-A) | no | – | 2026-10-31 |
+| `PT-AR-91B` | AR – Investigadores (art. 91.º-B) | RP – Researchers (art. 91-B) | no | `no_visa` | 2026-10-31 |
+| `PT-AR-91C` | AR – Investigadores em mobilidade de longa duração (art. 91.º-C) | RP – Researchers on long-term mobility (art. 91-C) | no | `no_visa` | 2026-10-31 |
+| `PT-AR-92` | AR – Estudantes do ensino secundário e profissional (art. 92.º) | RP – Secondary and vocational students (art. 92) | no | `no_visa` | 2026-10-31 |
+| `PT-AR-93` | AR – Estagiários (art. 93.º) | RP – Trainees (art. 93) | no | – | 2026-10-31 |
+| `PT-AR-94` | AR – Voluntários (art. 94.º) | RP – Volunteers (art. 94) | no | – | 2026-10-31 |
+| `PT-AR-89-4` | AR – Empreendedores imigrantes, Startup Visa (art. 89.º, 4) | RP – Migrant entrepreneurs, Startup Visa (art. 89(4)) | no | – | 2026-10-31 |
+| `PT-AR-77` | AR – Regime geral (art. 77.º) | RP – General regime (art. 77) | no | – | 2026-10-31 |
+| `PT-AR-80` | AR – Residência permanente (art. 80.º) | RP – Permanent residence (art. 80) | no | – | 2026-10-31 |
+| `PT-AR-90A-JOBS` | ARI – Investimento: criação de 10 postos de trabalho (art. 90.º-A) | ARI – Investment: creating 10 jobs (art. 90-A) | no | – | 2026-10-31 |
+| `PT-AR-90A-RESEARCH` | ARI – Investimento: 500 mil € em investigação científica (art. 90.º-A) | ARI – Investment: EUR 500,000 in scientific research (art. 90-A) | no | – | 2026-10-31 |
+| `PT-AR-90A-CULTURE` | ARI – Investimento: 250 mil € em cultura e património (art. 90.º-A) | ARI – Investment: EUR 250,000 in culture and heritage (art. 90-A) | no | – | 2026-10-31 |
+| `PT-AR-90A-FUNDS` | ARI – Investimento: 500 mil € em fundos de investimento (art. 90.º-A) | ARI – Investment: EUR 500,000 in investment funds (art. 90-A) | no | – | 2026-10-31 |
+| `PT-AR-90A-COMPANY` | ARI – Investimento: 500 mil € em sociedade com 5 postos de trabalho (art. 90.º-A) | ARI – Investment: EUR 500,000 in a company with 5 jobs (art. 90-A) | no | – | 2026-10-31 |
+| `PT-AR-98-1` | Reagrupamento familiar, familiar fora de Portugal (art. 98.º, 1) | Family reunification, family member abroad (art. 98(1)) | yes | – | 2026-10-31 |
+| `PT-AR-98-2` | Reagrupamento familiar, familiar já em Portugal (art. 98.º, 2) | Family reunification, family member already in Portugal (art. 98(2)) | yes | – | 2026-10-31 |
+| `PT-AR-109` | AR – Vítimas de tráfico de pessoas ou auxílio à imigração ilegal (art. 109.º) | RP – Victims of human trafficking or migrant smuggling (art. 109) | no | – | 2026-10-31 |
+| `PT-AR-116` | AR – Residentes de longa duração de outro Estado-Membro (art. 116.º) | RP – Long-term residents of another member state (art. 116) | no | – | 2026-10-31 |
+| `PT-AR-121A` | Cartão Azul UE (art. 121.º-A e seguintes) | EU Blue Card (art. 121-A ff.) | no | – | 2026-10-31 |
+| `PT-AR-122-A` | AR – Menores nascidos em Portugal, filhos de residentes (art. 122.º, 1, a) | RP – Children born in Portugal to residents (art. 122(1)(a)) | no | – | 2026-10-31 |
+| `PT-AR-122-B` | AR – Menores nascidos em Portugal a estudar cá (art. 122.º, 1, b) | RP – Children born in Portugal and in school here (art. 122(1)(b)) | no | – | 2026-10-31 |
+| `PT-AR-122-C` | AR – Filhos de residentes, maiores, em Portugal desde os 10 anos (art. 122.º, 1, c) | RP – Adult children of residents, in Portugal since age 10 (art. 122(1)(c)) | no | – | 2026-10-31 |
+| `PT-AR-122-D` | AR – Maiores nascidos em Portugal ou cá desde antes dos 10 anos (art. 122.º, 1, d) | RP – Adults born in Portugal or here since before age 10 (art. 122(1)(d)) | no | – | 2026-10-31 |
+| `PT-AR-122-E` | AR – Menores sujeitos a tutela (art. 122.º, 1, e) | RP – Minors under guardianship (art. 122(1)(e)) | no | – | 2026-10-31 |
+| `PT-AR-122-F` | AR – Fim da proteção internacional (art. 122.º, 1, f) | RP – End of international protection (art. 122(1)(f)) | no | – | 2026-10-31 |
+| `PT-AR-122-G` | AR – Doença que exige assistência prolongada (art. 122.º, 1, g) | RP – Illness needing long-term care (art. 122(1)(g)) | no | – | 2026-10-31 |
+| `PT-AR-122-H` | AR – Serviço militar nas Forças Armadas Portuguesas (art. 122.º, 1, h) | RP – Military service in the Portuguese Armed Forces (art. 122(1)(h)) | no | – | 2026-10-31 |
+| `PT-AR-122-I` | AR – Perda da nacionalidade portuguesa, 15 anos em Portugal (art. 122.º, 1, i) | RP – Lost Portuguese nationality, 15 years in Portugal (art. 122(1)(i)) | no | – | 2026-10-31 |
+| `PT-AR-122-J` | AR – Direito de residência caducado sem ausência de Portugal (art. 122.º, 1, j) | RP – Expired residence right without leaving Portugal (art. 122(1)(j)) | no | – | 2026-10-31 |
+| `PT-AR-122-K` | AR – Pais de menores residentes ou portugueses (art. 122.º, 1, k) | RP – Parents of resident or Portuguese children (art. 122(1)(k)) | no | – | 2026-10-31 |
+| `PT-AR-122-M` | AR – Vítimas de infrações laborais (art. 122.º, 1, m) | RP – Victims of labour offences (art. 122(1)(m)) | no | – | 2026-10-31 |
+| `PT-AR-122-N` | AR – Após autorização para vítimas de tráfico (art. 122.º, 1, n) | RP – After a trafficking-victim permit (art. 122(1)(n)) | no | – | 2026-10-31 |
+| `PT-AR-122-R` | AR – Atividade de investimento, sem prova de entrada legal (art. 122.º, 1, r) | RP – Investment activity, without proof of legal entry (art. 122(1)(r)) | no | – | 2026-10-31 |
+| `PT-AR-122-4` | AR – Pais de menores nascidos em Portugal a estudar cá (art. 122.º, 4) | RP – Parents of children born and in school in Portugal (art. 122(4)) | no | – | 2026-10-31 |
+| `PT-AR-122-8` | AR – Acompanhante ou cuidador informal de doente (art. 122.º, 8) | RP – Companion or informal carer of a patient (art. 122(8)) | no | – | 2026-10-31 |
+| `PT-AR-123` | AR – Regime excecional (art. 123.º) | RP – Exceptional regime (art. 123) | no | – | 2026-10-31 |
+| `PT-AR-125` | Estatuto de residente de longa duração (art. 125.º) | Long-term resident status (art. 125) | no | – | 2026-10-31 |
+| `PT-AR-131-11` | AR – Após perda do estatuto de residente de longa duração (art. 131.º, 11) | RP – After losing long-term resident status (art. 131(11)) | no | – | 2026-10-31 |
+| `PT-AR-BLUE-CARD-CANCELLED` | AR – Após cancelamento do Cartão Azul UE (DR, art. 61.º, 24) | RP – After an EU Blue Card was cancelled (DR art. 61(24)) | no | – | 2026-10-31 |
 
 ## Facts (`Cases.facts`, `;`-separated)
 

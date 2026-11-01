@@ -172,8 +172,15 @@ function skillReference(data) {
     '',
   ];
   Object.values(data.countries).forEach((c) => {
-    lines.push('### ' + c.name.en + ' (`' + c.code + '`)', '', rows(['visa_type', 'Português', 'English', 'Reviewed']), rows(['---', '---', '---', '---']));
-    c.visas.filter((v) => v.active).forEach((v) => lines.push(rows(['`' + v.id + '`', v.name.pt, v.name.en, v.last_reviewed])));
+    // What the skill asks the lawyer when opening a case: whether family members
+    // have documents of their own, and which of the lawyer's facts change the list.
+    const lawyerFacts = new Set(data.facts.filter((f) => !f.derived).map((f) => f.id));
+    const family = (v) => (v.requirements.some((r) => r.applies_to !== 'main_applicant' && r.applies_to !== 'case') ? 'yes' : 'no');
+    const facts = (v) => [...new Set(v.requirements.flatMap((r) => r.only_if.concat(r.unless)).filter((f) => lawyerFacts.has(f)))]
+      .map((f) => '`' + f + '`').join(', ') || '–';
+    lines.push('### ' + c.name.en + ' (`' + c.code + '`)', '',
+      rows(['visa_type', 'Português', 'English', 'Family documents', 'Facts to ask', 'Reviewed']), rows(['---', '---', '---', '---', '---', '---']));
+    c.visas.filter((v) => v.active).forEach((v) => lines.push(rows(['`' + v.id + '`', v.name.pt, v.name.en, family(v), facts(v), v.last_reviewed])));
     lines.push('');
   });
   lines.push('## Facts (`Cases.facts`, `;`-separated)', '', rows(['fact', 'Meaning', 'Set by']), rows(['---', '---', '---']));

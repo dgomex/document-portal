@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: asks-which-work-permit
+expected_outcome: |
+  "Autorização de residência para trabalho" matches several permits in the catalog (for example PT-AR-88-1, PT-AR-88-7, PT-AR-89-1), and the lawyer didn't pre-approve. So nothing is written yet: no writes.json, or an empty one. The reply lists a few candidate permits with a short reason each, asks the lawyer which one applies, and doesn't pick one itself. It may also ask the other questions for the case in the same message.
+context:
+  scaffold_script: place-files.sh
