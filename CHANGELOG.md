@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2 (library version 9, 2026-11-01)
+
+Security fixes: an upload can no longer register or trash a file created before it started; uploads started but never finished are trashed by a daily sweep (only files the portal created, never the lawyer's own).
+
 ## 0.4.1 (library version 8, 2026-11-01)
 
 Checklist items show their own upload in progress (spinner, percentage, retry on failure); Drive folders follow client and case renames in the sheet; bundles visa catalog 2026.11.1 with the 57 AIMA residence permits (applied only when the lawyer clicks Apply).

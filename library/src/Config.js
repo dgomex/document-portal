@@ -3,7 +3,7 @@
  * with the sheet and with the Claude skill: add columns, never rename them.
  */
 const Config = Object.freeze({
-  LIBRARY_VERSION: '0.4.1',
+  LIBRARY_VERSION: '0.4.2',
   SCHEMA_VERSION: 3,  // bump with a step in admin/Migrations.js
 
   LANGUAGES: ['pt', 'en', 'es'],
