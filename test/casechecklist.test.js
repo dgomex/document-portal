@@ -29,7 +29,7 @@ test('setting a visa adds the main applicant and builds the list once', () => {
   expect(f.people()).toEqual([expect.objectContaining({ name: 'Ana Ferreira', role: 'main_applicant', created_by: 'portal' })]);
   expect(f.items().length).toBe(9);
   expect(f.items().every((i) => /^IT-/.test(i.item_id) && i.status === 'missing')).toBe(true);
-  expect(f.caseRow().checklist_version).toMatch(/^2026\.11\|/);
+  expect(f.caseRow().checklist_version.split('|')[0]).toBe(lib.CATALOG_DATA.version);
   expect(f.sync()).toEqual({ people: 0, requests: 0, built: 0, rebuilt: 0, stale: 0 });
 });
 

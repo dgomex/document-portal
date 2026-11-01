@@ -242,3 +242,566 @@
 
 - id: STAY_CONDITIONS
   name: { pt: "Declaração das condições da estadia", en: "Declaration of the conditions of stay", es: "Declaración de las condiciones de la estancia" }
+
+# ---- AIMA residence permits (autorizações de residência), from aima.gov.pt ----
+
+- id: AIMA_FORM
+  name: { pt: "Impresso de pedido de autorização de residência (AIMA)", en: "Residence permit application form (AIMA)", es: "Impreso de solicitud de autorización de residencia (AIMA)" }
+  instructions:
+    pt: "Impresso próprio da AIMA (Modelo 1), preenchido e assinado pelo requerente ou pelo representante legal."
+    en: "AIMA's own form (Model 1), completed and signed by the applicant or their legal representative."
+    es: "Impreso propio de la AIMA (Modelo 1), cumplimentado y firmado por el solicitante o su representante legal."
+
+- id: PASSPORT_VALID
+  name: { pt: "Passaporte válido", en: "Valid passport", es: "Pasaporte válido" }
+  instructions:
+    pt: "Cópia da página de identificação e da página do visto ou carimbo de entrada. Deve estar válido à data do pedido."
+    en: "Copy of the identification page and of the page with the visa or entry stamp. It must be valid on the date of the application."
+    es: "Copia de la página de identificación y de la página del visado o sello de entrada. Debe estar vigente en la fecha de la solicitud."
+
+- id: PT_VISA
+  name: { pt: "Visto válido com que entrou em Portugal", en: "Valid visa you entered Portugal with", es: "Visado válido con el que entró en Portugal" }
+  instructions:
+    pt: "O visto emitido para esta finalidade (de residência ou de procura de trabalho), ainda válido."
+    en: "The visa issued for this purpose (residence or job seeker visa), still valid."
+    es: "El visado emitido para esta finalidad (de residencia o de búsqueda de empleo), aún vigente."
+
+- id: ADDRESS_DECLARATION
+  name: { pt: "Declaração de morada (compromisso de honra)", en: "Address declaration (solemn declaration)", es: "Declaración de domicilio (bajo compromiso de honor)" }
+  instructions:
+    pt: "Indica a morada e a que título lá vive: proprietário, arrendatário, subarrendatário, usufrutuário, comodatário, etc."
+    en: "States the address and on what basis you live there: owner, tenant, subtenant, usufructuary, borrower, etc."
+    es: "Indica el domicilio y a qué título vive allí: propietario, arrendatario, subarrendatario, usufructuario, comodatario, etc."
+
+- id: LAND_REGISTRY_CERT
+  name: { pt: "Certidão de registo predial", en: "Land registry certificate", es: "Certificado del registro de la propiedad" }
+  instructions:
+    pt: "Se é proprietário ou usufrutuário: a certidão, ou o código de acesso à certidão permanente."
+    en: "If you own the property or hold its usufruct: the certificate, or the access code to the online certificate."
+    es: "Si es propietario o usufructuario: el certificado, o el código de acceso al certificado permanente."
+
+- id: LANDLORD_DECLARATION
+  name: { pt: "Declaração do senhorio ou da entidade alojadora", en: "Declaration from the landlord or host", es: "Declaración del arrendador o de la entidad que lo aloja" }
+  instructions:
+    pt: "Se é arrendatário ou vive em casa de outrem: indica a situação jurídica que lhe dá direito a usar o imóvel."
+    en: "If you rent or live in someone else's home: states the legal basis of your right to use the property."
+    es: "Si es arrendatario o vive en casa ajena: indica la situación jurídica que le da derecho a usar el inmueble."
+
+- id: NIF_PROOF
+  name: { pt: "Comprovativo do NIF (inscrição nas Finanças)", en: "Proof of tax number (NIF)", es: "Justificante del NIF (inscripción en Hacienda)" }
+
+- id: NISS_PROOF
+  name: { pt: "Comprovativo do NISS (inscrição na Segurança Social)", en: "Proof of social security number (NISS)", es: "Justificante del NISS (inscripción en la Seguridad Social)" }
+
+- id: EMPLOYER_BOND_DECLARATION
+  name: { pt: "Declaração do empregador sobre o vínculo laboral", en: "Employer's declaration of employment", es: "Declaración del empleador sobre la relación laboral" }
+  instructions:
+    pt: "Declaração sob compromisso de honra da entidade patronal, atestando o vínculo laboral."
+    en: "Solemn declaration from the employer confirming the employment relationship."
+    es: "Declaración bajo compromiso de honor del empleador, que acredita la relación laboral."
+
+- id: REMOTE_BOND_DECLARATION
+  name: { pt: "Declaração do empregador ou cliente no estrangeiro", en: "Declaration from your employer or client abroad", es: "Declaración del empleador o cliente en el extranjero" }
+  instructions:
+    pt: "Sob compromisso de honra, da pessoa ou empresa com domicílio ou sede fora de Portugal, atestando o vínculo laboral ou a prestação de serviços."
+    en: "Solemn declaration from the person or company based outside Portugal, confirming the employment or the provision of services."
+    es: "Bajo compromiso de honor, de la persona o empresa con domicilio o sede fuera de Portugal, que acredita la relación laboral o la prestación de servicios."
+
+- id: LEGAL_ENTRY_PROOF
+  name: { pt: "Comprovativo de entrada legal", en: "Proof of legal entry", es: "Justificante de entrada legal" }
+  instructions:
+    pt: "Visto válido à data da entrada em Portugal, ou 12 meses de contribuições para a Segurança Social."
+    en: "A visa that was valid when you entered Portugal, or 12 months of social security contributions."
+    es: "Visado vigente en la fecha de entrada en Portugal, o 12 meses de cotizaciones a la Seguridad Social."
+
+- id: ACTIVITY_START_PROOF
+  name: { pt: "Comprovativo de início de atividade", en: "Proof of registration as self-employed", es: "Justificante de inicio de actividad" }
+  instructions:
+    pt: "Início de atividade nas Finanças e na Segurança Social."
+    en: "Registration of the activity with the tax authority and social security."
+    es: "Alta de la actividad en Hacienda y en la Seguridad Social."
+
+- id: RECENT_RECEIPTS
+  name: { pt: "Últimos recibos emitidos", en: "Latest invoices issued", es: "Últimos recibos emitidos" }
+  instructions:
+    pt: "Recibos verdes ou faturas emitidos pela atividade independente."
+    en: "Receipts or invoices issued for the self-employed work."
+    es: "Recibos o facturas emitidos por la actividad por cuenta propia."
+
+- id: QUALIFICATION_CERT
+  name: { pt: "Certificado de habilitações ou de especialização", en: "Certificate of qualifications or specialisation", es: "Certificado de titulación o de especialización" }
+  instructions:
+    pt: "Cópia autenticada do diploma ou do documento que comprova a especialização ou a experiência profissional."
+    en: "Certified copy of the diploma or of the document proving the specialisation or professional experience."
+    es: "Copia compulsada del título o del documento que acredita la especialización o la experiencia profesional."
+
+- id: HQ_EMPLOYER_DECLARATION
+  name: { pt: "Declaração do empregador (contrato altamente qualificado)", en: "Employer's declaration (highly qualified contract)", es: "Declaración del empleador (contrato altamente cualificado)" }
+  instructions:
+    pt: "Atesta um contrato de trabalho com salário de pelo menos 1,5 vezes o salário médio nacional (1,2 vezes nas profissões com falta de trabalhadores), segundo os valores em vigor."
+    en: "Confirms an employment contract with a salary of at least 1.5 times the national average salary (1.2 times in shortage occupations), at the current figures."
+    es: "Acredita un contrato de trabajo con un salario de al menos 1,5 veces el salario medio nacional (1,2 veces en profesiones con escasez de trabajadores), según los valores vigentes."
+
+- id: HOST_RESPONSIBILITY_TERM
+  name: { pt: "Termo de responsabilidade da entidade de acolhimento", en: "Statement of responsibility from the host entity", es: "Declaración de responsabilidad de la entidad de acogida" }
+  instructions:
+    pt: "Emitido pela entidade que utiliza a atividade do requerente."
+    en: "Issued by the entity that uses the applicant's work."
+    es: "Emitida por la entidad que utiliza la actividad del solicitante."
+
+- id: TECH_VISA_TERM
+  name: { pt: "Termo de responsabilidade da empresa certificada (Tech Visa)", en: "Statement of responsibility from the certified company (Tech Visa)", es: "Declaración de responsabilidad de la empresa certificada (Tech Visa)" }
+  instructions:
+    pt: "Emitido pela empresa certificada pelo IAPMEI que recruta o requerente."
+    en: "Issued by the IAPMEI-certified company recruiting the applicant."
+    es: "Emitida por la empresa certificada por el IAPMEI que contrata al solicitante."
+
+- id: CRIMINAL_RECORD_CONSENT
+  name: { pt: "Autorização de consulta do registo criminal português", en: "Consent to check the Portuguese criminal record", es: "Autorización de consulta del registro penal portugués" }
+  instructions:
+    pt: "Autoriza a AIMA a consultar o registo criminal português (não se aplica a menores de 16 anos)."
+    en: "Allows AIMA to check the Portuguese criminal record (not for children under 16)."
+    es: "Autoriza a la AIMA a consultar el registro penal portugués (no se aplica a menores de 16 años)."
+
+- id: SUBSISTENCE_PROOF
+  name: { pt: "Comprovativo de meios de subsistência", en: "Proof of means of subsistence", es: "Justificante de medios de subsistencia" }
+
+- id: DIPLOMATIC_ACCREDITATION
+  name: { pt: "Comprovativo de acreditação diplomática em Portugal", en: "Proof of diplomatic accreditation in Portugal", es: "Justificante de acreditación diplomática en Portugal" }
+  instructions:
+    pt: "Acreditação durante pelo menos 3 anos."
+    en: "Accreditation for at least 3 years."
+    es: "Acreditación durante al menos 3 años."
+
+- id: DEPENDENCY_PROOF
+  name: { pt: "Comprovativo de dependência económica", en: "Proof of financial dependency", es: "Justificante de dependencia económica" }
+  instructions:
+    pt: "Prova de que o familiar está a cargo, por exemplo transferências regulares para o país de origem."
+    en: "Proof that the family member is dependent on you, for example regular transfers to their home country."
+    es: "Prueba de que el familiar está a su cargo, por ejemplo transferencias regulares al país de origen."
+
+- id: STUDY_COMPLETION
+  name: { pt: "Declaração de conclusão dos estudos", en: "Certificate of completion of studies", es: "Declaración de finalización de los estudios" }
+  instructions:
+    pt: "Emitida pelo estabelecimento de ensino, atestando a conclusão do plano de estudos."
+    en: "Issued by the school or university, confirming completion of the course."
+    es: "Emitida por el centro de enseñanza, que acredita la finalización del plan de estudios."
+
+- id: RESEARCH_COMPLETION
+  name: { pt: "Declaração de conclusão da investigação", en: "Certificate of completion of research", es: "Declaración de finalización de la investigación" }
+  instructions:
+    pt: "Emitida pela entidade responsável pelo projeto de investigação."
+    en: "Issued by the entity responsible for the research project."
+    es: "Emitida por la entidad responsable del proyecto de investigación."
+
+- id: JOB_SEARCH_DECLARATION
+  name: { pt: "Declaração de procura de trabalho (até 1 ano)", en: "Declaration of job search (up to 1 year)", es: "Declaración de búsqueda de empleo (hasta 1 año)" }
+  instructions:
+    pt: "Do requerente, declarando que pretende usar o período máximo de um ano para procurar trabalho em Portugal compatível com as suas qualificações."
+    en: "From the applicant, stating they intend to use up to one year to look for work in Portugal matching their qualifications."
+    es: "Del solicitante, declarando que desea usar el período máximo de un año para buscar empleo en Portugal acorde con su cualificación."
+
+- id: NO_COOPERATION_AGREEMENT
+  name: { pt: "Declaração de não beneficiário de Acordo de Cooperação", en: "Declaration of not having benefited from a Cooperation Agreement", es: "Declaración de no beneficiario de un Acuerdo de Cooperación" }
+
+- id: TEMP_STAY_VISA
+  name: { pt: "Visto de estada temporária (investigação ou altamente qualificada)", en: "Temporary stay visa (research or highly qualified)", es: "Visado de estancia temporal (investigación o altamente cualificada)" }
+  instructions:
+    pt: "O visto com que está em Portugal; um visto de longa duração vale no máximo um ano e é substituído por um título de residência."
+    en: "The visa you are in Portugal on; a long-stay visa lasts at most one year and is replaced by a residence permit."
+    es: "El visado con el que está en Portugal; un visado de larga duración vale como máximo un año y se sustituye por un permiso de residencia."
+
+- id: EEA_RESIDENCE_PERMIT
+  name: { pt: "Título de residência no país onde estava a empresa", en: "Residence permit from the country where the company was", es: "Permiso de residencia del país donde estaba la empresa" }
+  instructions:
+    pt: "Válido, emitido pelo Estado do Espaço Económico Europeu (ou outro definido por despacho) de onde a empresa se deslocalizou."
+    en: "Valid, issued by the European Economic Area state (or other state set by order) the company relocated from."
+    es: "Vigente, emitido por el Estado del Espacio Económico Europeo (u otro fijado por resolución) desde el que se trasladó la empresa."
+
+- id: COMMERCIAL_REGISTRY_CERT
+  name: { pt: "Certidão do registo comercial atualizada", en: "Up-to-date commercial registry certificate", es: "Certificado actualizado del registro mercantil" }
+
+- id: ICT_EMPLOYER_DECLARATION
+  name: { pt: "Declaração do empregador (transferência dentro da empresa)", en: "Employer's declaration (intra-company transfer)", es: "Declaración del empleador (traslado dentro de la empresa)" }
+  instructions:
+    pt: "Atesta o contrato de trabalho e a condição de gestor, especialista ou empregado estagiário."
+    en: "Confirms the employment contract and the role of manager, specialist or trainee employee."
+    es: "Acredita el contrato de trabajo y la condición de directivo, especialista o trabajador en prácticas."
+
+- id: ICT_TRANSFER_TERMS
+  name: { pt: "Condições da transferência", en: "Terms of the transfer", es: "Condiciones del traslado" }
+  instructions:
+    pt: "Documento do empregador com a identificação da empresa de acolhimento, a remuneração e as demais condições de trabalho durante a transferência."
+    en: "Document from the employer naming the host company, the pay and the other working conditions during the transfer."
+    es: "Documento del empleador con la identificación de la empresa de acogida, la remuneración y las demás condiciones de trabajo durante el traslado."
+
+- id: SAME_GROUP_PROOF
+  name: { pt: "Comprovativo de que as empresas pertencem ao mesmo grupo", en: "Proof that the companies belong to the same group", es: "Justificante de que las empresas pertenecen al mismo grupo" }
+  instructions:
+    pt: "A empresa de acolhimento em Portugal e a empresa no país terceiro pertencem à mesma empresa ou grupo."
+    en: "The host company in Portugal and the company in the non-EU country belong to the same company or group."
+    es: "La empresa de acogida en Portugal y la empresa del tercer país pertenecen a la misma empresa o grupo."
+
+- id: PRIOR_EMPLOYMENT_PROOF
+  name: { pt: "Comprovativo de trabalho anterior no grupo", en: "Proof of prior work in the group", es: "Justificante de trabajo previo en el grupo" }
+  instructions:
+    pt: "Imediatamente antes da transferência: 3 a 12 meses seguidos como gestor ou especialista, ou 3 a 6 meses como empregado estagiário."
+    en: "Immediately before the transfer: 3 to 12 months in a row as a manager or specialist, or 3 to 6 months as a trainee employee."
+    es: "Inmediatamente antes del traslado: de 3 a 12 meses seguidos como directivo o especialista, o de 3 a 6 meses como trabajador en prácticas."
+
+- id: HEALTH_INSURANCE
+  name: { pt: "Seguro de saúde", en: "Health insurance", es: "Seguro de salud" }
+  instructions:
+    pt: "Comprovativo de ter seguro de saúde, quando não esteja abrangido pelo Serviço Nacional de Saúde."
+    en: "Proof of health insurance, when not covered by the Portuguese National Health Service."
+    es: "Justificante de tener seguro de salud, cuando no esté cubierto por el Servicio Nacional de Salud portugués."
+
+- id: HOST_COMPLIANCE_GUARANTEE
+  name: { pt: "Garantia da empresa de acolhimento", en: "Guarantee from the host company", es: "Garantía de la empresa de acogida" }
+  instructions:
+    pt: "A empresa de acolhimento garante que cumpre a lei portuguesa sobre condições de trabalho e remuneração."
+    en: "The host company guarantees it complies with Portuguese law on working conditions and pay."
+    es: "La empresa de acogida garantiza que cumple la ley portuguesa sobre condiciones de trabajo y remuneración."
+
+- id: ICT_PERMIT_OTHER_STATE
+  name: { pt: "Autorização de residência ICT de outro Estado-Membro", en: "ICT residence permit from another EU member state", es: "Autorización de residencia ICT de otro Estado miembro" }
+
+# ---- AIMA: living, studying and investing (aima.gov.pt/pt/viver, /estudar, /empreender) ----
+
+- id: ENROLMENT_PROOF
+  name: { pt: "Comprovativo de matrícula", en: "Proof of enrolment", es: "Justificante de matrícula" }
+  instructions:
+    pt: "Matrícula no estabelecimento de ensino ou na entidade formadora reconhecida."
+    en: "Enrolment at the school, university or recognised training body."
+    es: "Matrícula en el centro de enseñanza o en la entidad formadora reconocida."
+
+- id: TUITION_PROOF
+  name: { pt: "Comprovativo de pagamento de propinas", en: "Proof of tuition fee payment", es: "Justificante de pago de las tasas académicas" }
+  instructions:
+    pt: "Se aplicável, declaração do estabelecimento de ensino."
+    en: "If applicable, a statement from the school or university."
+    es: "Si procede, declaración del centro de enseñanza."
+
+- id: MOBILITY_FORM_M6
+  name: { pt: "Formulário Modelo 6 (mobilidade de estudantes)", en: "Form Model 6 (student mobility)", es: "Formulario Modelo 6 (movilidad de estudiantes)" }
+  instructions:
+    pt: "Comunicação à AIMA até 30 dias antes do início da mobilidade, por email para comunicacao.mobilidade.ue@aima.gov.pt."
+    en: "Notice to AIMA up to 30 days before the mobility starts, by email to comunicacao.mobilidade.ue@aima.gov.pt."
+    es: "Comunicación a la AIMA hasta 30 días antes del inicio de la movilidad, por email a comunicacao.mobilidade.ue@aima.gov.pt."
+
+- id: EU_STUDENT_PERMIT
+  name: { pt: "Título de residência de estudante de outro Estado-Membro", en: "Student residence permit from another EU member state", es: "Permiso de residencia de estudiante de otro Estado miembro" }
+  instructions:
+    pt: "Com a menção «Estudante do Ensino Superior» e validade que cubra todo o período de estudos em Portugal."
+    en: "Marked \"higher education student\", valid for the whole study period in Portugal."
+    es: "Con la mención «Estudiante de Enseñanza Superior» y validez que cubra todo el período de estudios en Portugal."
+
+- id: FEE_PAYMENT_PROOF
+  name: { pt: "Comprovativo de pagamento da taxa", en: "Proof of fee payment", es: "Justificante de pago de la tasa" }
+
+- id: EU_RESIDENCE_PERMIT
+  name: { pt: "Autorização de residência do Estado-Membro onde reside", en: "Residence permit from the EU member state where you live", es: "Autorización de residencia del Estado miembro donde reside" }
+
+- id: TRAINING_AGREEMENT
+  name: { pt: "Contrato de formação (estágio)", en: "Traineeship agreement", es: "Contrato de formación (prácticas)" }
+  instructions:
+    pt: "Com empresa ou organismo de formação reconhecido: programa e objetivos, duração e horário, local e supervisão, relação jurídica, e a menção de que o estágio não substitui um posto de trabalho."
+    en: "With a company or recognised training body: programme and goals, length and hours, place and supervision, the legal relationship, and a statement that the traineeship does not replace a job."
+    es: "Con empresa u organismo de formación reconocido: programa y objetivos, duración y horario, lugar y supervisión, relación jurídica, y la mención de que las prácticas no sustituyen un puesto de trabajo."
+
+- id: VOLUNTEER_HOST_DECLARATION
+  name: { pt: "Declaração da entidade de acolhimento do voluntariado", en: "Statement from the volunteering host", es: "Declaración de la entidad de acogida del voluntariado" }
+  instructions:
+    pt: "Descreve o programa, duração, horário e supervisão, e garante alimentação, alojamento e um mínimo de dinheiro de bolso."
+    en: "Describes the programme, length, hours and supervision, and covers food, housing and minimum pocket money."
+    es: "Describe el programa, duración, horario y supervisión, y garantiza manutención, alojamiento y un mínimo de dinero de bolsillo."
+
+- id: HOST_LIABILITY_INSURANCE
+  name: { pt: "Seguro de responsabilidade civil da entidade de acolhimento", en: "Host organisation's liability insurance", es: "Seguro de responsabilidad civil de la entidad de acogida" }
+  instructions:
+    pt: "Não é exigido no Serviço Voluntário Europeu."
+    en: "Not required for the European Voluntary Service."
+    es: "No se exige en el Servicio Voluntario Europeo."
+
+- id: KINSHIP_PROOF
+  name: { pt: "Comprovativo de vínculos de parentesco", en: "Proof of family ties", es: "Justificante de vínculos de parentesco" }
+  instructions:
+    pt: "Quando se justifique."
+    en: "When relevant."
+    es: "Cuando proceda."
+
+- id: TAX_SS_COMPLIANCE
+  name: { pt: "Situação regularizada nas Finanças e na Segurança Social", en: "Proof of being up to date with tax and social security", es: "Situación regularizada en Hacienda y en la Seguridad Social" }
+  instructions:
+    pt: "Certidões de situação contributiva e tributária regularizada."
+    en: "Certificates showing no tax or social security debts."
+    es: "Certificados de estar al corriente con Hacienda y la Seguridad Social."
+
+- id: TEMP_PERMIT_5Y
+  name: { pt: "Autorização de residência temporária há pelo menos 5 anos", en: "Temporary residence permit held for at least 5 years", es: "Autorización de residencia temporal desde hace al menos 5 años" }
+
+- id: PORTUGUESE_A2
+  name: { pt: "Comprovativo de português básico (A2)", en: "Proof of basic Portuguese (A2)", es: "Justificante de portugués básico (A2)" }
+  instructions:
+    pt: "Um destes: certificado de habilitações de escola portuguesa ou de país de língua oficial portuguesa; curso de português básico do IEFP ou escola reconhecida; teste CAPLE; ou nível A2 em Português Língua de Acolhimento."
+    en: "One of: a school certificate from a Portuguese school or one in a Portuguese-speaking country; a basic Portuguese course from IEFP or a recognised school; a CAPLE test; or level A2 in Portuguese as a Host Language."
+    es: "Uno de estos: certificado escolar de un centro portugués o de un país de lengua oficial portuguesa; curso de portugués básico del IEFP o centro reconocido; examen CAPLE; o nivel A2 en Portugués Lengua de Acogida."
+
+- id: LEGAL_STAY_PROOF
+  name: { pt: "Comprovativo de entrada e permanência legal", en: "Proof of legal entry and stay", es: "Justificante de entrada y permanencia legal" }
+
+- id: FOREIGN_TAX_ID
+  name: { pt: "Número de identificação fiscal do país de origem ou residência", en: "Tax ID from your country of origin or residence", es: "Número de identificación fiscal del país de origen o residencia" }
+
+- id: ARI_FORM
+  name: { pt: "Requerimento ARI", en: "ARI application form", es: "Solicitud ARI" }
+  instructions:
+    pt: "No modelo aprovado, incluindo a autorização de consulta do registo criminal português; pré-registo no Portal ARI."
+    en: "On the approved form, including consent to check the Portuguese criminal record; pre-registration on the ARI Portal."
+    es: "En el modelo aprobado, con la autorización de consulta del registro penal portugués; prerregistro en el Portal ARI."
+
+- id: INVESTMENT_COMMITMENT
+  name: { pt: "Declaração de compromisso de investimento (5 anos)", en: "Investment commitment declaration (5 years)", es: "Declaración de compromiso de inversión (5 años)" }
+  instructions:
+    pt: "Sob compromisso de honra, de que cumprirá os requisitos de valor e o prazo mínimo de 5 anos do investimento."
+    en: "Solemn declaration that you will meet the investment amount and the minimum 5-year period."
+    es: "Bajo compromiso de honor, de que cumplirá los requisitos de importe y el plazo mínimo de 5 años de la inversión."
+
+- id: NO_DEBT_DECLARATIONS
+  name: { pt: "Declarações de não dívida (Finanças e Segurança Social)", en: "No-debt certificates (tax and social security)", es: "Certificados de no deuda (Hacienda y Seguridad Social)" }
+  instructions:
+    pt: "Emitidas há no máximo 45 dias, ou declaração de não existência de registo."
+    en: "Issued no more than 45 days earlier, or a statement that you are not registered."
+    es: "Emitidos hace como máximo 45 días, o declaración de no existencia de registro."
+
+- id: ARI_FEE_RECEIPT
+  name: { pt: "Recibo da taxa de análise ARI", en: "ARI processing fee receipt", es: "Recibo de la tasa de análisis ARI" }
+
+- id: BANK_TRANSFER_DECLARATION
+  name: { pt: "Declaração bancária da transferência do investimento", en: "Bank statement of the investment transfer", es: "Declaración bancaria de la transferencia de la inversión" }
+  instructions:
+    pt: "De instituição de crédito registada no Banco de Portugal, atestando a transferência do montante exigido."
+    en: "From a bank registered with the Bank of Portugal, confirming the transfer of the required amount."
+    es: "De una entidad de crédito registrada en el Banco de Portugal, que acredita la transferencia del importe exigido."
+
+- id: WORKERS_CONTRACTS
+  name: { pt: "Contratos de trabalho dos postos criados", en: "Employment contracts for the jobs created", es: "Contratos de trabajo de los puestos creados" }
+  instructions:
+    pt: "Pelo menos 10 postos de trabalho (8 em territórios de baixa densidade)."
+    en: "At least 10 jobs (8 in low-density areas)."
+    es: "Al menos 10 puestos de trabajo (8 en territorios de baja densidad)."
+
+- id: RESEARCH_INSTITUTION_DECLARATION
+  name: { pt: "Declaração da instituição de investigação", en: "Statement from the research institution", es: "Declaración de la institución de investigación" }
+  instructions:
+    pt: "Atesta a transferência de pelo menos 500 mil euros (400 mil em baixa densidade) aplicada em investigação."
+    en: "Confirms at least EUR 500,000 (400,000 in low-density areas) applied to research."
+    es: "Acredita la transferencia de al menos 500.000 euros (400.000 en baja densidad) aplicada a investigación."
+
+- id: GEPAC_DECLARATION
+  name: { pt: "Declaração do GEPAC (investimento cultural)", en: "GEPAC statement (cultural investment)", es: "Declaración del GEPAC (inversión cultural)" }
+  instructions:
+    pt: "Atesta o investimento de pelo menos 250 mil euros na produção artística ou no património cultural."
+    en: "Confirms an investment of at least EUR 250,000 in the arts or cultural heritage."
+    es: "Acredita una inversión de al menos 250.000 euros en producción artística o patrimonio cultural."
+
+- id: FUND_UNITS_CERT
+  name: { pt: "Certificado das unidades de participação no fundo", en: "Certificate of the fund units held", es: "Certificado de las participaciones en el fondo" }
+  instructions:
+    pt: "Titularidade livre de ónus e encargos, de pelo menos 500 mil euros."
+    en: "Ownership free of charges, of at least EUR 500,000."
+    es: "Titularidad libre de cargas, de al menos 500.000 euros."
+
+- id: FUND_MANAGER_DECLARATION
+  name: { pt: "Declaração da sociedade gestora do fundo", en: "Statement from the fund manager", es: "Declaración de la sociedad gestora del fondo" }
+  instructions:
+    pt: "Atesta o plano de capitalização, a maturidade de pelo menos 5 anos e 60% investido em sociedades com sede em Portugal."
+    en: "Confirms the capitalisation plan, a maturity of at least 5 years and 60% invested in companies based in Portugal."
+    es: "Acredita el plan de capitalización, el vencimiento de al menos 5 años y el 60% invertido en sociedades con sede en Portugal."
+
+- id: COMPANY_INCORPORATION_CERT
+  name: { pt: "Certidão de constituição da sociedade", en: "Certificate of incorporation of the company", es: "Certificado de constitución de la sociedad" }
+  instructions:
+    pt: "Com capital social igual ou superior ao exigido, e certidão do registo comercial atualizada."
+    en: "With share capital at or above the required amount, and an up-to-date commercial registry certificate."
+    es: "Con capital social igual o superior al exigido, y certificado actualizado del registro mercantil."
+
+- id: SHARE_ACQUISITION_PROOF
+  name: { pt: "Aquisição de participação social", en: "Acquisition of a shareholding", es: "Adquisición de participación social" }
+  instructions:
+    pt: "Certidão do registo comercial com a participação e o contrato de aquisição com o valor."
+    en: "Commercial registry certificate showing the shareholding, and the purchase contract with the price."
+    es: "Certificado del registro mercantil con la participación y el contrato de adquisición con el importe."
+
+- id: SPONSOR_PERMIT
+  name: { pt: "Autorização de residência do familiar residente em Portugal", en: "Residence permit of the family member living in Portugal", es: "Autorización de residencia del familiar residente en Portugal" }
+
+- id: FAMILY_PASSPORT_COPY
+  name: { pt: "Cópia autenticada do passaporte do familiar", en: "Certified copy of the family member's passport", es: "Copia compulsada del pasaporte del familiar" }
+
+- id: ADOPTION_DECISION
+  name: { pt: "Decisão de adoção", en: "Adoption decision", es: "Resolución de adopción" }
+
+- id: GUARDIANSHIP_DECISION
+  name: { pt: "Decisão de tutela ou de confiança legal", en: "Guardianship or custody decision", es: "Resolución de tutela o de custodia legal" }
+  instructions:
+    pt: "Com a certidão da decisão que a reconheceu em Portugal, quando aplicável."
+    en: "With the certificate of its recognition in Portugal, where applicable."
+    es: "Con el certificado de su reconocimiento en Portugal, cuando proceda."
+
+- id: INCAPACITY_REPORT
+  name: { pt: "Relatório médico ou decisão judicial de incapacidade", en: "Medical report or court ruling of incapacity", es: "Informe médico o resolución judicial de incapacidad" }
+
+- id: NON_RESIDENT_PARENT_CONSENT
+  name: { pt: "Autorização do progenitor não residente", en: "Consent of the non-resident parent", es: "Autorización del progenitor no residente" }
+  instructions:
+    pt: "Escrita e autenticada por autoridade consular portuguesa, ou decisão que atribui a guarda ao residente."
+    en: "Written and certified by a Portuguese consular authority, or a decision giving custody to the resident."
+    es: "Escrita y legalizada por la autoridad consular portuguesa, o resolución que otorga la custodia al residente."
+
+- id: REASON_TO_SETTLE
+  name: { pt: "Motivo para fixar residência em Portugal", en: "Reason to settle in Portugal", es: "Motivo para fijar residencia en Portugal" }
+  instructions:
+    pt: "Por exemplo: trabalho, estudos ou outro motivo atendível."
+    en: "For example: work, studies or another valid reason."
+    es: "Por ejemplo: trabajo, estudios u otro motivo atendible."
+
+- id: LTR_OTHER_STATE
+  name: { pt: "Título de residente de longa duração de outro Estado-Membro", en: "Long-term resident permit from another member state", es: "Permiso de residente de larga duración de otro Estado miembro" }
+
+- id: BLUE_CARD_OTHER_STATE
+  name: { pt: "Cartão Azul UE de outro Estado-Membro", en: "EU Blue Card from another member state", es: "Tarjeta Azul UE de otro Estado miembro" }
+
+- id: BLUE_CARD_CONTRACT
+  name: { pt: "Contrato de trabalho altamente qualificado", en: "Highly qualified employment contract", es: "Contrato de trabajo altamente cualificado" }
+  instructions:
+    pt: "Ou promessa, de pelo menos 6 meses, com salário anual de pelo menos 1,5 vezes o salário médio nacional (1,2 vezes nos casos previstos), segundo os valores em vigor."
+    en: "Or a job offer, for at least 6 months, with an annual salary of at least 1.5 times the national average (1.2 times where the law allows), at the current figures."
+    es: "O promesa, de al menos 6 meses, con salario anual de al menos 1,5 veces el salario medio nacional (1,2 veces en los casos previstos), según los valores vigentes."
+
+- id: CONSULAR_REGISTRATION
+  name: { pt: "Certificado de inscrição consular com fotografia", en: "Consular registration certificate with photo", es: "Certificado de inscripción consular con fotografía" }
+  instructions:
+    pt: "Em alternativa ao passaporte do menor."
+    en: "Instead of the child's passport."
+    es: "Como alternativa al pasaporte del menor."
+
+- id: SCHOOL_ATTENDANCE
+  name: { pt: "Declaração da escola de que frequenta", en: "School attendance statement", es: "Certificado de escolarización" }
+  instructions:
+    pt: "Educação pré-escolar, ensino básico, secundário ou profissional."
+    en: "Pre-school, primary, secondary or vocational education."
+    es: "Educación infantil, primaria, secundaria o profesional."
+
+- id: STAY_IN_PT_PROOF
+  name: { pt: "Comprovativos de permanência em Portugal", en: "Proof of living in Portugal", es: "Justificantes de permanencia en Portugal" }
+  instructions:
+    pt: "Por exemplo: registos escolares, de saúde, de trabalho ou de morada ao longo dos anos."
+    en: "For example: school, health, work or address records over the years."
+    es: "Por ejemplo: registros escolares, sanitarios, laborales o de domicilio a lo largo de los años."
+
+- id: STAY_15Y_PROOF
+  name: { pt: "Comprovativos de permanência em Portugal nos últimos 15 anos", en: "Proof of living in Portugal for the last 15 years", es: "Justificantes de permanencia en Portugal en los últimos 15 años" }
+
+- id: BIRTH_CERT_ANNOTATED
+  name: { pt: "Certidão de nascimento com averbamento", en: "Birth certificate with annotation", es: "Certificado de nacimiento con anotación" }
+  instructions:
+    pt: "Com o averbamento da perda da nacionalidade portuguesa."
+    en: "Showing the annotation of the loss of Portuguese nationality."
+    es: "Con la anotación de la pérdida de la nacionalidad portuguesa."
+
+- id: GUARDIAN_ID
+  name: { pt: "Documento de identificação do tutor", en: "Guardian's identity document", es: "Documento de identidad del tutor" }
+
+- id: CPCJ_DECISION
+  name: { pt: "Decisão de promoção e proteção da CPCJ", en: "CPCJ child protection decision", es: "Resolución de protección de la CPCJ" }
+  instructions:
+    pt: "Original ou cópia autenticada."
+    en: "Original or certified copy."
+    es: "Original o copia compulsada."
+
+- id: MEDICAL_ILLNESS_DECLARATION
+  name: { pt: "Declaração médica de doença prolongada", en: "Medical statement of long-term illness", es: "Declaración médica de enfermedad prolongada" }
+  instructions:
+    pt: "Atesta a doença que exige assistência prolongada e impede o regresso ao país."
+    en: "Confirms the illness needs long-term care and prevents returning home."
+    es: "Acredita la enfermedad que exige asistencia prolongada e impide el regreso al país."
+
+- id: CAREGIVER_DECLARATION
+  name: { pt: "Declaração médica de acompanhante ou cuidador", en: "Medical statement of companion or carer", es: "Declaración médica de acompañante o cuidador" }
+  instructions:
+    pt: "Declara que o requerente é o acompanhante ou cuidador informal do doente."
+    en: "States that the applicant is the patient's companion or informal carer."
+    es: "Declara que el solicitante es el acompañante o cuidador informal del enfermo."
+
+- id: MILITARY_SERVICE_PROOF
+  name: { pt: "Comprovativo de serviço militar nas Forças Armadas Portuguesas", en: "Proof of military service in the Portuguese Armed Forces", es: "Justificante de servicio militar en las Fuerzas Armadas Portuguesas" }
+
+- id: PARENTAL_RESPONSIBILITY_PROOF
+  name: { pt: "Prova das responsabilidades parentais", en: "Proof of parental responsibility", es: "Prueba de la responsabilidad parental" }
+  instructions:
+    pt: "Exercício efetivo do poder paternal e contribuição para o sustento e educação da criança."
+    en: "That you actually exercise parental authority and support the child's upkeep and education."
+    es: "Ejercicio efectivo de la patria potestad y contribución al sustento y la educación del menor."
+
+- id: COMPLAINT_REPORT
+  name: { pt: "Cópia do auto de denúncia", en: "Copy of the complaint report", es: "Copia de la denuncia" }
+
+- id: ACT_COOPERATION_DECLARATION
+  name: { pt: "Declaração da ACT ou autoridade judiciária (colaboração)", en: "Statement from ACT or the judicial authority (cooperation)", es: "Declaración de la ACT o autoridad judicial (colaboración)" }
+  instructions:
+    pt: "Confirma a colaboração com a investigação e a existência de indícios das infrações."
+    en: "Confirms cooperation with the investigation and evidence of the offences."
+    es: "Confirma la colaboración con la investigación y la existencia de indicios de las infracciones."
+
+- id: ACT_EXPLOITATION_DECLARATION
+  name: { pt: "Declaração da ACT (desproteção e exploração)", en: "Statement from ACT (lack of protection and exploitation)", es: "Declaración de la ACT (desprotección y explotación)" }
+  instructions:
+    pt: "Atesta a situação de desproteção social, exploração salarial e de horário."
+    en: "Confirms the lack of social protection and the exploitation of pay and hours."
+    es: "Acredita la situación de desprotección social y explotación salarial y de horario."
+
+- id: JUDICIAL_CESSATION_DECLARATION
+  name: { pt: "Declaração judicial de fim da colaboração", en: "Court statement ending the cooperation", es: "Declaración judicial de fin de la colaboración" }
+  instructions:
+    pt: "Da autoridade judicial, ou certidão da sentença."
+    en: "From the judicial authority, or a copy of the judgment."
+    es: "De la autoridad judicial, o certificado de la sentencia."
+
+- id: EXCEPTIONAL_STATEMENT
+  name: { pt: "Exposição do pedido (regime excecional)", en: "Written request (exceptional regime)", es: "Escrito de solicitud (régimen excepcional)" }
+  instructions:
+    pt: "Assinada pelo requerente (ou pelo representante legal de menor ou incapaz) e entregue presencialmente."
+    en: "Signed by the applicant (or the legal representative of a minor or incapacitated person), handed in person."
+    es: "Firmado por el solicitante (o el representante legal de un menor o incapaz) y entregado en persona."
+
+- id: EXCEPTIONALITY_PROOF
+  name: { pt: "Comprovativo do caráter humanitário ou de interesse nacional", en: "Proof of humanitarian grounds or national interest", es: "Justificante del carácter humanitario o de interés nacional" }
+
+- id: RELEVANT_ACTIVITY_PROOF
+  name: { pt: "Comprovativo de atividade relevante", en: "Proof of a relevant activity", es: "Justificante de actividad relevante" }
+  instructions:
+    pt: "Científica, cultural, desportiva, económica ou social."
+    en: "Scientific, cultural, sporting, economic or social."
+    es: "Científica, cultural, deportiva, económica o social."
+
+- id: STABLE_RESOURCES
+  name: { pt: "Comprovativo de recursos estáveis e regulares", en: "Proof of stable and regular resources", es: "Justificante de recursos estables y regulares" }
+  instructions:
+    pt: "Suficientes para a própria subsistência e a dos familiares."
+    en: "Enough to support yourself and your family."
+    es: "Suficientes para su propia subsistencia y la de sus familiares."
+
+- id: POSTING_ABSENCE_PROOF
+  name: { pt: "Comprovativo de ausências por destacamento", en: "Proof of absences due to posting abroad", es: "Justificante de ausencias por desplazamiento" }
+  instructions:
+    pt: "Quando houve ausências por destacamento de trabalho, por exemplo em prestação de serviços transfronteiriços."
+    en: "When you were away on a work posting, for example cross-border services."
+    es: "Cuando hubo ausencias por desplazamiento laboral, por ejemplo en servicios transfronterizos."
+
+- id: LEGAL_RESIDENCE_5Y
+  name: { pt: "Comprovativo de 5 anos de residência legal", en: "Proof of 5 years of legal residence", es: "Justificante de 5 años de residencia legal" }
+  instructions:
+    pt: "Residência legal e ininterrupta em Portugal nos cinco anos anteriores ao pedido."
+    en: "Legal, continuous residence in Portugal for the five years before applying."
+    es: "Residencia legal e ininterrumpida en Portugal en los cinco años anteriores a la solicitud."

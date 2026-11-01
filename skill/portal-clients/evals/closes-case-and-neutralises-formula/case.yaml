@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: closes-case-and-neutralises-formula
 expected_outcome: |
-  The Herança case (CS-4D5E6F, Cases row 3) gets only its status cell changed to closed. The new client row (Clients row 5) has the name prefixed with an apostrophe so Sheets stores it as text, plus the usual new-row values.
+  The Autorização de residência case (CS-4D5E6F, Cases row 3) gets only its status cell changed to closed. The new client row (Clients row 5) has the name prefixed with an apostrophe so Sheets stores it as text, plus the usual new-row values.
 context:
   scaffold_script: place-files.sh

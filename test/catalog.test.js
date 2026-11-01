@@ -40,10 +40,42 @@ test('every visa says when it was last reviewed and where it comes from', () => 
   }));
 });
 
+const isPermit = (v) => /^PT-AR-/.test(v.id);
+
 test('Portugal: every residence visa has the general block and the family block', () => {
-  build().data.countries.PT.visas.forEach((v) => {
+  build().data.countries.PT.visas.filter((v) => !isPermit(v)).forEach((v) => {
     const keys = v.requirements.map((r) => r.key);
     ['PASSPORT', 'CRIMINAL_RECORD', 'ACCOMMODATION', 'MEANS', 'BIRTH_CERTIFICATE'].forEach((k) => expect([v.id, keys.includes(k)]).toEqual([v.id, true]));
+  });
+});
+
+// AIMA residence permits, from aima.gov.pt (trabalhar, viver, estudar,
+// empreender): asked for in Portugal, each from its own AIMA page.
+test('Portugal: every AIMA residence permit comes from its own AIMA page', () => {
+  const permits = build().data.countries.PT.visas.filter(isPermit);
+  expect(permits.length).toBe(57);
+  permits.forEach((v) => {
+    expect(v.sources.length).toBeGreaterThan(0);
+    v.sources.forEach((u) => expect([v.id, u]).toEqual([v.id, expect.stringMatching(/^https:\/\/aima\.gov\.pt\/pt\/(trabalhar|viver|estudar|empreender)\/./)]));
+  });
+});
+
+test('Portugal: work permits have the AIMA block, for the main applicant only', () => {
+  build().data.countries.PT.visas.filter((v) => isPermit(v) && /\/trabalhar\//.test(v.sources[0])).forEach((v) => {
+    const keys = v.requirements.map((r) => r.key);
+    ['AIMA_FORM', 'PASSPORT_VALID', 'ADDRESS_DECLARATION', 'AIMA_HOUSING'].forEach((k) => expect([v.id, keys.includes(k)]).toEqual([v.id, true]));
+    expect([v.id, v.requirements.every((r) => r.applies_to === 'main_applicant')]).toEqual([v.id, true]);
+  });
+});
+
+test('Portugal: family reunification gives the spouse and each child their own documents', () => {
+  const visas = build().data.countries.PT.visas.filter((v) => /^PT-AR-98-/.test(v.id));
+  expect(visas.map((v) => v.id)).toEqual(['PT-AR-98-1', 'PT-AR-98-2']);
+  visas.forEach((v) => {
+    const by = (who) => v.requirements.filter((r) => r.applies_to === who).map((r) => r.key);
+    expect(by('main_applicant')).toEqual(expect.arrayContaining(['SPONSOR_PERMIT', 'AIMA_FORM']));
+    expect(by('spouse')).toEqual(expect.arrayContaining(['RELATIONSHIP_PROOF', 'CRIMINAL_RECORD']));
+    expect(by('each_child')).toEqual(expect.arrayContaining(['BIRTH_CERTIFICATE']));
   });
 });
 

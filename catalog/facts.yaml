@@ -12,3 +12,11 @@
   name: { pt: "Reside num país que não o da sua nacionalidade", en: "Lives in a country other than their nationality", es: "Reside en un país distinto al de su nacionalidad" }
 - id: sole_custody
   name: { pt: "Guarda exclusiva de um dos pais", en: "Sole custody by one parent", es: "Custodia exclusiva de uno de los padres" }
+- id: self_employed
+  name: { pt: "Exerce a atividade por conta própria", en: "Works self-employed", es: "Trabaja por cuenta propia" }
+- id: diplomat_family
+  name: { pt: "O requerente é familiar do agente diplomático ou consular", en: "The applicant is a family member of the diplomatic or consular agent", es: "El solicitante es familiar del agente diplomático o consular" }
+- id: certified_group
+  name: { pt: "Empresa ou grupo certificado (dispensa documentos ICT)", en: "Certified company or group (waives some ICT documents)", es: "Empresa o grupo certificado (exime documentos ICT)" }
+- id: no_visa
+  name: { pt: "Pedido com dispensa de visto de residência", en: "Applied for without a residence visa", es: "Solicitud con exención de visado de residencia" }

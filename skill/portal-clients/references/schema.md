@@ -35,7 +35,7 @@ Read-only for this skill. Useful keys:
 |---|---|---|
 | `case_id` | skill (new rows) | `CS-` + 6 Crockford base32 characters |
 | `client_id` | skill | an existing, active client's ID |
-| `case_name` | skill | 1–120 characters, what the client sees ("Divórcio") |
+| `case_name` | skill | 1–120 characters, what the client sees ("Visto D7 – família") |
 | `firm_reference` | skill (if given) | the firm's own file number, shown next to the name |
 | `status` | skill | `open` / `closed`. Only open cases appear in the portal |
 | `responsible_email` | skill (if given) | the lawyer who gets this case's upload emails; empty = the firm address |

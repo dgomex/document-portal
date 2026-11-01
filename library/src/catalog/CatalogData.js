@@ -3,7 +3,7 @@
  * The bundled visa catalog: visas, document types and requirements (no personal data).
  */
 const CATALOG_DATA = {
- "version": "2026.11",
+ "version": "2026.11.1",
  "format": 1,
  "languages": [
   "pt",
@@ -80,6 +80,42 @@ const CATALOG_DATA = {
     "pt": "Guarda exclusiva de um dos pais",
     "en": "Sole custody by one parent",
     "es": "Custodia exclusiva de uno de los padres"
+   },
+   "derived": null
+  },
+  {
+   "id": "self_employed",
+   "name": {
+    "pt": "Exerce a atividade por conta própria",
+    "en": "Works self-employed",
+    "es": "Trabaja por cuenta propia"
+   },
+   "derived": null
+  },
+  {
+   "id": "diplomat_family",
+   "name": {
+    "pt": "O requerente é familiar do agente diplomático ou consular",
+    "en": "The applicant is a family member of the diplomatic or consular agent",
+    "es": "El solicitante es familiar del agente diplomático o consular"
+   },
+   "derived": null
+  },
+  {
+   "id": "certified_group",
+   "name": {
+    "pt": "Empresa ou grupo certificado (dispensa documentos ICT)",
+    "en": "Certified company or group (waives some ICT documents)",
+    "es": "Empresa o grupo certificado (exime documentos ICT)"
+   },
+   "derived": null
+  },
+  {
+   "id": "no_visa",
+   "name": {
+    "pt": "Pedido com dispensa de visto de residência",
+    "en": "Applied for without a residence visa",
+    "es": "Solicitud con exención de visado de residencia"
    },
    "derived": null
   }
@@ -626,6 +662,1216 @@ const CATALOG_DATA = {
    "instructions": null,
    "rules": {},
    "active": true
+  },
+  "AIMA_FORM": {
+   "name": {
+    "pt": "Impresso de pedido de autorização de residência (AIMA)",
+    "en": "Residence permit application form (AIMA)",
+    "es": "Impreso de solicitud de autorización de residencia (AIMA)"
+   },
+   "instructions": {
+    "pt": "Impresso próprio da AIMA (Modelo 1), preenchido e assinado pelo requerente ou pelo representante legal.",
+    "en": "AIMA's own form (Model 1), completed and signed by the applicant or their legal representative.",
+    "es": "Impreso propio de la AIMA (Modelo 1), cumplimentado y firmado por el solicitante o su representante legal."
+   },
+   "rules": {},
+   "active": true
+  },
+  "PASSPORT_VALID": {
+   "name": {
+    "pt": "Passaporte válido",
+    "en": "Valid passport",
+    "es": "Pasaporte válido"
+   },
+   "instructions": {
+    "pt": "Cópia da página de identificação e da página do visto ou carimbo de entrada. Deve estar válido à data do pedido.",
+    "en": "Copy of the identification page and of the page with the visa or entry stamp. It must be valid on the date of the application.",
+    "es": "Copia de la página de identificación y de la página del visado o sello de entrada. Debe estar vigente en la fecha de la solicitud."
+   },
+   "rules": {},
+   "active": true
+  },
+  "PT_VISA": {
+   "name": {
+    "pt": "Visto válido com que entrou em Portugal",
+    "en": "Valid visa you entered Portugal with",
+    "es": "Visado válido con el que entró en Portugal"
+   },
+   "instructions": {
+    "pt": "O visto emitido para esta finalidade (de residência ou de procura de trabalho), ainda válido.",
+    "en": "The visa issued for this purpose (residence or job seeker visa), still valid.",
+    "es": "El visado emitido para esta finalidad (de residencia o de búsqueda de empleo), aún vigente."
+   },
+   "rules": {},
+   "active": true
+  },
+  "ADDRESS_DECLARATION": {
+   "name": {
+    "pt": "Declaração de morada (compromisso de honra)",
+    "en": "Address declaration (solemn declaration)",
+    "es": "Declaración de domicilio (bajo compromiso de honor)"
+   },
+   "instructions": {
+    "pt": "Indica a morada e a que título lá vive: proprietário, arrendatário, subarrendatário, usufrutuário, comodatário, etc.",
+    "en": "States the address and on what basis you live there: owner, tenant, subtenant, usufructuary, borrower, etc.",
+    "es": "Indica el domicilio y a qué título vive allí: propietario, arrendatario, subarrendatario, usufructuario, comodatario, etc."
+   },
+   "rules": {},
+   "active": true
+  },
+  "LAND_REGISTRY_CERT": {
+   "name": {
+    "pt": "Certidão de registo predial",
+    "en": "Land registry certificate",
+    "es": "Certificado del registro de la propiedad"
+   },
+   "instructions": {
+    "pt": "Se é proprietário ou usufrutuário: a certidão, ou o código de acesso à certidão permanente.",
+    "en": "If you own the property or hold its usufruct: the certificate, or the access code to the online certificate.",
+    "es": "Si es propietario o usufructuario: el certificado, o el código de acceso al certificado permanente."
+   },
+   "rules": {},
+   "active": true
+  },
+  "LANDLORD_DECLARATION": {
+   "name": {
+    "pt": "Declaração do senhorio ou da entidade alojadora",
+    "en": "Declaration from the landlord or host",
+    "es": "Declaración del arrendador o de la entidad que lo aloja"
+   },
+   "instructions": {
+    "pt": "Se é arrendatário ou vive em casa de outrem: indica a situação jurídica que lhe dá direito a usar o imóvel.",
+    "en": "If you rent or live in someone else's home: states the legal basis of your right to use the property.",
+    "es": "Si es arrendatario o vive en casa ajena: indica la situación jurídica que le da derecho a usar el inmueble."
+   },
+   "rules": {},
+   "active": true
+  },
+  "NIF_PROOF": {
+   "name": {
+    "pt": "Comprovativo do NIF (inscrição nas Finanças)",
+    "en": "Proof of tax number (NIF)",
+    "es": "Justificante del NIF (inscripción en Hacienda)"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "NISS_PROOF": {
+   "name": {
+    "pt": "Comprovativo do NISS (inscrição na Segurança Social)",
+    "en": "Proof of social security number (NISS)",
+    "es": "Justificante del NISS (inscripción en la Seguridad Social)"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "EMPLOYER_BOND_DECLARATION": {
+   "name": {
+    "pt": "Declaração do empregador sobre o vínculo laboral",
+    "en": "Employer's declaration of employment",
+    "es": "Declaración del empleador sobre la relación laboral"
+   },
+   "instructions": {
+    "pt": "Declaração sob compromisso de honra da entidade patronal, atestando o vínculo laboral.",
+    "en": "Solemn declaration from the employer confirming the employment relationship.",
+    "es": "Declaración bajo compromiso de honor del empleador, que acredita la relación laboral."
+   },
+   "rules": {},
+   "active": true
+  },
+  "REMOTE_BOND_DECLARATION": {
+   "name": {
+    "pt": "Declaração do empregador ou cliente no estrangeiro",
+    "en": "Declaration from your employer or client abroad",
+    "es": "Declaración del empleador o cliente en el extranjero"
+   },
+   "instructions": {
+    "pt": "Sob compromisso de honra, da pessoa ou empresa com domicílio ou sede fora de Portugal, atestando o vínculo laboral ou a prestação de serviços.",
+    "en": "Solemn declaration from the person or company based outside Portugal, confirming the employment or the provision of services.",
+    "es": "Bajo compromiso de honor, de la persona o empresa con domicilio o sede fuera de Portugal, que acredita la relación laboral o la prestación de servicios."
+   },
+   "rules": {},
+   "active": true
+  },
+  "LEGAL_ENTRY_PROOF": {
+   "name": {
+    "pt": "Comprovativo de entrada legal",
+    "en": "Proof of legal entry",
+    "es": "Justificante de entrada legal"
+   },
+   "instructions": {
+    "pt": "Visto válido à data da entrada em Portugal, ou 12 meses de contribuições para a Segurança Social.",
+    "en": "A visa that was valid when you entered Portugal, or 12 months of social security contributions.",
+    "es": "Visado vigente en la fecha de entrada en Portugal, o 12 meses de cotizaciones a la Seguridad Social."
+   },
+   "rules": {},
+   "active": true
+  },
+  "ACTIVITY_START_PROOF": {
+   "name": {
+    "pt": "Comprovativo de início de atividade",
+    "en": "Proof of registration as self-employed",
+    "es": "Justificante de inicio de actividad"
+   },
+   "instructions": {
+    "pt": "Início de atividade nas Finanças e na Segurança Social.",
+    "en": "Registration of the activity with the tax authority and social security.",
+    "es": "Alta de la actividad en Hacienda y en la Seguridad Social."
+   },
+   "rules": {},
+   "active": true
+  },
+  "RECENT_RECEIPTS": {
+   "name": {
+    "pt": "Últimos recibos emitidos",
+    "en": "Latest invoices issued",
+    "es": "Últimos recibos emitidos"
+   },
+   "instructions": {
+    "pt": "Recibos verdes ou faturas emitidos pela atividade independente.",
+    "en": "Receipts or invoices issued for the self-employed work.",
+    "es": "Recibos o facturas emitidos por la actividad por cuenta propia."
+   },
+   "rules": {},
+   "active": true
+  },
+  "QUALIFICATION_CERT": {
+   "name": {
+    "pt": "Certificado de habilitações ou de especialização",
+    "en": "Certificate of qualifications or specialisation",
+    "es": "Certificado de titulación o de especialización"
+   },
+   "instructions": {
+    "pt": "Cópia autenticada do diploma ou do documento que comprova a especialização ou a experiência profissional.",
+    "en": "Certified copy of the diploma or of the document proving the specialisation or professional experience.",
+    "es": "Copia compulsada del título o del documento que acredita la especialización o la experiencia profesional."
+   },
+   "rules": {},
+   "active": true
+  },
+  "HQ_EMPLOYER_DECLARATION": {
+   "name": {
+    "pt": "Declaração do empregador (contrato altamente qualificado)",
+    "en": "Employer's declaration (highly qualified contract)",
+    "es": "Declaración del empleador (contrato altamente cualificado)"
+   },
+   "instructions": {
+    "pt": "Atesta um contrato de trabalho com salário de pelo menos 1,5 vezes o salário médio nacional (1,2 vezes nas profissões com falta de trabalhadores), segundo os valores em vigor.",
+    "en": "Confirms an employment contract with a salary of at least 1.5 times the national average salary (1.2 times in shortage occupations), at the current figures.",
+    "es": "Acredita un contrato de trabajo con un salario de al menos 1,5 veces el salario medio nacional (1,2 veces en profesiones con escasez de trabajadores), según los valores vigentes."
+   },
+   "rules": {},
+   "active": true
+  },
+  "HOST_RESPONSIBILITY_TERM": {
+   "name": {
+    "pt": "Termo de responsabilidade da entidade de acolhimento",
+    "en": "Statement of responsibility from the host entity",
+    "es": "Declaración de responsabilidad de la entidad de acogida"
+   },
+   "instructions": {
+    "pt": "Emitido pela entidade que utiliza a atividade do requerente.",
+    "en": "Issued by the entity that uses the applicant's work.",
+    "es": "Emitida por la entidad que utiliza la actividad del solicitante."
+   },
+   "rules": {},
+   "active": true
+  },
+  "TECH_VISA_TERM": {
+   "name": {
+    "pt": "Termo de responsabilidade da empresa certificada (Tech Visa)",
+    "en": "Statement of responsibility from the certified company (Tech Visa)",
+    "es": "Declaración de responsabilidad de la empresa certificada (Tech Visa)"
+   },
+   "instructions": {
+    "pt": "Emitido pela empresa certificada pelo IAPMEI que recruta o requerente.",
+    "en": "Issued by the IAPMEI-certified company recruiting the applicant.",
+    "es": "Emitida por la empresa certificada por el IAPMEI que contrata al solicitante."
+   },
+   "rules": {},
+   "active": true
+  },
+  "CRIMINAL_RECORD_CONSENT": {
+   "name": {
+    "pt": "Autorização de consulta do registo criminal português",
+    "en": "Consent to check the Portuguese criminal record",
+    "es": "Autorización de consulta del registro penal portugués"
+   },
+   "instructions": {
+    "pt": "Autoriza a AIMA a consultar o registo criminal português (não se aplica a menores de 16 anos).",
+    "en": "Allows AIMA to check the Portuguese criminal record (not for children under 16).",
+    "es": "Autoriza a la AIMA a consultar el registro penal portugués (no se aplica a menores de 16 años)."
+   },
+   "rules": {},
+   "active": true
+  },
+  "SUBSISTENCE_PROOF": {
+   "name": {
+    "pt": "Comprovativo de meios de subsistência",
+    "en": "Proof of means of subsistence",
+    "es": "Justificante de medios de subsistencia"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "DIPLOMATIC_ACCREDITATION": {
+   "name": {
+    "pt": "Comprovativo de acreditação diplomática em Portugal",
+    "en": "Proof of diplomatic accreditation in Portugal",
+    "es": "Justificante de acreditación diplomática en Portugal"
+   },
+   "instructions": {
+    "pt": "Acreditação durante pelo menos 3 anos.",
+    "en": "Accreditation for at least 3 years.",
+    "es": "Acreditación durante al menos 3 años."
+   },
+   "rules": {},
+   "active": true
+  },
+  "DEPENDENCY_PROOF": {
+   "name": {
+    "pt": "Comprovativo de dependência económica",
+    "en": "Proof of financial dependency",
+    "es": "Justificante de dependencia económica"
+   },
+   "instructions": {
+    "pt": "Prova de que o familiar está a cargo, por exemplo transferências regulares para o país de origem.",
+    "en": "Proof that the family member is dependent on you, for example regular transfers to their home country.",
+    "es": "Prueba de que el familiar está a su cargo, por ejemplo transferencias regulares al país de origen."
+   },
+   "rules": {},
+   "active": true
+  },
+  "STUDY_COMPLETION": {
+   "name": {
+    "pt": "Declaração de conclusão dos estudos",
+    "en": "Certificate of completion of studies",
+    "es": "Declaración de finalización de los estudios"
+   },
+   "instructions": {
+    "pt": "Emitida pelo estabelecimento de ensino, atestando a conclusão do plano de estudos.",
+    "en": "Issued by the school or university, confirming completion of the course.",
+    "es": "Emitida por el centro de enseñanza, que acredita la finalización del plan de estudios."
+   },
+   "rules": {},
+   "active": true
+  },
+  "RESEARCH_COMPLETION": {
+   "name": {
+    "pt": "Declaração de conclusão da investigação",
+    "en": "Certificate of completion of research",
+    "es": "Declaración de finalización de la investigación"
+   },
+   "instructions": {
+    "pt": "Emitida pela entidade responsável pelo projeto de investigação.",
+    "en": "Issued by the entity responsible for the research project.",
+    "es": "Emitida por la entidad responsable del proyecto de investigación."
+   },
+   "rules": {},
+   "active": true
+  },
+  "JOB_SEARCH_DECLARATION": {
+   "name": {
+    "pt": "Declaração de procura de trabalho (até 1 ano)",
+    "en": "Declaration of job search (up to 1 year)",
+    "es": "Declaración de búsqueda de empleo (hasta 1 año)"
+   },
+   "instructions": {
+    "pt": "Do requerente, declarando que pretende usar o período máximo de um ano para procurar trabalho em Portugal compatível com as suas qualificações.",
+    "en": "From the applicant, stating they intend to use up to one year to look for work in Portugal matching their qualifications.",
+    "es": "Del solicitante, declarando que desea usar el período máximo de un año para buscar empleo en Portugal acorde con su cualificación."
+   },
+   "rules": {},
+   "active": true
+  },
+  "NO_COOPERATION_AGREEMENT": {
+   "name": {
+    "pt": "Declaração de não beneficiário de Acordo de Cooperação",
+    "en": "Declaration of not having benefited from a Cooperation Agreement",
+    "es": "Declaración de no beneficiario de un Acuerdo de Cooperación"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "TEMP_STAY_VISA": {
+   "name": {
+    "pt": "Visto de estada temporária (investigação ou altamente qualificada)",
+    "en": "Temporary stay visa (research or highly qualified)",
+    "es": "Visado de estancia temporal (investigación o altamente cualificada)"
+   },
+   "instructions": {
+    "pt": "O visto com que está em Portugal; um visto de longa duração vale no máximo um ano e é substituído por um título de residência.",
+    "en": "The visa you are in Portugal on; a long-stay visa lasts at most one year and is replaced by a residence permit.",
+    "es": "El visado con el que está en Portugal; un visado de larga duración vale como máximo un año y se sustituye por un permiso de residencia."
+   },
+   "rules": {},
+   "active": true
+  },
+  "EEA_RESIDENCE_PERMIT": {
+   "name": {
+    "pt": "Título de residência no país onde estava a empresa",
+    "en": "Residence permit from the country where the company was",
+    "es": "Permiso de residencia del país donde estaba la empresa"
+   },
+   "instructions": {
+    "pt": "Válido, emitido pelo Estado do Espaço Económico Europeu (ou outro definido por despacho) de onde a empresa se deslocalizou.",
+    "en": "Valid, issued by the European Economic Area state (or other state set by order) the company relocated from.",
+    "es": "Vigente, emitido por el Estado del Espacio Económico Europeo (u otro fijado por resolución) desde el que se trasladó la empresa."
+   },
+   "rules": {},
+   "active": true
+  },
+  "COMMERCIAL_REGISTRY_CERT": {
+   "name": {
+    "pt": "Certidão do registo comercial atualizada",
+    "en": "Up-to-date commercial registry certificate",
+    "es": "Certificado actualizado del registro mercantil"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "ICT_EMPLOYER_DECLARATION": {
+   "name": {
+    "pt": "Declaração do empregador (transferência dentro da empresa)",
+    "en": "Employer's declaration (intra-company transfer)",
+    "es": "Declaración del empleador (traslado dentro de la empresa)"
+   },
+   "instructions": {
+    "pt": "Atesta o contrato de trabalho e a condição de gestor, especialista ou empregado estagiário.",
+    "en": "Confirms the employment contract and the role of manager, specialist or trainee employee.",
+    "es": "Acredita el contrato de trabajo y la condición de directivo, especialista o trabajador en prácticas."
+   },
+   "rules": {},
+   "active": true
+  },
+  "ICT_TRANSFER_TERMS": {
+   "name": {
+    "pt": "Condições da transferência",
+    "en": "Terms of the transfer",
+    "es": "Condiciones del traslado"
+   },
+   "instructions": {
+    "pt": "Documento do empregador com a identificação da empresa de acolhimento, a remuneração e as demais condições de trabalho durante a transferência.",
+    "en": "Document from the employer naming the host company, the pay and the other working conditions during the transfer.",
+    "es": "Documento del empleador con la identificación de la empresa de acogida, la remuneración y las demás condiciones de trabajo durante el traslado."
+   },
+   "rules": {},
+   "active": true
+  },
+  "SAME_GROUP_PROOF": {
+   "name": {
+    "pt": "Comprovativo de que as empresas pertencem ao mesmo grupo",
+    "en": "Proof that the companies belong to the same group",
+    "es": "Justificante de que las empresas pertenecen al mismo grupo"
+   },
+   "instructions": {
+    "pt": "A empresa de acolhimento em Portugal e a empresa no país terceiro pertencem à mesma empresa ou grupo.",
+    "en": "The host company in Portugal and the company in the non-EU country belong to the same company or group.",
+    "es": "La empresa de acogida en Portugal y la empresa del tercer país pertenecen a la misma empresa o grupo."
+   },
+   "rules": {},
+   "active": true
+  },
+  "PRIOR_EMPLOYMENT_PROOF": {
+   "name": {
+    "pt": "Comprovativo de trabalho anterior no grupo",
+    "en": "Proof of prior work in the group",
+    "es": "Justificante de trabajo previo en el grupo"
+   },
+   "instructions": {
+    "pt": "Imediatamente antes da transferência: 3 a 12 meses seguidos como gestor ou especialista, ou 3 a 6 meses como empregado estagiário.",
+    "en": "Immediately before the transfer: 3 to 12 months in a row as a manager or specialist, or 3 to 6 months as a trainee employee.",
+    "es": "Inmediatamente antes del traslado: de 3 a 12 meses seguidos como directivo o especialista, o de 3 a 6 meses como trabajador en prácticas."
+   },
+   "rules": {},
+   "active": true
+  },
+  "HEALTH_INSURANCE": {
+   "name": {
+    "pt": "Seguro de saúde",
+    "en": "Health insurance",
+    "es": "Seguro de salud"
+   },
+   "instructions": {
+    "pt": "Comprovativo de ter seguro de saúde, quando não esteja abrangido pelo Serviço Nacional de Saúde.",
+    "en": "Proof of health insurance, when not covered by the Portuguese National Health Service.",
+    "es": "Justificante de tener seguro de salud, cuando no esté cubierto por el Servicio Nacional de Salud portugués."
+   },
+   "rules": {},
+   "active": true
+  },
+  "HOST_COMPLIANCE_GUARANTEE": {
+   "name": {
+    "pt": "Garantia da empresa de acolhimento",
+    "en": "Guarantee from the host company",
+    "es": "Garantía de la empresa de acogida"
+   },
+   "instructions": {
+    "pt": "A empresa de acolhimento garante que cumpre a lei portuguesa sobre condições de trabalho e remuneração.",
+    "en": "The host company guarantees it complies with Portuguese law on working conditions and pay.",
+    "es": "La empresa de acogida garantiza que cumple la ley portuguesa sobre condiciones de trabajo y remuneración."
+   },
+   "rules": {},
+   "active": true
+  },
+  "ICT_PERMIT_OTHER_STATE": {
+   "name": {
+    "pt": "Autorização de residência ICT de outro Estado-Membro",
+    "en": "ICT residence permit from another EU member state",
+    "es": "Autorización de residencia ICT de otro Estado miembro"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "ENROLMENT_PROOF": {
+   "name": {
+    "pt": "Comprovativo de matrícula",
+    "en": "Proof of enrolment",
+    "es": "Justificante de matrícula"
+   },
+   "instructions": {
+    "pt": "Matrícula no estabelecimento de ensino ou na entidade formadora reconhecida.",
+    "en": "Enrolment at the school, university or recognised training body.",
+    "es": "Matrícula en el centro de enseñanza o en la entidad formadora reconocida."
+   },
+   "rules": {},
+   "active": true
+  },
+  "TUITION_PROOF": {
+   "name": {
+    "pt": "Comprovativo de pagamento de propinas",
+    "en": "Proof of tuition fee payment",
+    "es": "Justificante de pago de las tasas académicas"
+   },
+   "instructions": {
+    "pt": "Se aplicável, declaração do estabelecimento de ensino.",
+    "en": "If applicable, a statement from the school or university.",
+    "es": "Si procede, declaración del centro de enseñanza."
+   },
+   "rules": {},
+   "active": true
+  },
+  "MOBILITY_FORM_M6": {
+   "name": {
+    "pt": "Formulário Modelo 6 (mobilidade de estudantes)",
+    "en": "Form Model 6 (student mobility)",
+    "es": "Formulario Modelo 6 (movilidad de estudiantes)"
+   },
+   "instructions": {
+    "pt": "Comunicação à AIMA até 30 dias antes do início da mobilidade, por email para comunicacao.mobilidade.ue@aima.gov.pt.",
+    "en": "Notice to AIMA up to 30 days before the mobility starts, by email to comunicacao.mobilidade.ue@aima.gov.pt.",
+    "es": "Comunicación a la AIMA hasta 30 días antes del inicio de la movilidad, por email a comunicacao.mobilidade.ue@aima.gov.pt."
+   },
+   "rules": {},
+   "active": true
+  },
+  "EU_STUDENT_PERMIT": {
+   "name": {
+    "pt": "Título de residência de estudante de outro Estado-Membro",
+    "en": "Student residence permit from another EU member state",
+    "es": "Permiso de residencia de estudiante de otro Estado miembro"
+   },
+   "instructions": {
+    "pt": "Com a menção «Estudante do Ensino Superior» e validade que cubra todo o período de estudos em Portugal.",
+    "en": "Marked \"higher education student\", valid for the whole study period in Portugal.",
+    "es": "Con la mención «Estudiante de Enseñanza Superior» y validez que cubra todo el período de estudios en Portugal."
+   },
+   "rules": {},
+   "active": true
+  },
+  "FEE_PAYMENT_PROOF": {
+   "name": {
+    "pt": "Comprovativo de pagamento da taxa",
+    "en": "Proof of fee payment",
+    "es": "Justificante de pago de la tasa"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "EU_RESIDENCE_PERMIT": {
+   "name": {
+    "pt": "Autorização de residência do Estado-Membro onde reside",
+    "en": "Residence permit from the EU member state where you live",
+    "es": "Autorización de residencia del Estado miembro donde reside"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "TRAINING_AGREEMENT": {
+   "name": {
+    "pt": "Contrato de formação (estágio)",
+    "en": "Traineeship agreement",
+    "es": "Contrato de formación (prácticas)"
+   },
+   "instructions": {
+    "pt": "Com empresa ou organismo de formação reconhecido: programa e objetivos, duração e horário, local e supervisão, relação jurídica, e a menção de que o estágio não substitui um posto de trabalho.",
+    "en": "With a company or recognised training body: programme and goals, length and hours, place and supervision, the legal relationship, and a statement that the traineeship does not replace a job.",
+    "es": "Con empresa u organismo de formación reconocido: programa y objetivos, duración y horario, lugar y supervisión, relación jurídica, y la mención de que las prácticas no sustituyen un puesto de trabajo."
+   },
+   "rules": {},
+   "active": true
+  },
+  "VOLUNTEER_HOST_DECLARATION": {
+   "name": {
+    "pt": "Declaração da entidade de acolhimento do voluntariado",
+    "en": "Statement from the volunteering host",
+    "es": "Declaración de la entidad de acogida del voluntariado"
+   },
+   "instructions": {
+    "pt": "Descreve o programa, duração, horário e supervisão, e garante alimentação, alojamento e um mínimo de dinheiro de bolso.",
+    "en": "Describes the programme, length, hours and supervision, and covers food, housing and minimum pocket money.",
+    "es": "Describe el programa, duración, horario y supervisión, y garantiza manutención, alojamiento y un mínimo de dinero de bolsillo."
+   },
+   "rules": {},
+   "active": true
+  },
+  "HOST_LIABILITY_INSURANCE": {
+   "name": {
+    "pt": "Seguro de responsabilidade civil da entidade de acolhimento",
+    "en": "Host organisation's liability insurance",
+    "es": "Seguro de responsabilidad civil de la entidad de acogida"
+   },
+   "instructions": {
+    "pt": "Não é exigido no Serviço Voluntário Europeu.",
+    "en": "Not required for the European Voluntary Service.",
+    "es": "No se exige en el Servicio Voluntario Europeo."
+   },
+   "rules": {},
+   "active": true
+  },
+  "KINSHIP_PROOF": {
+   "name": {
+    "pt": "Comprovativo de vínculos de parentesco",
+    "en": "Proof of family ties",
+    "es": "Justificante de vínculos de parentesco"
+   },
+   "instructions": {
+    "pt": "Quando se justifique.",
+    "en": "When relevant.",
+    "es": "Cuando proceda."
+   },
+   "rules": {},
+   "active": true
+  },
+  "TAX_SS_COMPLIANCE": {
+   "name": {
+    "pt": "Situação regularizada nas Finanças e na Segurança Social",
+    "en": "Proof of being up to date with tax and social security",
+    "es": "Situación regularizada en Hacienda y en la Seguridad Social"
+   },
+   "instructions": {
+    "pt": "Certidões de situação contributiva e tributária regularizada.",
+    "en": "Certificates showing no tax or social security debts.",
+    "es": "Certificados de estar al corriente con Hacienda y la Seguridad Social."
+   },
+   "rules": {},
+   "active": true
+  },
+  "TEMP_PERMIT_5Y": {
+   "name": {
+    "pt": "Autorização de residência temporária há pelo menos 5 anos",
+    "en": "Temporary residence permit held for at least 5 years",
+    "es": "Autorización de residencia temporal desde hace al menos 5 años"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "PORTUGUESE_A2": {
+   "name": {
+    "pt": "Comprovativo de português básico (A2)",
+    "en": "Proof of basic Portuguese (A2)",
+    "es": "Justificante de portugués básico (A2)"
+   },
+   "instructions": {
+    "pt": "Um destes: certificado de habilitações de escola portuguesa ou de país de língua oficial portuguesa; curso de português básico do IEFP ou escola reconhecida; teste CAPLE; ou nível A2 em Português Língua de Acolhimento.",
+    "en": "One of: a school certificate from a Portuguese school or one in a Portuguese-speaking country; a basic Portuguese course from IEFP or a recognised school; a CAPLE test; or level A2 in Portuguese as a Host Language.",
+    "es": "Uno de estos: certificado escolar de un centro portugués o de un país de lengua oficial portuguesa; curso de portugués básico del IEFP o centro reconocido; examen CAPLE; o nivel A2 en Portugués Lengua de Acogida."
+   },
+   "rules": {},
+   "active": true
+  },
+  "LEGAL_STAY_PROOF": {
+   "name": {
+    "pt": "Comprovativo de entrada e permanência legal",
+    "en": "Proof of legal entry and stay",
+    "es": "Justificante de entrada y permanencia legal"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "FOREIGN_TAX_ID": {
+   "name": {
+    "pt": "Número de identificação fiscal do país de origem ou residência",
+    "en": "Tax ID from your country of origin or residence",
+    "es": "Número de identificación fiscal del país de origen o residencia"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "ARI_FORM": {
+   "name": {
+    "pt": "Requerimento ARI",
+    "en": "ARI application form",
+    "es": "Solicitud ARI"
+   },
+   "instructions": {
+    "pt": "No modelo aprovado, incluindo a autorização de consulta do registo criminal português; pré-registo no Portal ARI.",
+    "en": "On the approved form, including consent to check the Portuguese criminal record; pre-registration on the ARI Portal.",
+    "es": "En el modelo aprobado, con la autorización de consulta del registro penal portugués; prerregistro en el Portal ARI."
+   },
+   "rules": {},
+   "active": true
+  },
+  "INVESTMENT_COMMITMENT": {
+   "name": {
+    "pt": "Declaração de compromisso de investimento (5 anos)",
+    "en": "Investment commitment declaration (5 years)",
+    "es": "Declaración de compromiso de inversión (5 años)"
+   },
+   "instructions": {
+    "pt": "Sob compromisso de honra, de que cumprirá os requisitos de valor e o prazo mínimo de 5 anos do investimento.",
+    "en": "Solemn declaration that you will meet the investment amount and the minimum 5-year period.",
+    "es": "Bajo compromiso de honor, de que cumplirá los requisitos de importe y el plazo mínimo de 5 años de la inversión."
+   },
+   "rules": {},
+   "active": true
+  },
+  "NO_DEBT_DECLARATIONS": {
+   "name": {
+    "pt": "Declarações de não dívida (Finanças e Segurança Social)",
+    "en": "No-debt certificates (tax and social security)",
+    "es": "Certificados de no deuda (Hacienda y Seguridad Social)"
+   },
+   "instructions": {
+    "pt": "Emitidas há no máximo 45 dias, ou declaração de não existência de registo.",
+    "en": "Issued no more than 45 days earlier, or a statement that you are not registered.",
+    "es": "Emitidos hace como máximo 45 días, o declaración de no existencia de registro."
+   },
+   "rules": {},
+   "active": true
+  },
+  "ARI_FEE_RECEIPT": {
+   "name": {
+    "pt": "Recibo da taxa de análise ARI",
+    "en": "ARI processing fee receipt",
+    "es": "Recibo de la tasa de análisis ARI"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "BANK_TRANSFER_DECLARATION": {
+   "name": {
+    "pt": "Declaração bancária da transferência do investimento",
+    "en": "Bank statement of the investment transfer",
+    "es": "Declaración bancaria de la transferencia de la inversión"
+   },
+   "instructions": {
+    "pt": "De instituição de crédito registada no Banco de Portugal, atestando a transferência do montante exigido.",
+    "en": "From a bank registered with the Bank of Portugal, confirming the transfer of the required amount.",
+    "es": "De una entidad de crédito registrada en el Banco de Portugal, que acredita la transferencia del importe exigido."
+   },
+   "rules": {},
+   "active": true
+  },
+  "WORKERS_CONTRACTS": {
+   "name": {
+    "pt": "Contratos de trabalho dos postos criados",
+    "en": "Employment contracts for the jobs created",
+    "es": "Contratos de trabajo de los puestos creados"
+   },
+   "instructions": {
+    "pt": "Pelo menos 10 postos de trabalho (8 em territórios de baixa densidade).",
+    "en": "At least 10 jobs (8 in low-density areas).",
+    "es": "Al menos 10 puestos de trabajo (8 en territorios de baja densidad)."
+   },
+   "rules": {},
+   "active": true
+  },
+  "RESEARCH_INSTITUTION_DECLARATION": {
+   "name": {
+    "pt": "Declaração da instituição de investigação",
+    "en": "Statement from the research institution",
+    "es": "Declaración de la institución de investigación"
+   },
+   "instructions": {
+    "pt": "Atesta a transferência de pelo menos 500 mil euros (400 mil em baixa densidade) aplicada em investigação.",
+    "en": "Confirms at least EUR 500,000 (400,000 in low-density areas) applied to research.",
+    "es": "Acredita la transferencia de al menos 500.000 euros (400.000 en baja densidad) aplicada a investigación."
+   },
+   "rules": {},
+   "active": true
+  },
+  "GEPAC_DECLARATION": {
+   "name": {
+    "pt": "Declaração do GEPAC (investimento cultural)",
+    "en": "GEPAC statement (cultural investment)",
+    "es": "Declaración del GEPAC (inversión cultural)"
+   },
+   "instructions": {
+    "pt": "Atesta o investimento de pelo menos 250 mil euros na produção artística ou no património cultural.",
+    "en": "Confirms an investment of at least EUR 250,000 in the arts or cultural heritage.",
+    "es": "Acredita una inversión de al menos 250.000 euros en producción artística o patrimonio cultural."
+   },
+   "rules": {},
+   "active": true
+  },
+  "FUND_UNITS_CERT": {
+   "name": {
+    "pt": "Certificado das unidades de participação no fundo",
+    "en": "Certificate of the fund units held",
+    "es": "Certificado de las participaciones en el fondo"
+   },
+   "instructions": {
+    "pt": "Titularidade livre de ónus e encargos, de pelo menos 500 mil euros.",
+    "en": "Ownership free of charges, of at least EUR 500,000.",
+    "es": "Titularidad libre de cargas, de al menos 500.000 euros."
+   },
+   "rules": {},
+   "active": true
+  },
+  "FUND_MANAGER_DECLARATION": {
+   "name": {
+    "pt": "Declaração da sociedade gestora do fundo",
+    "en": "Statement from the fund manager",
+    "es": "Declaración de la sociedad gestora del fondo"
+   },
+   "instructions": {
+    "pt": "Atesta o plano de capitalização, a maturidade de pelo menos 5 anos e 60% investido em sociedades com sede em Portugal.",
+    "en": "Confirms the capitalisation plan, a maturity of at least 5 years and 60% invested in companies based in Portugal.",
+    "es": "Acredita el plan de capitalización, el vencimiento de al menos 5 años y el 60% invertido en sociedades con sede en Portugal."
+   },
+   "rules": {},
+   "active": true
+  },
+  "COMPANY_INCORPORATION_CERT": {
+   "name": {
+    "pt": "Certidão de constituição da sociedade",
+    "en": "Certificate of incorporation of the company",
+    "es": "Certificado de constitución de la sociedad"
+   },
+   "instructions": {
+    "pt": "Com capital social igual ou superior ao exigido, e certidão do registo comercial atualizada.",
+    "en": "With share capital at or above the required amount, and an up-to-date commercial registry certificate.",
+    "es": "Con capital social igual o superior al exigido, y certificado actualizado del registro mercantil."
+   },
+   "rules": {},
+   "active": true
+  },
+  "SHARE_ACQUISITION_PROOF": {
+   "name": {
+    "pt": "Aquisição de participação social",
+    "en": "Acquisition of a shareholding",
+    "es": "Adquisición de participación social"
+   },
+   "instructions": {
+    "pt": "Certidão do registo comercial com a participação e o contrato de aquisição com o valor.",
+    "en": "Commercial registry certificate showing the shareholding, and the purchase contract with the price.",
+    "es": "Certificado del registro mercantil con la participación y el contrato de adquisición con el importe."
+   },
+   "rules": {},
+   "active": true
+  },
+  "SPONSOR_PERMIT": {
+   "name": {
+    "pt": "Autorização de residência do familiar residente em Portugal",
+    "en": "Residence permit of the family member living in Portugal",
+    "es": "Autorización de residencia del familiar residente en Portugal"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "FAMILY_PASSPORT_COPY": {
+   "name": {
+    "pt": "Cópia autenticada do passaporte do familiar",
+    "en": "Certified copy of the family member's passport",
+    "es": "Copia compulsada del pasaporte del familiar"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "ADOPTION_DECISION": {
+   "name": {
+    "pt": "Decisão de adoção",
+    "en": "Adoption decision",
+    "es": "Resolución de adopción"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "GUARDIANSHIP_DECISION": {
+   "name": {
+    "pt": "Decisão de tutela ou de confiança legal",
+    "en": "Guardianship or custody decision",
+    "es": "Resolución de tutela o de custodia legal"
+   },
+   "instructions": {
+    "pt": "Com a certidão da decisão que a reconheceu em Portugal, quando aplicável.",
+    "en": "With the certificate of its recognition in Portugal, where applicable.",
+    "es": "Con el certificado de su reconocimiento en Portugal, cuando proceda."
+   },
+   "rules": {},
+   "active": true
+  },
+  "INCAPACITY_REPORT": {
+   "name": {
+    "pt": "Relatório médico ou decisão judicial de incapacidade",
+    "en": "Medical report or court ruling of incapacity",
+    "es": "Informe médico o resolución judicial de incapacidad"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "NON_RESIDENT_PARENT_CONSENT": {
+   "name": {
+    "pt": "Autorização do progenitor não residente",
+    "en": "Consent of the non-resident parent",
+    "es": "Autorización del progenitor no residente"
+   },
+   "instructions": {
+    "pt": "Escrita e autenticada por autoridade consular portuguesa, ou decisão que atribui a guarda ao residente.",
+    "en": "Written and certified by a Portuguese consular authority, or a decision giving custody to the resident.",
+    "es": "Escrita y legalizada por la autoridad consular portuguesa, o resolución que otorga la custodia al residente."
+   },
+   "rules": {},
+   "active": true
+  },
+  "REASON_TO_SETTLE": {
+   "name": {
+    "pt": "Motivo para fixar residência em Portugal",
+    "en": "Reason to settle in Portugal",
+    "es": "Motivo para fijar residencia en Portugal"
+   },
+   "instructions": {
+    "pt": "Por exemplo: trabalho, estudos ou outro motivo atendível.",
+    "en": "For example: work, studies or another valid reason.",
+    "es": "Por ejemplo: trabajo, estudios u otro motivo atendible."
+   },
+   "rules": {},
+   "active": true
+  },
+  "LTR_OTHER_STATE": {
+   "name": {
+    "pt": "Título de residente de longa duração de outro Estado-Membro",
+    "en": "Long-term resident permit from another member state",
+    "es": "Permiso de residente de larga duración de otro Estado miembro"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "BLUE_CARD_OTHER_STATE": {
+   "name": {
+    "pt": "Cartão Azul UE de outro Estado-Membro",
+    "en": "EU Blue Card from another member state",
+    "es": "Tarjeta Azul UE de otro Estado miembro"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "BLUE_CARD_CONTRACT": {
+   "name": {
+    "pt": "Contrato de trabalho altamente qualificado",
+    "en": "Highly qualified employment contract",
+    "es": "Contrato de trabajo altamente cualificado"
+   },
+   "instructions": {
+    "pt": "Ou promessa, de pelo menos 6 meses, com salário anual de pelo menos 1,5 vezes o salário médio nacional (1,2 vezes nos casos previstos), segundo os valores em vigor.",
+    "en": "Or a job offer, for at least 6 months, with an annual salary of at least 1.5 times the national average (1.2 times where the law allows), at the current figures.",
+    "es": "O promesa, de al menos 6 meses, con salario anual de al menos 1,5 veces el salario medio nacional (1,2 veces en los casos previstos), según los valores vigentes."
+   },
+   "rules": {},
+   "active": true
+  },
+  "CONSULAR_REGISTRATION": {
+   "name": {
+    "pt": "Certificado de inscrição consular com fotografia",
+    "en": "Consular registration certificate with photo",
+    "es": "Certificado de inscripción consular con fotografía"
+   },
+   "instructions": {
+    "pt": "Em alternativa ao passaporte do menor.",
+    "en": "Instead of the child's passport.",
+    "es": "Como alternativa al pasaporte del menor."
+   },
+   "rules": {},
+   "active": true
+  },
+  "SCHOOL_ATTENDANCE": {
+   "name": {
+    "pt": "Declaração da escola de que frequenta",
+    "en": "School attendance statement",
+    "es": "Certificado de escolarización"
+   },
+   "instructions": {
+    "pt": "Educação pré-escolar, ensino básico, secundário ou profissional.",
+    "en": "Pre-school, primary, secondary or vocational education.",
+    "es": "Educación infantil, primaria, secundaria o profesional."
+   },
+   "rules": {},
+   "active": true
+  },
+  "STAY_IN_PT_PROOF": {
+   "name": {
+    "pt": "Comprovativos de permanência em Portugal",
+    "en": "Proof of living in Portugal",
+    "es": "Justificantes de permanencia en Portugal"
+   },
+   "instructions": {
+    "pt": "Por exemplo: registos escolares, de saúde, de trabalho ou de morada ao longo dos anos.",
+    "en": "For example: school, health, work or address records over the years.",
+    "es": "Por ejemplo: registros escolares, sanitarios, laborales o de domicilio a lo largo de los años."
+   },
+   "rules": {},
+   "active": true
+  },
+  "STAY_15Y_PROOF": {
+   "name": {
+    "pt": "Comprovativos de permanência em Portugal nos últimos 15 anos",
+    "en": "Proof of living in Portugal for the last 15 years",
+    "es": "Justificantes de permanencia en Portugal en los últimos 15 años"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "BIRTH_CERT_ANNOTATED": {
+   "name": {
+    "pt": "Certidão de nascimento com averbamento",
+    "en": "Birth certificate with annotation",
+    "es": "Certificado de nacimiento con anotación"
+   },
+   "instructions": {
+    "pt": "Com o averbamento da perda da nacionalidade portuguesa.",
+    "en": "Showing the annotation of the loss of Portuguese nationality.",
+    "es": "Con la anotación de la pérdida de la nacionalidad portuguesa."
+   },
+   "rules": {},
+   "active": true
+  },
+  "GUARDIAN_ID": {
+   "name": {
+    "pt": "Documento de identificação do tutor",
+    "en": "Guardian's identity document",
+    "es": "Documento de identidad del tutor"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "CPCJ_DECISION": {
+   "name": {
+    "pt": "Decisão de promoção e proteção da CPCJ",
+    "en": "CPCJ child protection decision",
+    "es": "Resolución de protección de la CPCJ"
+   },
+   "instructions": {
+    "pt": "Original ou cópia autenticada.",
+    "en": "Original or certified copy.",
+    "es": "Original o copia compulsada."
+   },
+   "rules": {},
+   "active": true
+  },
+  "MEDICAL_ILLNESS_DECLARATION": {
+   "name": {
+    "pt": "Declaração médica de doença prolongada",
+    "en": "Medical statement of long-term illness",
+    "es": "Declaración médica de enfermedad prolongada"
+   },
+   "instructions": {
+    "pt": "Atesta a doença que exige assistência prolongada e impede o regresso ao país.",
+    "en": "Confirms the illness needs long-term care and prevents returning home.",
+    "es": "Acredita la enfermedad que exige asistencia prolongada e impide el regreso al país."
+   },
+   "rules": {},
+   "active": true
+  },
+  "CAREGIVER_DECLARATION": {
+   "name": {
+    "pt": "Declaração médica de acompanhante ou cuidador",
+    "en": "Medical statement of companion or carer",
+    "es": "Declaración médica de acompañante o cuidador"
+   },
+   "instructions": {
+    "pt": "Declara que o requerente é o acompanhante ou cuidador informal do doente.",
+    "en": "States that the applicant is the patient's companion or informal carer.",
+    "es": "Declara que el solicitante es el acompañante o cuidador informal del enfermo."
+   },
+   "rules": {},
+   "active": true
+  },
+  "MILITARY_SERVICE_PROOF": {
+   "name": {
+    "pt": "Comprovativo de serviço militar nas Forças Armadas Portuguesas",
+    "en": "Proof of military service in the Portuguese Armed Forces",
+    "es": "Justificante de servicio militar en las Fuerzas Armadas Portuguesas"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "PARENTAL_RESPONSIBILITY_PROOF": {
+   "name": {
+    "pt": "Prova das responsabilidades parentais",
+    "en": "Proof of parental responsibility",
+    "es": "Prueba de la responsabilidad parental"
+   },
+   "instructions": {
+    "pt": "Exercício efetivo do poder paternal e contribuição para o sustento e educação da criança.",
+    "en": "That you actually exercise parental authority and support the child's upkeep and education.",
+    "es": "Ejercicio efectivo de la patria potestad y contribución al sustento y la educación del menor."
+   },
+   "rules": {},
+   "active": true
+  },
+  "COMPLAINT_REPORT": {
+   "name": {
+    "pt": "Cópia do auto de denúncia",
+    "en": "Copy of the complaint report",
+    "es": "Copia de la denuncia"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "ACT_COOPERATION_DECLARATION": {
+   "name": {
+    "pt": "Declaração da ACT ou autoridade judiciária (colaboração)",
+    "en": "Statement from ACT or the judicial authority (cooperation)",
+    "es": "Declaración de la ACT o autoridad judicial (colaboración)"
+   },
+   "instructions": {
+    "pt": "Confirma a colaboração com a investigação e a existência de indícios das infrações.",
+    "en": "Confirms cooperation with the investigation and evidence of the offences.",
+    "es": "Confirma la colaboración con la investigación y la existencia de indicios de las infracciones."
+   },
+   "rules": {},
+   "active": true
+  },
+  "ACT_EXPLOITATION_DECLARATION": {
+   "name": {
+    "pt": "Declaração da ACT (desproteção e exploração)",
+    "en": "Statement from ACT (lack of protection and exploitation)",
+    "es": "Declaración de la ACT (desprotección y explotación)"
+   },
+   "instructions": {
+    "pt": "Atesta a situação de desproteção social, exploração salarial e de horário.",
+    "en": "Confirms the lack of social protection and the exploitation of pay and hours.",
+    "es": "Acredita la situación de desprotección social y explotación salarial y de horario."
+   },
+   "rules": {},
+   "active": true
+  },
+  "JUDICIAL_CESSATION_DECLARATION": {
+   "name": {
+    "pt": "Declaração judicial de fim da colaboração",
+    "en": "Court statement ending the cooperation",
+    "es": "Declaración judicial de fin de la colaboración"
+   },
+   "instructions": {
+    "pt": "Da autoridade judicial, ou certidão da sentença.",
+    "en": "From the judicial authority, or a copy of the judgment.",
+    "es": "De la autoridad judicial, o certificado de la sentencia."
+   },
+   "rules": {},
+   "active": true
+  },
+  "EXCEPTIONAL_STATEMENT": {
+   "name": {
+    "pt": "Exposição do pedido (regime excecional)",
+    "en": "Written request (exceptional regime)",
+    "es": "Escrito de solicitud (régimen excepcional)"
+   },
+   "instructions": {
+    "pt": "Assinada pelo requerente (ou pelo representante legal de menor ou incapaz) e entregue presencialmente.",
+    "en": "Signed by the applicant (or the legal representative of a minor or incapacitated person), handed in person.",
+    "es": "Firmado por el solicitante (o el representante legal de un menor o incapaz) y entregado en persona."
+   },
+   "rules": {},
+   "active": true
+  },
+  "EXCEPTIONALITY_PROOF": {
+   "name": {
+    "pt": "Comprovativo do caráter humanitário ou de interesse nacional",
+    "en": "Proof of humanitarian grounds or national interest",
+    "es": "Justificante del carácter humanitario o de interés nacional"
+   },
+   "instructions": null,
+   "rules": {},
+   "active": true
+  },
+  "RELEVANT_ACTIVITY_PROOF": {
+   "name": {
+    "pt": "Comprovativo de atividade relevante",
+    "en": "Proof of a relevant activity",
+    "es": "Justificante de actividad relevante"
+   },
+   "instructions": {
+    "pt": "Científica, cultural, desportiva, económica ou social.",
+    "en": "Scientific, cultural, sporting, economic or social.",
+    "es": "Científica, cultural, deportiva, económica o social."
+   },
+   "rules": {},
+   "active": true
+  },
+  "STABLE_RESOURCES": {
+   "name": {
+    "pt": "Comprovativo de recursos estáveis e regulares",
+    "en": "Proof of stable and regular resources",
+    "es": "Justificante de recursos estables y regulares"
+   },
+   "instructions": {
+    "pt": "Suficientes para a própria subsistência e a dos familiares.",
+    "en": "Enough to support yourself and your family.",
+    "es": "Suficientes para su propia subsistencia y la de sus familiares."
+   },
+   "rules": {},
+   "active": true
+  },
+  "POSTING_ABSENCE_PROOF": {
+   "name": {
+    "pt": "Comprovativo de ausências por destacamento",
+    "en": "Proof of absences due to posting abroad",
+    "es": "Justificante de ausencias por desplazamiento"
+   },
+   "instructions": {
+    "pt": "Quando houve ausências por destacamento de trabalho, por exemplo em prestação de serviços transfronteiriços.",
+    "en": "When you were away on a work posting, for example cross-border services.",
+    "es": "Cuando hubo ausencias por desplazamiento laboral, por ejemplo en servicios transfronterizos."
+   },
+   "rules": {},
+   "active": true
+  },
+  "LEGAL_RESIDENCE_5Y": {
+   "name": {
+    "pt": "Comprovativo de 5 anos de residência legal",
+    "en": "Proof of 5 years of legal residence",
+    "es": "Justificante de 5 años de residencia legal"
+   },
+   "instructions": {
+    "pt": "Residência legal e ininterrupta em Portugal nos cinco anos anteriores ao pedido.",
+    "en": "Legal, continuous residence in Portugal for the five years before applying.",
+    "es": "Residencia legal e ininterrumpida en Portugal en los cinco años anteriores a la solicitud."
+   },
+   "rules": {},
+   "active": true
   }
  },
  "countries": {
@@ -638,6 +1884,10 @@ const CATALOG_DATA = {
    },
    "sources": [
     "https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia",
+    "https://aima.gov.pt/pt/trabalhar",
+    "https://aima.gov.pt/pt/viver",
+    "https://aima.gov.pt/pt/estudar",
+    "https://aima.gov.pt/pt/empreender",
     "https://vistos.mne.gov.pt/en/national-visas/national-legislation"
    ],
    "visas": [
@@ -652,6 +1902,10 @@ const CATALOG_DATA = {
      "last_reviewed": "2026-10-31",
      "sources": [
       "https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia",
+      "https://aima.gov.pt/pt/trabalhar",
+      "https://aima.gov.pt/pt/viver",
+      "https://aima.gov.pt/pt/estudar",
+      "https://aima.gov.pt/pt/empreender",
       "https://vistos.mne.gov.pt/en/national-visas/national-legislation"
      ],
      "requirements": [
@@ -861,6 +2115,10 @@ const CATALOG_DATA = {
      "last_reviewed": "2026-10-31",
      "sources": [
       "https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia",
+      "https://aima.gov.pt/pt/trabalhar",
+      "https://aima.gov.pt/pt/viver",
+      "https://aima.gov.pt/pt/estudar",
+      "https://aima.gov.pt/pt/empreender",
       "https://vistos.mne.gov.pt/en/national-visas/national-legislation"
      ],
      "requirements": [
@@ -1081,6 +2339,10 @@ const CATALOG_DATA = {
      "last_reviewed": "2026-10-31",
      "sources": [
       "https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia",
+      "https://aima.gov.pt/pt/trabalhar",
+      "https://aima.gov.pt/pt/viver",
+      "https://aima.gov.pt/pt/estudar",
+      "https://aima.gov.pt/pt/empreender",
       "https://vistos.mne.gov.pt/en/national-visas/national-legislation"
      ],
      "requirements": [
@@ -1312,6 +2574,10 @@ const CATALOG_DATA = {
      "last_reviewed": "2026-10-31",
      "sources": [
       "https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia",
+      "https://aima.gov.pt/pt/trabalhar",
+      "https://aima.gov.pt/pt/viver",
+      "https://aima.gov.pt/pt/estudar",
+      "https://aima.gov.pt/pt/empreender",
       "https://vistos.mne.gov.pt/en/national-visas/national-legislation"
      ],
      "requirements": [
@@ -1519,6 +2785,10 @@ const CATALOG_DATA = {
      "last_reviewed": "2026-10-31",
      "sources": [
       "https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia",
+      "https://aima.gov.pt/pt/trabalhar",
+      "https://aima.gov.pt/pt/viver",
+      "https://aima.gov.pt/pt/estudar",
+      "https://aima.gov.pt/pt/empreender",
       "https://vistos.mne.gov.pt/en/national-visas/national-legislation"
      ],
      "requirements": [
@@ -1747,6 +3017,10 @@ const CATALOG_DATA = {
      "last_reviewed": "2026-10-31",
      "sources": [
       "https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia",
+      "https://aima.gov.pt/pt/trabalhar",
+      "https://aima.gov.pt/pt/viver",
+      "https://aima.gov.pt/pt/estudar",
+      "https://aima.gov.pt/pt/empreender",
       "https://vistos.mne.gov.pt/en/national-visas/national-legislation"
      ],
      "requirements": [
@@ -1954,6 +3228,10 @@ const CATALOG_DATA = {
      "last_reviewed": "2026-10-31",
      "sources": [
       "https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia",
+      "https://aima.gov.pt/pt/trabalhar",
+      "https://aima.gov.pt/pt/viver",
+      "https://aima.gov.pt/pt/estudar",
+      "https://aima.gov.pt/pt/empreender",
       "https://vistos.mne.gov.pt/en/national-visas/national-legislation"
      ],
      "requirements": [
@@ -2158,6 +3436,10 @@ const CATALOG_DATA = {
      "last_reviewed": "2026-10-31",
      "sources": [
       "https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia",
+      "https://aima.gov.pt/pt/trabalhar",
+      "https://aima.gov.pt/pt/viver",
+      "https://aima.gov.pt/pt/estudar",
+      "https://aima.gov.pt/pt/empreender",
       "https://vistos.mne.gov.pt/en/national-visas/national-legislation"
      ],
      "requirements": [
@@ -2365,6 +3647,10 @@ const CATALOG_DATA = {
      "last_reviewed": "2026-10-31",
      "sources": [
       "https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia",
+      "https://aima.gov.pt/pt/trabalhar",
+      "https://aima.gov.pt/pt/viver",
+      "https://aima.gov.pt/pt/estudar",
+      "https://aima.gov.pt/pt/empreender",
       "https://vistos.mne.gov.pt/en/national-visas/national-legislation"
      ],
      "requirements": [
@@ -2582,6 +3868,10 @@ const CATALOG_DATA = {
      "last_reviewed": "2026-10-31",
      "sources": [
       "https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia",
+      "https://aima.gov.pt/pt/trabalhar",
+      "https://aima.gov.pt/pt/viver",
+      "https://aima.gov.pt/pt/estudar",
+      "https://aima.gov.pt/pt/empreender",
       "https://vistos.mne.gov.pt/en/national-visas/national-legislation"
      ],
      "requirements": [
@@ -2820,6 +4110,10 @@ const CATALOG_DATA = {
      "last_reviewed": "2026-10-31",
      "sources": [
       "https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia",
+      "https://aima.gov.pt/pt/trabalhar",
+      "https://aima.gov.pt/pt/viver",
+      "https://aima.gov.pt/pt/estudar",
+      "https://aima.gov.pt/pt/empreender",
       "https://vistos.mne.gov.pt/en/national-visas/national-legislation"
      ],
      "requirements": [
@@ -3016,6 +4310,10 @@ const CATALOG_DATA = {
      "last_reviewed": "2026-10-31",
      "sources": [
       "https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia",
+      "https://aima.gov.pt/pt/trabalhar",
+      "https://aima.gov.pt/pt/viver",
+      "https://aima.gov.pt/pt/estudar",
+      "https://aima.gov.pt/pt/empreender",
       "https://vistos.mne.gov.pt/en/national-visas/national-legislation"
      ],
      "requirements": [
@@ -3212,6 +4510,7312 @@ const CATALOG_DATA = {
        "unless": [
         "cplp"
        ],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-88-1",
+     "name": {
+      "pt": "AR – Trabalho subordinado, com visto de residência (art. 88.º, 1)",
+      "en": "RP – Employed work, with residence visa (art. 88(1))",
+      "es": "AR – Trabajo por cuenta ajena, con visado de residencia (art. 88.º, 1)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-exercicio-de-atividade-profissional-subordinada-com-visto-de-residencia-art-88-o-n-o-1"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "EMPLOYER_BOND_DECLARATION",
+       "doc": "EMPLOYER_BOND_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-88-1-NOMAD",
+     "name": {
+      "pt": "AR – Trabalho remoto, nómadas digitais (art. 88.º, 1)",
+      "en": "RP – Remote work, digital nomads (art. 88(1))",
+      "es": "AR – Trabajo remoto, nómadas digitales (art. 88.º, 1)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-o-exercicio-de-atividade-profissional-prestada-de-forma-remota-com-visto-de-residencia-para-o-exe"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "REMOTE_BOND_DECLARATION",
+       "doc": "REMOTE_BOND_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-88-2",
+     "name": {
+      "pt": "AR – Trabalho subordinado, sem visto (art. 88.º, 2; pedidos até 03/06/2024)",
+      "en": "RP – Employed work, without visa (art. 88(2); applications up to 3 June 2024)",
+      "es": "AR – Trabajo por cuenta ajena, sin visado (art. 88.º, 2; solicitudes hasta el 03/06/2024)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-exercicio-de-atividade-profissional-subordinada-com-dispensa-de-visto-de-residencia-art-88-o-n-o-"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "LEGAL_ENTRY_PROOF",
+       "doc": "LEGAL_ENTRY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "EMPLOYMENT_BOND",
+       "doc": null,
+       "any_of": [
+        "EMPLOYMENT_CONTRACT",
+        "EMPLOYER_BOND_DECLARATION"
+       ],
+       "name": {
+        "pt": "Promessa de contrato ou declaração do empregador",
+        "en": "Job offer or employer's declaration",
+        "es": "Promesa de contrato o declaración del empleador"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-88-7",
+     "name": {
+      "pt": "AR – Trabalho subordinado, com visto de procura de trabalho (art. 88.º, 7)",
+      "en": "RP – Employed work, with job seeker visa (art. 88(7))",
+      "es": "AR – Trabajo por cuenta ajena, con visado de búsqueda de empleo (art. 88.º, 7)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-exercicio-de-atividade-profissional-subordinada-com-visto-para-procura-de-trabalho-art-88-o-n-o7"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "EMPLOYER_BOND_DECLARATION",
+       "doc": "EMPLOYER_BOND_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-89-1",
+     "name": {
+      "pt": "AR – Trabalho independente, com visto de residência (art. 89.º, 1)",
+      "en": "RP – Self-employed work, with residence visa (art. 89(1))",
+      "es": "AR – Trabajo por cuenta propia, con visado de residencia (art. 89.º, 1)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-exercicio-de-atividade-profissional-independente-com-visto-de-residencia-art-89-o-n-o1"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ACTIVITY_START_PROOF",
+       "doc": "ACTIVITY_START_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SELF_EMPLOYED_BASIS",
+       "doc": null,
+       "any_of": [
+        "SERVICE_CONTRACT",
+        "COMPANY_REGISTRATION",
+        "RECENT_RECEIPTS"
+       ],
+       "name": {
+        "pt": "Prova da atividade independente",
+        "en": "Proof of the self-employed work",
+        "es": "Prueba de la actividad por cuenta propia"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PROFESSIONAL_CERTIFICATE",
+       "doc": "PROFESSIONAL_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-89-2",
+     "name": {
+      "pt": "AR – Trabalho independente, sem visto (art. 89.º, 2; pedidos até 03/06/2024)",
+      "en": "RP – Self-employed work, without visa (art. 89(2); applications up to 3 June 2024)",
+      "es": "AR – Trabajo por cuenta propia, sin visado (art. 89.º, 2; solicitudes hasta el 03/06/2024)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-exercicio-de-atividade-profissional-independente-com-dispensa-de-visto-de-residencia-art-89-o-n-o"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ACTIVITY_START_PROOF",
+       "doc": "ACTIVITY_START_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SELF_EMPLOYED_BASIS",
+       "doc": null,
+       "any_of": [
+        "SERVICE_CONTRACT",
+        "COMPANY_REGISTRATION",
+        "RECENT_RECEIPTS"
+       ],
+       "name": {
+        "pt": "Prova da atividade independente",
+        "en": "Proof of the self-employed work",
+        "es": "Prueba de la actividad por cuenta propia"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PROFESSIONAL_CERTIFICATE",
+       "doc": "PROFESSIONAL_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-90-TEACHING",
+     "name": {
+      "pt": "AR – Atividade de docência (art. 90.º)",
+      "en": "RP – Teaching (art. 90)",
+      "es": "AR – Actividad docente (art. 90.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-atividade-de-docencia-art-90-o"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "TEACHING_BOND",
+       "doc": null,
+       "any_of": [
+        "EMPLOYER_BOND_DECLARATION",
+        "INVITATION_LETTER"
+       ],
+       "name": {
+        "pt": "Contrato ou carta convite de ensino",
+        "en": "Teaching contract or invitation letter",
+        "es": "Contrato o carta de invitación docente"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-90-HQ",
+     "name": {
+      "pt": "AR – Atividade altamente qualificada (art. 90.º)",
+      "en": "RP – Highly qualified work (art. 90)",
+      "es": "AR – Actividad altamente cualificada (art. 90.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-atividade-altamente-qualificada-art-90-o"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "QUALIFICATION_CERT",
+       "doc": "QUALIFICATION_CERT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HQ_EMPLOYER_DECLARATION",
+       "doc": "HQ_EMPLOYER_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [
+        "self_employed"
+       ],
+       "min_age": null
+      },
+      {
+       "key": "ACTIVITY_START_PROOF",
+       "doc": "ACTIVITY_START_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [
+        "self_employed"
+       ],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SELF_EMPLOYED_BASIS",
+       "doc": null,
+       "any_of": [
+        "SERVICE_CONTRACT",
+        "COMPANY_REGISTRATION",
+        "RECENT_RECEIPTS"
+       ],
+       "name": {
+        "pt": "Prova da atividade independente",
+        "en": "Proof of the self-employed work",
+        "es": "Prueba de la actividad por cuenta propia"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [
+        "self_employed"
+       ],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-90-CULTURAL",
+     "name": {
+      "pt": "AR – Atividade cultural (art. 90.º)",
+      "en": "RP – Cultural work (art. 90)",
+      "es": "AR – Actividad cultural (art. 90.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-atividade-cultural-art-90-o"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HOST_RESPONSIBILITY_TERM",
+       "doc": "HOST_RESPONSIBILITY_TERM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-90-TECH",
+     "name": {
+      "pt": "AR – Tech Visa, empresa certificada (art. 90.º)",
+      "en": "RP – Tech Visa, certified company (art. 90)",
+      "es": "AR – Tech Visa, empresa certificada (art. 90.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-atividade-altamente-qualificada-exercida-para-empresa-certificada-art-90-o-tech-visa"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD_CONSENT",
+       "doc": "CRIMINAL_RECORD_CONSENT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "TECH_VISA_TERM",
+       "doc": "TECH_VISA_TERM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-L",
+     "name": {
+      "pt": "AR – Agentes diplomáticos e consulares e familiares (art. 122.º, 1, l)",
+      "en": "RP – Diplomatic and consular agents and family (art. 122(1)(l))",
+      "es": "AR – Agentes diplomáticos y consulares y familiares (art. 122.º, 1, l)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/que-sejam-agentes-diplomaticos-e-consulares-ou-respetivos-conjuges-ascendentes-e-descendentes-a-cargo-art-122-o-1-al-l"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "DIPLOMATIC_ACCREDITATION",
+       "doc": "DIPLOMATIC_ACCREDITATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "DIPLOMAT_FAMILY_LINK",
+       "doc": null,
+       "any_of": [
+        "RELATIONSHIP_PROOF",
+        "BIRTH_CERTIFICATE"
+       ],
+       "name": {
+        "pt": "Vínculo familiar com o agente",
+        "en": "Family link to the agent",
+        "es": "Vínculo familiar con el agente"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [
+        "diplomat_family"
+       ],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "DEPENDENCY_PROOF",
+       "doc": "DEPENDENCY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [
+        "diplomat_family"
+       ],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-O",
+     "name": {
+      "pt": "AR – Trabalho após estudos secundários ou licenciatura (art. 122.º, 1, o)",
+      "en": "RP – Work after secondary school or a bachelor's degree (art. 122(1)(o))",
+      "es": "AR – Trabajo tras estudios secundarios o grado (art. 122.º, 1, o)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/tendo-beneficiado-de-ar-para-estudantes-do-ensino-secundario-ou-de-ar-para-estudantes-do-1-o-ciclo-do-ensino-superior-e-concluid"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "WORK_MEANS",
+       "doc": null,
+       "any_of": [
+        "EMPLOYMENT_CONTRACT",
+        "SERVICE_CONTRACT",
+        "ACTIVITY_START_PROOF"
+       ],
+       "name": {
+        "pt": "Meios de subsistência (trabalho ou atividade)",
+        "en": "Means of subsistence (work or activity)",
+        "es": "Medios de subsistencia (trabajo o actividad)"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "STUDY_COMPLETION",
+       "doc": "STUDY_COMPLETION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NO_COOPERATION_AGREEMENT",
+       "doc": "NO_COOPERATION_AGREEMENT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-P",
+     "name": {
+      "pt": "AR – Trabalho após mestrado, doutoramento ou investigação (art. 122.º, 1, p)",
+      "en": "RP – Work after a master's, PhD or research (art. 122(1)(p))",
+      "es": "AR – Trabajo tras máster, doctorado o investigación (art. 122.º, 1, p)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/tendo-beneficiado-de-ar-para-estudantes-do-2-o-ou-3-o-ciclos-do-ensino-superior-ou-de-ar-para-investigacao-e-concluido-os-estudo"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "WORK_MEANS",
+       "doc": null,
+       "any_of": [
+        "EMPLOYMENT_CONTRACT",
+        "SERVICE_CONTRACT",
+        "ACTIVITY_START_PROOF"
+       ],
+       "name": {
+        "pt": "Meios de subsistência (trabalho ou atividade)",
+        "en": "Means of subsistence (work or activity)",
+        "es": "Medios de subsistencia (trabajo o actividad)"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "COMPLETION",
+       "doc": null,
+       "any_of": [
+        "STUDY_COMPLETION",
+        "RESEARCH_COMPLETION",
+        "JOB_SEARCH_DECLARATION"
+       ],
+       "name": {
+        "pt": "Conclusão dos estudos ou da investigação",
+        "en": "Completion of studies or research",
+        "es": "Finalización de los estudios o de la investigación"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-Q",
+     "name": {
+      "pt": "AR – Após visto de estada temporária para investigação ou atividade qualificada (art. 122.º, 1, q)",
+      "en": "RP – After a temporary stay visa for research or qualified work (art. 122(1)(q))",
+      "es": "AR – Tras visado de estancia temporal para investigación o actividad cualificada (art. 122.º, 1, q)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/tendo-beneficiado-de-visto-de-estada-temporaria-para-atividade-de-investigacao-ou-altamente-qualificada-pretendam-exercer-em-por"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "WORK_MEANS",
+       "doc": null,
+       "any_of": [
+        "EMPLOYMENT_CONTRACT",
+        "SERVICE_CONTRACT",
+        "ACTIVITY_START_PROOF"
+       ],
+       "name": {
+        "pt": "Meios de subsistência (trabalho ou atividade)",
+        "en": "Means of subsistence (work or activity)",
+        "es": "Medios de subsistencia (trabajo o actividad)"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "TEMP_STAY_VISA",
+       "doc": "TEMP_STAY_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-123A",
+     "name": {
+      "pt": "AR – Empresas deslocalizadas para Portugal (art. 123.º-A)",
+      "en": "RP – Companies relocated to Portugal (art. 123-A)",
+      "es": "AR – Empresas trasladadas a Portugal (art. 123.º-A)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-titulares-administradores-ou-trabalhadores-de-empresas-sediadas-ou-com-estabelecimentos-principal"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "EEA_RESIDENCE_PERMIT",
+       "doc": "EEA_RESIDENCE_PERMIT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "COMMERCIAL_REGISTRY_CERT",
+       "doc": "COMMERCIAL_REGISTRY_CERT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "EMPLOYER_BOND_DECLARATION",
+       "doc": "EMPLOYER_BOND_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-124B",
+     "name": {
+      "pt": "AR – Transferência dentro da empresa, ICT (art. 124.º-B)",
+      "en": "RP – Intra-company transfer, ICT (art. 124-B)",
+      "es": "AR – Traslado dentro de la empresa, ICT (art. 124.º-B)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-tde-ict-para-trabalhador-transferido-dentro-da-empresa-art-124-o-b"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ICT_EMPLOYER_DECLARATION",
+       "doc": "ICT_EMPLOYER_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ICT_TRANSFER_TERMS",
+       "doc": "ICT_TRANSFER_TERMS",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SAME_GROUP_PROOF",
+       "doc": "SAME_GROUP_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PRIOR_EMPLOYMENT_PROOF",
+       "doc": "PRIOR_EMPLOYMENT_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "QUALIFICATION_CERT",
+       "doc": "QUALIFICATION_CERT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PROFESSIONAL_CERTIFICATE",
+       "doc": "PROFESSIONAL_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HOST_COMPLIANCE_GUARANTEE",
+       "doc": "HOST_COMPLIANCE_GUARANTEE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-124E",
+     "name": {
+      "pt": "AR – ICT móvel, com título ICT de outro Estado-Membro (art. 124.º-E)",
+      "en": "RP – Mobile ICT, with an ICT permit from another member state (art. 124-E)",
+      "es": "AR – ICT móvil, con título ICT de otro Estado miembro (art. 124.º-E)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-ict-movel-para-mobilidade-de-trabalhador-transferido-dentro-da-empresa-detentor-de-titulo-de-residenci"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ICT_PERMIT_OTHER_STATE",
+       "doc": "ICT_PERMIT_OTHER_STATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ICT_EMPLOYER_DECLARATION",
+       "doc": "ICT_EMPLOYER_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [
+        "certified_group"
+       ],
+       "min_age": null
+      },
+      {
+       "key": "ICT_TRANSFER_TERMS",
+       "doc": "ICT_TRANSFER_TERMS",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SAME_GROUP_PROOF",
+       "doc": "SAME_GROUP_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PRIOR_EMPLOYMENT_PROOF",
+       "doc": "PRIOR_EMPLOYMENT_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [
+        "certified_group"
+       ],
+       "min_age": null
+      },
+      {
+       "key": "QUALIFICATION_CERT",
+       "doc": "QUALIFICATION_CERT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [
+        "certified_group"
+       ],
+       "min_age": null
+      },
+      {
+       "key": "PROFESSIONAL_CERTIFICATE",
+       "doc": "PROFESSIONAL_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HOST_COMPLIANCE_GUARANTEE",
+       "doc": "HOST_COMPLIANCE_GUARANTEE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [
+        "certified_group"
+       ],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-91",
+     "name": {
+      "pt": "AR – Estudantes do ensino superior (art. 91.º)",
+      "en": "RP – Higher education students (art. 91)",
+      "es": "AR – Estudiantes de enseñanza superior (art. 91.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/estudar/autorizacao-de-residencia-emitida-a-estudantes-do-ensino-superior-art-o-91"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ENROLMENT_PROOF",
+       "doc": "ENROLMENT_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "TUITION_PROOF",
+       "doc": "TUITION_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-91A",
+     "name": {
+      "pt": "AR – Mobilidade de estudantes do ensino superior (art. 91.º-A)",
+      "en": "RP – Higher education student mobility (art. 91-A)",
+      "es": "AR – Movilidad de estudiantes de enseñanza superior (art. 91.º-A)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/estudar/mobilidade-de-estudantes-do-ensino-superior-art-91-o-a"
+     ],
+     "requirements": [
+      {
+       "key": "MOBILITY_FORM_M6",
+       "doc": "MOBILITY_FORM_M6",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "EU_STUDENT_PERMIT",
+       "doc": "EU_STUDENT_PERMIT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADMISSION_PROOF",
+       "doc": "ADMISSION_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "FEE_PAYMENT_PROOF",
+       "doc": "FEE_PAYMENT_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-91B",
+     "name": {
+      "pt": "AR – Investigadores (art. 91.º-B)",
+      "en": "RP – Researchers (art. 91-B)",
+      "es": "AR – Investigadores (art. 91.º-B)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/estudar/autorizacao-de-residencia-para-investigadores-art-91-o-b"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [
+        "no_visa"
+       ],
+       "min_age": null
+      },
+      {
+       "key": "LEGAL_ENTRY_PROOF",
+       "doc": "LEGAL_ENTRY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [
+        "no_visa"
+       ],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "RESEARCH_BASIS",
+       "doc": null,
+       "any_of": [
+        "EMPLOYMENT_CONTRACT",
+        "SERVICE_CONTRACT",
+        "SCHOLARSHIP_PROOF",
+        "RESEARCH_HOSTING"
+       ],
+       "name": {
+        "pt": "Contrato, bolsa ou convenção de acolhimento",
+        "en": "Contract, grant or hosting agreement",
+        "es": "Contrato, beca o convenio de acogida"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-91C",
+     "name": {
+      "pt": "AR – Investigadores em mobilidade de longa duração (art. 91.º-C)",
+      "en": "RP – Researchers on long-term mobility (art. 91-C)",
+      "es": "AR – Investigadores en movilidad de larga duración (art. 91.º-C)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/estudar/autorizacao-de-residencia-para-investigadores-em-mobilidade-art-91-o-c"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [
+        "no_visa"
+       ],
+       "min_age": null
+      },
+      {
+       "key": "LEGAL_ENTRY_PROOF",
+       "doc": "LEGAL_ENTRY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [
+        "no_visa"
+       ],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PROFESSIONAL_CERTIFICATE",
+       "doc": "PROFESSIONAL_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "EU_RESIDENCE_PERMIT",
+       "doc": "EU_RESIDENCE_PERMIT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "RESEARCH_MOBILITY_BASIS",
+       "doc": null,
+       "any_of": [
+        "SERVICE_CONTRACT",
+        "SCHOLARSHIP_PROOF",
+        "RESEARCH_HOSTING"
+       ],
+       "name": {
+        "pt": "Contrato, bolsa ou convenção de acolhimento",
+        "en": "Contract, grant or hosting agreement",
+        "es": "Contrato, beca o convenio de acogida"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-92",
+     "name": {
+      "pt": "AR – Estudantes do ensino secundário e profissional (art. 92.º)",
+      "en": "RP – Secondary and vocational students (art. 92)",
+      "es": "AR – Estudiantes de secundaria y formación profesional (art. 92.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/estudar/autorizacao-de-residencia-para-estudantes-art-92-o"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [
+        "no_visa"
+       ],
+       "min_age": null
+      },
+      {
+       "key": "LEGAL_ENTRY_PROOF",
+       "doc": "LEGAL_ENTRY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [
+        "no_visa"
+       ],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ENROLMENT_PROOF",
+       "doc": "ENROLMENT_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "TUITION_PROOF",
+       "doc": "TUITION_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-93",
+     "name": {
+      "pt": "AR – Estagiários (art. 93.º)",
+      "en": "RP – Trainees (art. 93)",
+      "es": "AR – Personas en prácticas (art. 93.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/estudar/autorizacao-de-residencia-para-estagiarios-art-93-o"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "TRAINING_AGREEMENT",
+       "doc": "TRAINING_AGREEMENT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-94",
+     "name": {
+      "pt": "AR – Voluntários (art. 94.º)",
+      "en": "RP – Volunteers (art. 94)",
+      "es": "AR – Voluntarios (art. 94.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/estudar/autorizacao-de-residencia-para-voluntarios-art-94-o"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "VOLUNTEER_HOST_DECLARATION",
+       "doc": "VOLUNTEER_HOST_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HOST_LIABILITY_INSURANCE",
+       "doc": "HOST_LIABILITY_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-89-4",
+     "name": {
+      "pt": "AR – Empreendedores imigrantes, Startup Visa (art. 89.º, 4)",
+      "en": "RP – Migrant entrepreneurs, Startup Visa (art. 89(4))",
+      "es": "AR – Emprendedores inmigrantes, Startup Visa (art. 89.º, 4)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/empreender/autorizacao-de-residencia-para-imigrantes-empreendedores-startup-visa-art-89-o-n-o-4"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "IAPMEI_DECLARATION",
+       "doc": "IAPMEI_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PROFESSIONAL_CERTIFICATE",
+       "doc": "PROFESSIONAL_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-77",
+     "name": {
+      "pt": "AR – Regime geral (art. 77.º)",
+      "en": "RP – General regime (art. 77)",
+      "es": "AR – Régimen general (art. 77.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/autorizacao-de-residencia-regime-e-requisitos-gerais-art-o-77-o-n-o-1"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PT_VISA",
+       "doc": "PT_VISA",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "KINSHIP_PROOF",
+       "doc": "KINSHIP_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-80",
+     "name": {
+      "pt": "AR – Residência permanente (art. 80.º)",
+      "en": "RP – Permanent residence (art. 80)",
+      "es": "AR – Residencia permanente (art. 80.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/autorizacao-de-residencia-permanente-art-80-o"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "TAX_SS_COMPLIANCE",
+       "doc": "TAX_SS_COMPLIANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "TEMP_PERMIT_5Y",
+       "doc": "TEMP_PERMIT_5Y",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PORTUGUESE_A2",
+       "doc": "PORTUGUESE_A2",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-90A-JOBS",
+     "name": {
+      "pt": "ARI – Investimento: criação de 10 postos de trabalho (art. 90.º-A)",
+      "en": "ARI – Investment: creating 10 jobs (art. 90-A)",
+      "es": "ARI – Inversión: creación de 10 puestos de trabajo (art. 90.º-A)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-investimento-art-90-o-a"
+     ],
+     "requirements": [
+      {
+       "key": "ARI_FORM",
+       "doc": "ARI_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "FOREIGN_TAX_ID",
+       "doc": "FOREIGN_TAX_ID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "INVESTMENT_COMMITMENT",
+       "doc": "INVESTMENT_COMMITMENT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NO_DEBT_DECLARATIONS",
+       "doc": "NO_DEBT_DECLARATIONS",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ARI_FEE_RECEIPT",
+       "doc": "ARI_FEE_RECEIPT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "LEGAL_STAY_PROOF",
+       "doc": "LEGAL_STAY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "WORKERS_CONTRACTS",
+       "doc": "WORKERS_CONTRACTS",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "COMMERCIAL_REGISTRY_CERT",
+       "doc": "COMMERCIAL_REGISTRY_CERT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-90A-RESEARCH",
+     "name": {
+      "pt": "ARI – Investimento: 500 mil € em investigação científica (art. 90.º-A)",
+      "en": "ARI – Investment: EUR 500,000 in scientific research (art. 90-A)",
+      "es": "ARI – Inversión: 500.000 € en investigación científica (art. 90.º-A)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-investimento-art-90-o-a"
+     ],
+     "requirements": [
+      {
+       "key": "ARI_FORM",
+       "doc": "ARI_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "FOREIGN_TAX_ID",
+       "doc": "FOREIGN_TAX_ID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "INVESTMENT_COMMITMENT",
+       "doc": "INVESTMENT_COMMITMENT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NO_DEBT_DECLARATIONS",
+       "doc": "NO_DEBT_DECLARATIONS",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ARI_FEE_RECEIPT",
+       "doc": "ARI_FEE_RECEIPT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "LEGAL_STAY_PROOF",
+       "doc": "LEGAL_STAY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BANK_TRANSFER_DECLARATION",
+       "doc": "BANK_TRANSFER_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "RESEARCH_INSTITUTION_DECLARATION",
+       "doc": "RESEARCH_INSTITUTION_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "COMMERCIAL_REGISTRY_CERT",
+       "doc": "COMMERCIAL_REGISTRY_CERT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-90A-CULTURE",
+     "name": {
+      "pt": "ARI – Investimento: 250 mil € em cultura e património (art. 90.º-A)",
+      "en": "ARI – Investment: EUR 250,000 in culture and heritage (art. 90-A)",
+      "es": "ARI – Inversión: 250.000 € en cultura y patrimonio (art. 90.º-A)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-investimento-art-90-o-a"
+     ],
+     "requirements": [
+      {
+       "key": "ARI_FORM",
+       "doc": "ARI_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "FOREIGN_TAX_ID",
+       "doc": "FOREIGN_TAX_ID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "INVESTMENT_COMMITMENT",
+       "doc": "INVESTMENT_COMMITMENT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NO_DEBT_DECLARATIONS",
+       "doc": "NO_DEBT_DECLARATIONS",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ARI_FEE_RECEIPT",
+       "doc": "ARI_FEE_RECEIPT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "LEGAL_STAY_PROOF",
+       "doc": "LEGAL_STAY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BANK_TRANSFER_DECLARATION",
+       "doc": "BANK_TRANSFER_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "GEPAC_DECLARATION",
+       "doc": "GEPAC_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "COMMERCIAL_REGISTRY_CERT",
+       "doc": "COMMERCIAL_REGISTRY_CERT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-90A-FUNDS",
+     "name": {
+      "pt": "ARI – Investimento: 500 mil € em fundos de investimento (art. 90.º-A)",
+      "en": "ARI – Investment: EUR 500,000 in investment funds (art. 90-A)",
+      "es": "ARI – Inversión: 500.000 € en fondos de inversión (art. 90.º-A)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-investimento-art-90-o-a"
+     ],
+     "requirements": [
+      {
+       "key": "ARI_FORM",
+       "doc": "ARI_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "FOREIGN_TAX_ID",
+       "doc": "FOREIGN_TAX_ID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "INVESTMENT_COMMITMENT",
+       "doc": "INVESTMENT_COMMITMENT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NO_DEBT_DECLARATIONS",
+       "doc": "NO_DEBT_DECLARATIONS",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ARI_FEE_RECEIPT",
+       "doc": "ARI_FEE_RECEIPT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "LEGAL_STAY_PROOF",
+       "doc": "LEGAL_STAY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BANK_TRANSFER_DECLARATION",
+       "doc": "BANK_TRANSFER_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "FUND_UNITS_CERT",
+       "doc": "FUND_UNITS_CERT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "FUND_MANAGER_DECLARATION",
+       "doc": "FUND_MANAGER_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "COMMERCIAL_REGISTRY_CERT",
+       "doc": "COMMERCIAL_REGISTRY_CERT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-90A-COMPANY",
+     "name": {
+      "pt": "ARI – Investimento: 500 mil € em sociedade com 5 postos de trabalho (art. 90.º-A)",
+      "en": "ARI – Investment: EUR 500,000 in a company with 5 jobs (art. 90-A)",
+      "es": "ARI – Inversión: 500.000 € en sociedad con 5 puestos de trabajo (art. 90.º-A)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-investimento-art-90-o-a"
+     ],
+     "requirements": [
+      {
+       "key": "ARI_FORM",
+       "doc": "ARI_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "FOREIGN_TAX_ID",
+       "doc": "FOREIGN_TAX_ID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "INVESTMENT_COMMITMENT",
+       "doc": "INVESTMENT_COMMITMENT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NO_DEBT_DECLARATIONS",
+       "doc": "NO_DEBT_DECLARATIONS",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ARI_FEE_RECEIPT",
+       "doc": "ARI_FEE_RECEIPT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "LEGAL_STAY_PROOF",
+       "doc": "LEGAL_STAY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BANK_TRANSFER_DECLARATION",
+       "doc": "BANK_TRANSFER_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "COMPANY_INVESTMENT",
+       "doc": null,
+       "any_of": [
+        "COMPANY_INCORPORATION_CERT",
+        "SHARE_ACQUISITION_PROOF"
+       ],
+       "name": {
+        "pt": "Constituição ou participação na sociedade",
+        "en": "Company incorporation or shareholding",
+        "es": "Constitución o participación en la sociedad"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "COMMERCIAL_REGISTRY_CERT",
+       "doc": "COMMERCIAL_REGISTRY_CERT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-98-1",
+     "name": {
+      "pt": "Reagrupamento familiar, familiar fora de Portugal (art. 98.º, 1)",
+      "en": "Family reunification, family member abroad (art. 98(1))",
+      "es": "Reagrupación familiar, familiar fuera de Portugal (art. 98.º, 1)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/reagrupamento-familiar-com-familiar-fora-de-territorio-nacional-art-98-o-n-o-1"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SPONSOR_PERMIT",
+       "doc": "SPONSOR_PERMIT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "RELATIONSHIP_PROOF",
+       "doc": "RELATIONSHIP_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "spouse",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "spouse",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BIRTH_CERTIFICATE",
+       "doc": "BIRTH_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "each_child",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NON_RESIDENT_PARENT_CONSENT",
+       "doc": "NON_RESIDENT_PARENT_CONSENT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "each_child",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "OTHER_FAMILY_LINK",
+       "doc": null,
+       "any_of": [
+        "ADOPTION_DECISION",
+        "GUARDIANSHIP_DECISION",
+        "INCAPACITY_REPORT",
+        "DEPENDENCY_PROOF"
+       ],
+       "name": {
+        "pt": "Outros vínculos (adoção, tutela, incapacidade, dependência)",
+        "en": "Other family links (adoption, guardianship, incapacity, dependency)",
+        "es": "Otros vínculos (adopción, tutela, incapacidad, dependencia)"
+       },
+       "applies_to": "case",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "FAMILY_PASSPORT_COPY",
+       "doc": "FAMILY_PASSPORT_COPY",
+       "any_of": null,
+       "name": null,
+       "applies_to": "spouse",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "FAMILY_PASSPORT_COPY",
+       "doc": "FAMILY_PASSPORT_COPY",
+       "any_of": null,
+       "name": null,
+       "applies_to": "each_child",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-98-2",
+     "name": {
+      "pt": "Reagrupamento familiar, familiar já em Portugal (art. 98.º, 2)",
+      "en": "Family reunification, family member already in Portugal (art. 98(2))",
+      "es": "Reagrupación familiar, familiar ya en Portugal (art. 98.º, 2)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/reagrupamento-familiar-com-familiar-em-territorio-nacional-art-98-o-n-o-2"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SPONSOR_PERMIT",
+       "doc": "SPONSOR_PERMIT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "RELATIONSHIP_PROOF",
+       "doc": "RELATIONSHIP_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "spouse",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "spouse",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BIRTH_CERTIFICATE",
+       "doc": "BIRTH_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "each_child",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NON_RESIDENT_PARENT_CONSENT",
+       "doc": "NON_RESIDENT_PARENT_CONSENT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "each_child",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "OTHER_FAMILY_LINK",
+       "doc": null,
+       "any_of": [
+        "ADOPTION_DECISION",
+        "GUARDIANSHIP_DECISION",
+        "INCAPACITY_REPORT",
+        "DEPENDENCY_PROOF"
+       ],
+       "name": {
+        "pt": "Outros vínculos (adoção, tutela, incapacidade, dependência)",
+        "en": "Other family links (adoption, guardianship, incapacity, dependency)",
+        "es": "Otros vínculos (adopción, tutela, incapacidad, dependencia)"
+       },
+       "applies_to": "case",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "spouse",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "each_child",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "LEGAL_ENTRY_PROOF",
+       "doc": "LEGAL_ENTRY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "spouse",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "LEGAL_ENTRY_PROOF",
+       "doc": "LEGAL_ENTRY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "each_child",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-109",
+     "name": {
+      "pt": "AR – Vítimas de tráfico de pessoas ou auxílio à imigração ilegal (art. 109.º)",
+      "en": "RP – Victims of human trafficking or migrant smuggling (art. 109)",
+      "es": "AR – Víctimas de trata de personas o de ayuda a la inmigración ilegal (art. 109.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-vitimas-de-trafico-de-pessoas-ou-de-acao-de-auxilio-a-imigracao-ilegal-art-109-"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-116",
+     "name": {
+      "pt": "AR – Residentes de longa duração de outro Estado-Membro (art. 116.º)",
+      "en": "RP – Long-term residents of another member state (art. 116)",
+      "es": "AR – Residentes de larga duración de otro Estado miembro (art. 116.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-titulares-do-estatuto-de-residente-de-longa-duracao-em-outro-estado-membro-da-u"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "REASON_TO_SETTLE",
+       "doc": "REASON_TO_SETTLE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PROFESSIONAL_CERTIFICATE",
+       "doc": "PROFESSIONAL_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "LTR_OTHER_STATE",
+       "doc": "LTR_OTHER_STATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-121A",
+     "name": {
+      "pt": "Cartão Azul UE (art. 121.º-A e seguintes)",
+      "en": "EU Blue Card (art. 121-A ff.)",
+      "es": "Tarjeta Azul UE (art. 121.º-A y ss.)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/concessao-de-cartao-azul-ue-e-autorizacao-de-residencia-para-titulares-de-cartao-azul-ue-noutro-estado-membro-"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BLUE_CARD_ENTRY",
+       "doc": null,
+       "any_of": [
+        "PT_VISA",
+        "BLUE_CARD_OTHER_STATE"
+       ],
+       "name": {
+        "pt": "Visto de residência ou Cartão Azul UE de outro Estado",
+        "en": "Residence visa or EU Blue Card from another state",
+        "es": "Visado de residencia o Tarjeta Azul UE de otro Estado"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BLUE_CARD_CONTRACT",
+       "doc": "BLUE_CARD_CONTRACT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BLUE_CARD_QUALIFICATIONS",
+       "doc": null,
+       "any_of": [
+        "QUALIFICATION_CERT",
+        "PROFESSIONAL_CERTIFICATE"
+       ],
+       "name": {
+        "pt": "Qualificações profissionais elevadas",
+        "en": "High professional qualifications",
+        "es": "Cualificaciones profesionales elevadas"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-A",
+     "name": {
+      "pt": "AR – Menores nascidos em Portugal, filhos de residentes (art. 122.º, 1, a)",
+      "en": "RP – Children born in Portugal to residents (art. 122(1)(a))",
+      "es": "AR – Menores nacidos en Portugal, hijos de residentes (art. 122.º, 1, a)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/menores-filhos-de-cidadaos-estrangeiros-titulares-de-autorizacao-de-residencia-nascidos-em-portugal-art-122-o-"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BIRTH_CERTIFICATE",
+       "doc": "BIRTH_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CONSULAR_REGISTRATION",
+       "doc": "CONSULAR_REGISTRATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-B",
+     "name": {
+      "pt": "AR – Menores nascidos em Portugal a estudar cá (art. 122.º, 1, b)",
+      "en": "RP – Children born in Portugal and in school here (art. 122(1)(b))",
+      "es": "AR – Menores nacidos en Portugal que estudian aquí (art. 122.º, 1, b)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/menores-nascidos-em-portugal-que-aqui-tenham-permanecido-e-se-encontrem-a-frequentar-a-educacao-pre-escolar-ou"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BIRTH_CERTIFICATE",
+       "doc": "BIRTH_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SCHOOL_ATTENDANCE",
+       "doc": "SCHOOL_ATTENDANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-C",
+     "name": {
+      "pt": "AR – Filhos de residentes, maiores, em Portugal desde os 10 anos (art. 122.º, 1, c)",
+      "en": "RP – Adult children of residents, in Portugal since age 10 (art. 122(1)(c))",
+      "es": "AR – Hijos de residentes, mayores, en Portugal desde los 10 años (art. 122.º, 1, c)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/filhos-ou-filhas-de-titulares-de-autorizacao-de-residencia-que-tenham-atingido-a-maioridade-e-tenham-permaneci"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "STAY_IN_PT_PROOF",
+       "doc": "STAY_IN_PT_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-D",
+     "name": {
+      "pt": "AR – Maiores nascidos em Portugal ou cá desde antes dos 10 anos (art. 122.º, 1, d)",
+      "en": "RP – Adults born in Portugal or here since before age 10 (art. 122(1)(d))",
+      "es": "AR – Mayores nacidos en Portugal o aquí desde antes de los 10 años (art. 122.º, 1, d)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/maiores-nascidos-em-portugal-que-daqui-nao-se-tenham-ausentado-ou-que-aqui-tenham-permanecido-desde-idade-infe"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BIRTH_CERTIFICATE",
+       "doc": "BIRTH_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "STAY_IN_PT_PROOF",
+       "doc": "STAY_IN_PT_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-E",
+     "name": {
+      "pt": "AR – Menores sujeitos a tutela (art. 122.º, 1, e)",
+      "en": "RP – Minors under guardianship (art. 122(1)(e))",
+      "es": "AR – Menores sujetos a tutela (art. 122.º, 1, e)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/menores-obrigatoriamente-sujeitos-a-tutela-nos-termos-do-codigo-civil-art-122-o-1-al-e"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "GUARDIAN_ID",
+       "doc": "GUARDIAN_ID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "GUARDIANSHIP",
+       "doc": null,
+       "any_of": [
+        "GUARDIANSHIP_DECISION",
+        "CPCJ_DECISION"
+       ],
+       "name": {
+        "pt": "Decisão de tutela ou de proteção",
+        "en": "Guardianship or protection decision",
+        "es": "Resolución de tutela o de protección"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-F",
+     "name": {
+      "pt": "AR – Fim da proteção internacional (art. 122.º, 1, f)",
+      "en": "RP – End of international protection (art. 122(1)(f))",
+      "es": "AR – Fin de la protección internacional (art. 122.º, 1, f)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/que-tenham-deixado-de-beneficiar-do-direito-de-protecao-internacional-em-portugal-em-virtude-de-terem-cessado-"
+     ],
+     "requirements": [
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-G",
+     "name": {
+      "pt": "AR – Doença que exige assistência prolongada (art. 122.º, 1, g)",
+      "en": "RP – Illness needing long-term care (art. 122(1)(g))",
+      "es": "AR – Enfermedad que exige asistencia prolongada (art. 122.º, 1, g)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/que-sofram-de-doenca-que-requeira-assistencia-medica-prolongada-que-obste-ao-retorno-ao-pais-a-fim-de-evitar-r"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "MEDICAL_ILLNESS_DECLARATION",
+       "doc": "MEDICAL_ILLNESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-H",
+     "name": {
+      "pt": "AR – Serviço militar nas Forças Armadas Portuguesas (art. 122.º, 1, h)",
+      "en": "RP – Military service in the Portuguese Armed Forces (art. 122(1)(h))",
+      "es": "AR – Servicio militar en las Fuerzas Armadas Portuguesas (art. 122.º, 1, h)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/que-tenham-cumprido-servico-militar-efetivo-nas-forcas-armadas-portuguesas-art-122-o-1-al-h"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "MILITARY_SERVICE_PROOF",
+       "doc": "MILITARY_SERVICE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-I",
+     "name": {
+      "pt": "AR – Perda da nacionalidade portuguesa, 15 anos em Portugal (art. 122.º, 1, i)",
+      "en": "RP – Lost Portuguese nationality, 15 years in Portugal (art. 122(1)(i))",
+      "es": "AR – Pérdida de la nacionalidad portuguesa, 15 años en Portugal (art. 122.º, 1, i)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/que-tendo-perdido-a-nacionalidade-portuguesa-hajam-permanecido-em-portugal-nos-ultimos-15-anos-art-122-o-1-al-"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BIRTH_CERT_ANNOTATED",
+       "doc": "BIRTH_CERT_ANNOTATED",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "STAY_15Y_PROOF",
+       "doc": "STAY_15Y_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-J",
+     "name": {
+      "pt": "AR – Direito de residência caducado sem ausência de Portugal (art. 122.º, 1, j)",
+      "en": "RP – Expired residence right without leaving Portugal (art. 122(1)(j))",
+      "es": "AR – Derecho de residencia caducado sin ausentarse de Portugal (art. 122.º, 1, j)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/que-nao-se-tenham-ausentado-de-portugal-e-cujo-direito-de-residencia-tenha-caducado-art-122-o-1-al-j"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "STAY_IN_PT_PROOF",
+       "doc": "STAY_IN_PT_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-K",
+     "name": {
+      "pt": "AR – Pais de menores residentes ou portugueses (art. 122.º, 1, k)",
+      "en": "RP – Parents of resident or Portuguese children (art. 122(1)(k))",
+      "es": "AR – Padres de menores residentes o portugueses (art. 122.º, 1, k)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/que-tenham-filhos-menores-residentes-em-portugal-ou-com-nacionalidade-portuguesa-sobre-os-quais-exercam-efetiv"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BIRTH_CERTIFICATE",
+       "doc": "BIRTH_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PARENTAL_RESPONSIBILITY_PROOF",
+       "doc": "PARENTAL_RESPONSIBILITY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-M",
+     "name": {
+      "pt": "AR – Vítimas de infrações laborais (art. 122.º, 1, m)",
+      "en": "RP – Victims of labour offences (art. 122(1)(m))",
+      "es": "AR – Víctimas de infracciones laborales (art. 122.º, 1, m)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/vitimas-de-infracao-penal-ou-contraordenacional-referente-a-relacao-de-trabalho-e-em-condicoes-de-desprotecao-"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "COMPLAINT_REPORT",
+       "doc": "COMPLAINT_REPORT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ACT_COOPERATION_DECLARATION",
+       "doc": "ACT_COOPERATION_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ACT_EXPLOITATION_DECLARATION",
+       "doc": "ACT_EXPLOITATION_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-N",
+     "name": {
+      "pt": "AR – Após autorização para vítimas de tráfico (art. 122.º, 1, n)",
+      "en": "RP – After a trafficking-victim permit (art. 122(1)(n))",
+      "es": "AR – Tras autorización para víctimas de trata (art. 122.º, 1, n)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/que-tenham-beneficiado-de-autorizacao-de-residencia-para-vitimas-de-trafico-de-pessoas-ou-de-acao-de-auxilio-a"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "WORK_MEANS",
+       "doc": null,
+       "any_of": [
+        "EMPLOYMENT_CONTRACT",
+        "SERVICE_CONTRACT",
+        "ACTIVITY_START_PROOF"
+       ],
+       "name": {
+        "pt": "Meios de subsistência (trabalho ou atividade)",
+        "en": "Means of subsistence (work or activity)",
+        "es": "Medios de subsistencia (trabajo o actividad)"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "JUDICIAL_CESSATION_DECLARATION",
+       "doc": "JUDICIAL_CESSATION_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-R",
+     "name": {
+      "pt": "AR – Atividade de investimento, sem prova de entrada legal (art. 122.º, 1, r)",
+      "en": "RP – Investment activity, without proof of legal entry (art. 122(1)(r))",
+      "es": "AR – Actividad de inversión, sin prueba de entrada legal (art. 122.º, 1, r)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/que-facam-prova-de-atividade-de-investimento-nos-termos-a-que-se-refere-a-alinea-d-do-artigo-3-o-art-122-o-1-a"
+     ],
+     "requirements": [
+      {
+       "key": "ARI_FORM",
+       "doc": "ARI_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "FOREIGN_TAX_ID",
+       "doc": "FOREIGN_TAX_ID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "INVESTMENT_COMMITMENT",
+       "doc": "INVESTMENT_COMMITMENT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NO_DEBT_DECLARATIONS",
+       "doc": "NO_DEBT_DECLARATIONS",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ARI_FEE_RECEIPT",
+       "doc": "ARI_FEE_RECEIPT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BANK_TRANSFER_DECLARATION",
+       "doc": "BANK_TRANSFER_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ARI_INVESTMENT",
+       "doc": null,
+       "any_of": [
+        "WORKERS_CONTRACTS",
+        "RESEARCH_INSTITUTION_DECLARATION",
+        "GEPAC_DECLARATION",
+        "FUND_UNITS_CERT",
+        "COMPANY_INCORPORATION_CERT",
+        "SHARE_ACQUISITION_PROOF"
+       ],
+       "name": {
+        "pt": "Prova do investimento (conforme o tipo)",
+        "en": "Proof of the investment (by type)",
+        "es": "Prueba de la inversión (según el tipo)"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "COMMERCIAL_REGISTRY_CERT",
+       "doc": "COMMERCIAL_REGISTRY_CERT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-4",
+     "name": {
+      "pt": "AR – Pais de menores nascidos em Portugal a estudar cá (art. 122.º, 4)",
+      "en": "RP – Parents of children born and in school in Portugal (art. 122(4))",
+      "es": "AR – Padres de menores nacidos y escolarizados en Portugal (art. 122.º, 4)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/ascendentes-em-1-o-grau-dos-nacionais-de-paises-terceiros-abrangidos-pela-al-b-do-n-o-1-do-art-o-122-o-que-sob"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "WORK_MEANS",
+       "doc": null,
+       "any_of": [
+        "EMPLOYMENT_CONTRACT",
+        "SERVICE_CONTRACT",
+        "ACTIVITY_START_PROOF"
+       ],
+       "name": {
+        "pt": "Meios de subsistência (trabalho ou atividade)",
+        "en": "Means of subsistence (work or activity)",
+        "es": "Medios de subsistencia (trabajo o actividad)"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "BIRTH_CERTIFICATE",
+       "doc": "BIRTH_CERTIFICATE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PARENTAL_RESPONSIBILITY_PROOF",
+       "doc": "PARENTAL_RESPONSIBILITY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SCHOOL_ATTENDANCE",
+       "doc": "SCHOOL_ATTENDANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-122-8",
+     "name": {
+      "pt": "AR – Acompanhante ou cuidador informal de doente (art. 122.º, 8)",
+      "en": "RP – Companion or informal carer of a patient (art. 122(8))",
+      "es": "AR – Acompañante o cuidador informal de enfermo (art. 122.º, 8)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/nacional-de-pais-terceiro-que-acompanhe-a-pessoa-que-requer-na-qualidade-de-acompanhante-ou-cuidador-a-informa"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "MEDICAL_ILLNESS_DECLARATION",
+       "doc": "MEDICAL_ILLNESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CAREGIVER_DECLARATION",
+       "doc": "CAREGIVER_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-123",
+     "name": {
+      "pt": "AR – Regime excecional (art. 123.º)",
+      "en": "RP – Exceptional regime (art. 123)",
+      "es": "AR – Régimen excepcional (art. 123.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/regime-excecional-art-123-o"
+     ],
+     "requirements": [
+      {
+       "key": "EXCEPTIONAL_STATEMENT",
+       "doc": "EXCEPTIONAL_STATEMENT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD_CONSENT",
+       "doc": "CRIMINAL_RECORD_CONSENT",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "EXCEPTIONALITY_PROOF",
+       "doc": "EXCEPTIONALITY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "RELEVANT_ACTIVITY_PROOF",
+       "doc": "RELEVANT_ACTIVITY_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-125",
+     "name": {
+      "pt": "Estatuto de residente de longa duração (art. 125.º)",
+      "en": "Long-term resident status (art. 125)",
+      "es": "Estatuto de residente de larga duración (art. 125.º)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/aquisicao-do-estatuto-de-residente-de-longa-duracao-erld-art-125-o"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "STABLE_RESOURCES",
+       "doc": "STABLE_RESOURCES",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "HEALTH_INSURANCE",
+       "doc": "HEALTH_INSURANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PORTUGUESE_A2",
+       "doc": "PORTUGUESE_A2",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "POSTING_ABSENCE_PROOF",
+       "doc": "POSTING_ABSENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "optional",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "TAX_SS_COMPLIANCE",
+       "doc": "TAX_SS_COMPLIANCE",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "LEGAL_RESIDENCE_5Y",
+       "doc": "LEGAL_RESIDENCE_5Y",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-131-11",
+     "name": {
+      "pt": "AR – Após perda do estatuto de residente de longa duração (art. 131.º, 11)",
+      "en": "RP – After losing long-term resident status (art. 131(11))",
+      "es": "AR – Tras perder el estatuto de residente de larga duración (art. 131.º, 11)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/nacionais-de-paises-terceiros-cuja-perda-do-estatuto-de-residente-de-longa-duracao-erld-nao-conduziu-ao-afasta"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NIF_PROOF",
+       "doc": "NIF_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "NISS_PROOF",
+       "doc": "NISS_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      }
+     ]
+    },
+    {
+     "id": "PT-AR-BLUE-CARD-CANCELLED",
+     "name": {
+      "pt": "AR – Após cancelamento do Cartão Azul UE (DR, art. 61.º, 24)",
+      "en": "RP – After an EU Blue Card was cancelled (DR art. 61(24))",
+      "es": "AR – Tras la cancelación de la Tarjeta Azul UE (DR, art. 61.º, 24)"
+     },
+     "active": true,
+     "last_reviewed": "2026-10-31",
+     "sources": [
+      "https://aima.gov.pt/pt/viver/nacionais-de-paises-terceiros-cujo-cancelamento-do-cartao-azul-ue-nao-conduziu-ao-afastamento-art-o-61-o-n-o-2"
+     ],
+     "requirements": [
+      {
+       "key": "AIMA_FORM",
+       "doc": "AIMA_FORM",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "PASSPORT_VALID",
+       "doc": "PASSPORT_VALID",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "ADDRESS_DECLARATION",
+       "doc": "ADDRESS_DECLARATION",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "AIMA_HOUSING",
+       "doc": null,
+       "any_of": [
+        "LAND_REGISTRY_CERT",
+        "LANDLORD_DECLARATION"
+       ],
+       "name": {
+        "pt": "Título de habitação",
+        "en": "Right to live at the address",
+        "es": "Título de vivienda"
+       },
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "SUBSISTENCE_PROOF",
+       "doc": "SUBSISTENCE_PROOF",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
+       "min_age": null
+      },
+      {
+       "key": "CRIMINAL_RECORD",
+       "doc": "CRIMINAL_RECORD",
+       "any_of": null,
+       "name": null,
+       "applies_to": "main_applicant",
+       "level": "required",
+       "only_if": [],
+       "unless": [],
        "min_age": null
       }
      ]

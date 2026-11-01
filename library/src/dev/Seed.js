@@ -5,15 +5,19 @@
  */
 const Seed = (function () {
   const FIRM = 'Silva & Costa Advogados';
+  // Real immigration cases, each with its catalog visa or AIMA permit, so the
+  // test firm shows checklists. [case name, status, visa_type]
   const CLIENTS = [
     { tag: 'ana', name: 'Ana Ferreira', language: 'pt', active: true,
-      cases: [['Divórcio', 'open'], ['Herança', 'open']] },  // two open: case dropdown
+      cases: [['Visto D7 – família', 'open', 'PT-D7'],
+        ['Autorização de residência – trabalho subordinado', 'open', 'PT-AR-88-1']] },  // two open: case dropdown
     { tag: 'bruno', name: 'Bruno Mendes', language: 'pt', active: true,
-      cases: [['Contrato de arrendamento', 'open'], ['Cobrança de dívida', 'closed']] },  // one open: no dropdown
-    { tag: 'carla', name: 'Carla Duarte, Lda.', language: 'en', active: true,
-      cases: [['Insolvency', 'closed']] },  // none open: "contact your lawyer"
+      cases: [['Autorização de residência – Tech Visa', 'open', 'PT-AR-90-TECH'],
+        ['Visto D8 – nómada digital', 'closed', 'PT-D8']] },  // one open: no dropdown
+    { tag: 'carla', name: 'Carla Duarte', language: 'en', active: true,
+      cases: [['Intra-company transfer (ICT) residence permit', 'closed', 'PT-AR-124B']] },  // none open: "contact your lawyer"
     { tag: 'diogo', name: 'Diogo Santos', language: 'pt', active: false,
-      cases: [['Acidente de viação', 'open']] },  // inactive: behaves like an unknown email
+      cases: [['Visto para procura de trabalho', 'open', 'PT-JOB-SEEKER']] },  // inactive: behaves like an unknown email
   ];
 
   function enabled(ss) {
@@ -50,7 +54,7 @@ const Seed = (function () {
         const caseId = Ids.generate(Config.ID_PREFIX.CASE, caseIds);
         caseIds.add(caseId);
         casesTable.append({
-          case_id: caseId, client_id: clientId, case_name: k[0], status: k[1],
+          case_id: caseId, client_id: clientId, case_name: k[0], status: k[1], visa_type: k[2] || '',
           provision_status: Config.PROVISION.PENDING, created_at: now, created_by: 'seed',
         });
       });

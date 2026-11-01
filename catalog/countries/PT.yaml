@@ -1,4 +1,5 @@
-# Portugal: national (long-stay) residence visas.
+# Portugal: national (long-stay) residence visas, and the residence permits
+# (autorizações de residência) asked for at AIMA in Portugal.
 # Sources: the Portuguese consular checklists (vistos.mne.gov.pt, as published
 # by the posts' visa centres). Lists vary slightly between consular posts, so
 # firms adjust them; the lawyer owns the final list.
@@ -31,8 +32,50 @@ sets:
     - { doc: PARENTAL_CONSENT, applies_to: each_child, level: optional }
     - { doc: SOLE_CUSTODY_PROOF, applies_to: case, only_if: [children, sole_custody] }
 
+  # Residence permits (autorizações de residência) are asked for in Portugal,
+  # at AIMA, by each person on their own: family members go through family
+  # reunification, so these lists cover the main applicant.
+  PT-AIMA-BASE:
+    - { doc: AIMA_FORM, applies_to: main_applicant }
+    - { doc: PASSPORT_VALID, applies_to: main_applicant }
+    - { doc: ADDRESS_DECLARATION, applies_to: main_applicant }
+    - { id: AIMA_HOUSING, any_of: [LAND_REGISTRY_CERT, LANDLORD_DECLARATION], applies_to: main_applicant,
+        name: { pt: "Título de habitação", en: "Right to live at the address", es: "Título de vivienda" } }
+  PT-AIMA-TAX:
+    - { doc: NIF_PROOF, applies_to: main_applicant }
+    - { doc: NISS_PROOF, applies_to: main_applicant }
+
+  PT-ARI-GENERAL:
+    - { doc: ARI_FORM, applies_to: main_applicant }
+    - { doc: PASSPORT_VALID, applies_to: main_applicant }
+    - { doc: HEALTH_INSURANCE, applies_to: main_applicant }
+    - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+    - { doc: FOREIGN_TAX_ID, applies_to: main_applicant }
+    - { doc: INVESTMENT_COMMITMENT, applies_to: main_applicant }
+    - { doc: NO_DEBT_DECLARATIONS, applies_to: main_applicant }
+    - { doc: ARI_FEE_RECEIPT, applies_to: main_applicant }
+  # Family reunification: the resident in Portugal applies; the spouse and
+  # children being reunited are added in People and get their own documents.
+  PT-REUNIFICATION:
+    - { doc: AIMA_FORM, applies_to: main_applicant }
+    - { doc: SPONSOR_PERMIT, applies_to: main_applicant }
+    - { doc: ADDRESS_DECLARATION, applies_to: main_applicant }
+    - { id: AIMA_HOUSING, any_of: [LAND_REGISTRY_CERT, LANDLORD_DECLARATION], applies_to: main_applicant,
+        name: { pt: "Título de habitação", en: "Right to live at the address", es: "Título de vivienda" } }
+    - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+    - { doc: RELATIONSHIP_PROOF, applies_to: spouse }
+    - { doc: CRIMINAL_RECORD, applies_to: spouse }
+    - { doc: BIRTH_CERTIFICATE, applies_to: each_child }
+    - { doc: NON_RESIDENT_PARENT_CONSENT, applies_to: each_child, level: optional }
+    - { id: OTHER_FAMILY_LINK, any_of: [ADOPTION_DECISION, GUARDIANSHIP_DECISION, INCAPACITY_REPORT, DEPENDENCY_PROOF], applies_to: case, level: optional,
+        name: { pt: "Outros vínculos (adoção, tutela, incapacidade, dependência)", en: "Other family links (adoption, guardianship, incapacity, dependency)", es: "Otros vínculos (adopción, tutela, incapacidad, dependencia)" } }
+
 sources:
   - https://vistos.mne.gov.pt/pt/vistos-nacionais/documentacao-instrutoria/residencia
+  - https://aima.gov.pt/pt/trabalhar
+  - https://aima.gov.pt/pt/viver
+  - https://aima.gov.pt/pt/estudar
+  - https://aima.gov.pt/pt/empreender
   - https://vistos.mne.gov.pt/en/national-visas/national-legislation
 
 visas:
@@ -139,3 +182,661 @@ visas:
     requirements:
       - { doc: IEFP_DECLARATION, applies_to: main_applicant, unless: [cplp] }
       - { doc: STAY_CONDITIONS, applies_to: main_applicant, unless: [cplp] }
+
+  - id: PT-AR-88-1
+    name: { pt: "AR – Trabalho subordinado, com visto de residência (art. 88.º, 1)", en: "RP – Employed work, with residence visa (art. 88(1))", es: "AR – Trabajo por cuenta ajena, con visado de residencia (art. 88.º, 1)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-exercicio-de-atividade-profissional-subordinada-com-visto-de-residencia-art-88-o-n-o-1]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant }
+      - { doc: EMPLOYER_BOND_DECLARATION, applies_to: main_applicant }
+
+  - id: PT-AR-88-1-NOMAD
+    name: { pt: "AR – Trabalho remoto, nómadas digitais (art. 88.º, 1)", en: "RP – Remote work, digital nomads (art. 88(1))", es: "AR – Trabajo remoto, nómadas digitales (art. 88.º, 1)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-o-exercicio-de-atividade-profissional-prestada-de-forma-remota-com-visto-de-residencia-para-o-exe]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant }
+      - { doc: REMOTE_BOND_DECLARATION, applies_to: main_applicant }
+
+  - id: PT-AR-88-2
+    name: { pt: "AR – Trabalho subordinado, sem visto (art. 88.º, 2; pedidos até 03/06/2024)", en: "RP – Employed work, without visa (art. 88(2); applications up to 3 June 2024)", es: "AR – Trabajo por cuenta ajena, sin visado (art. 88.º, 2; solicitudes hasta el 03/06/2024)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-exercicio-de-atividade-profissional-subordinada-com-dispensa-de-visto-de-residencia-art-88-o-n-o-]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: LEGAL_ENTRY_PROOF, applies_to: main_applicant }
+      - { id: EMPLOYMENT_BOND, any_of: [EMPLOYMENT_CONTRACT, EMPLOYER_BOND_DECLARATION], applies_to: main_applicant,
+          name: { pt: "Promessa de contrato ou declaração do empregador", en: "Job offer or employer's declaration", es: "Promesa de contrato o declaración del empleador" } }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+
+  - id: PT-AR-88-7
+    name: { pt: "AR – Trabalho subordinado, com visto de procura de trabalho (art. 88.º, 7)", en: "RP – Employed work, with job seeker visa (art. 88(7))", es: "AR – Trabajo por cuenta ajena, con visado de búsqueda de empleo (art. 88.º, 7)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-exercicio-de-atividade-profissional-subordinada-com-visto-para-procura-de-trabalho-art-88-o-n-o7]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant }
+      - { doc: EMPLOYER_BOND_DECLARATION, applies_to: main_applicant }
+
+  - id: PT-AR-89-1
+    name: { pt: "AR – Trabalho independente, com visto de residência (art. 89.º, 1)", en: "RP – Self-employed work, with residence visa (art. 89(1))", es: "AR – Trabajo por cuenta propia, con visado de residencia (art. 89.º, 1)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-exercicio-de-atividade-profissional-independente-com-visto-de-residencia-art-89-o-n-o1]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant }
+      - { doc: ACTIVITY_START_PROOF, applies_to: main_applicant }
+      - { id: SELF_EMPLOYED_BASIS, any_of: [SERVICE_CONTRACT, COMPANY_REGISTRATION, RECENT_RECEIPTS], applies_to: main_applicant,
+          name: { pt: "Prova da atividade independente", en: "Proof of the self-employed work", es: "Prueba de la actividad por cuenta propia" } }
+      - { doc: PROFESSIONAL_CERTIFICATE, applies_to: main_applicant, level: optional }
+
+  - id: PT-AR-89-2
+    name: { pt: "AR – Trabalho independente, sem visto (art. 89.º, 2; pedidos até 03/06/2024)", en: "RP – Self-employed work, without visa (art. 89(2); applications up to 3 June 2024)", es: "AR – Trabajo por cuenta propia, sin visado (art. 89.º, 2; solicitudes hasta el 03/06/2024)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-exercicio-de-atividade-profissional-independente-com-dispensa-de-visto-de-residencia-art-89-o-n-o]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: ACTIVITY_START_PROOF, applies_to: main_applicant }
+      - { id: SELF_EMPLOYED_BASIS, any_of: [SERVICE_CONTRACT, COMPANY_REGISTRATION, RECENT_RECEIPTS], applies_to: main_applicant,
+          name: { pt: "Prova da atividade independente", en: "Proof of the self-employed work", es: "Prueba de la actividad por cuenta propia" } }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: PROFESSIONAL_CERTIFICATE, applies_to: main_applicant, level: optional }
+
+  - id: PT-AR-90-TEACHING
+    name: { pt: "AR – Atividade de docência (art. 90.º)", en: "RP – Teaching (art. 90)", es: "AR – Actividad docente (art. 90.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-atividade-de-docencia-art-90-o]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { id: TEACHING_BOND, any_of: [EMPLOYER_BOND_DECLARATION, INVITATION_LETTER], applies_to: main_applicant,
+          name: { pt: "Contrato ou carta convite de ensino", en: "Teaching contract or invitation letter", es: "Contrato o carta de invitación docente" } }
+
+  - id: PT-AR-90-HQ
+    name: { pt: "AR – Atividade altamente qualificada (art. 90.º)", en: "RP – Highly qualified work (art. 90)", es: "AR – Actividad altamente cualificada (art. 90.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-atividade-altamente-qualificada-art-90-o]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: QUALIFICATION_CERT, applies_to: main_applicant }
+      - { doc: HQ_EMPLOYER_DECLARATION, applies_to: main_applicant, unless: [self_employed] }
+      - { doc: ACTIVITY_START_PROOF, applies_to: main_applicant, only_if: [self_employed] }
+      - { id: SELF_EMPLOYED_BASIS, any_of: [SERVICE_CONTRACT, COMPANY_REGISTRATION, RECENT_RECEIPTS], applies_to: main_applicant, only_if: [self_employed],
+          name: { pt: "Prova da atividade independente", en: "Proof of the self-employed work", es: "Prueba de la actividad por cuenta propia" } }
+
+  - id: PT-AR-90-CULTURAL
+    name: { pt: "AR – Atividade cultural (art. 90.º)", en: "RP – Cultural work (art. 90)", es: "AR – Actividad cultural (art. 90.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-atividade-cultural-art-90-o]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: HOST_RESPONSIBILITY_TERM, applies_to: main_applicant }
+
+  - id: PT-AR-90-TECH
+    name: { pt: "AR – Tech Visa, empresa certificada (art. 90.º)", en: "RP – Tech Visa, certified company (art. 90)", es: "AR – Tech Visa, empresa certificada (art. 90.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-atividade-altamente-qualificada-exercida-para-empresa-certificada-art-90-o-tech-visa]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD_CONSENT, applies_to: main_applicant }
+      - { doc: TECH_VISA_TERM, applies_to: main_applicant }
+
+  - id: PT-AR-122-L
+    name: { pt: "AR – Agentes diplomáticos e consulares e familiares (art. 122.º, 1, l)", en: "RP – Diplomatic and consular agents and family (art. 122(1)(l))", es: "AR – Agentes diplomáticos y consulares y familiares (art. 122.º, 1, l)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/que-sejam-agentes-diplomaticos-e-consulares-ou-respetivos-conjuges-ascendentes-e-descendentes-a-cargo-art-122-o-1-al-l]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: DIPLOMATIC_ACCREDITATION, applies_to: main_applicant }
+      - { id: DIPLOMAT_FAMILY_LINK, any_of: [RELATIONSHIP_PROOF, BIRTH_CERTIFICATE], applies_to: main_applicant, only_if: [diplomat_family],
+          name: { pt: "Vínculo familiar com o agente", en: "Family link to the agent", es: "Vínculo familiar con el agente" } }
+      - { doc: DEPENDENCY_PROOF, applies_to: main_applicant, level: optional, only_if: [diplomat_family] }
+
+  - id: PT-AR-122-O
+    name: { pt: "AR – Trabalho após estudos secundários ou licenciatura (art. 122.º, 1, o)", en: "RP – Work after secondary school or a bachelor's degree (art. 122(1)(o))", es: "AR – Trabajo tras estudios secundarios o grado (art. 122.º, 1, o)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/tendo-beneficiado-de-ar-para-estudantes-do-ensino-secundario-ou-de-ar-para-estudantes-do-1-o-ciclo-do-ensino-superior-e-concluid]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { id: WORK_MEANS, any_of: [EMPLOYMENT_CONTRACT, SERVICE_CONTRACT, ACTIVITY_START_PROOF], applies_to: main_applicant,
+          name: { pt: "Meios de subsistência (trabalho ou atividade)", en: "Means of subsistence (work or activity)", es: "Medios de subsistencia (trabajo o actividad)" } }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: STUDY_COMPLETION, applies_to: main_applicant }
+      - { doc: NO_COOPERATION_AGREEMENT, applies_to: main_applicant }
+
+  - id: PT-AR-122-P
+    name: { pt: "AR – Trabalho após mestrado, doutoramento ou investigação (art. 122.º, 1, p)", en: "RP – Work after a master's, PhD or research (art. 122(1)(p))", es: "AR – Trabajo tras máster, doctorado o investigación (art. 122.º, 1, p)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/tendo-beneficiado-de-ar-para-estudantes-do-2-o-ou-3-o-ciclos-do-ensino-superior-ou-de-ar-para-investigacao-e-concluido-os-estudo]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { id: WORK_MEANS, any_of: [EMPLOYMENT_CONTRACT, SERVICE_CONTRACT, ACTIVITY_START_PROOF], applies_to: main_applicant,
+          name: { pt: "Meios de subsistência (trabalho ou atividade)", en: "Means of subsistence (work or activity)", es: "Medios de subsistencia (trabajo o actividad)" } }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { id: COMPLETION, any_of: [STUDY_COMPLETION, RESEARCH_COMPLETION, JOB_SEARCH_DECLARATION], applies_to: main_applicant,
+          name: { pt: "Conclusão dos estudos ou da investigação", en: "Completion of studies or research", es: "Finalización de los estudios o de la investigación" } }
+
+  - id: PT-AR-122-Q
+    name: { pt: "AR – Após visto de estada temporária para investigação ou atividade qualificada (art. 122.º, 1, q)", en: "RP – After a temporary stay visa for research or qualified work (art. 122(1)(q))", es: "AR – Tras visado de estancia temporal para investigación o actividad cualificada (art. 122.º, 1, q)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/tendo-beneficiado-de-visto-de-estada-temporaria-para-atividade-de-investigacao-ou-altamente-qualificada-pretendam-exercer-em-por]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { id: WORK_MEANS, any_of: [EMPLOYMENT_CONTRACT, SERVICE_CONTRACT, ACTIVITY_START_PROOF], applies_to: main_applicant,
+          name: { pt: "Meios de subsistência (trabalho ou atividade)", en: "Means of subsistence (work or activity)", es: "Medios de subsistencia (trabajo o actividad)" } }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: TEMP_STAY_VISA, applies_to: main_applicant }
+
+  - id: PT-AR-123A
+    name: { pt: "AR – Empresas deslocalizadas para Portugal (art. 123.º-A)", en: "RP – Companies relocated to Portugal (art. 123-A)", es: "AR – Empresas trasladadas a Portugal (art. 123.º-A)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-para-titulares-administradores-ou-trabalhadores-de-empresas-sediadas-ou-com-estabelecimentos-principal]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: EEA_RESIDENCE_PERMIT, applies_to: main_applicant }
+      - { doc: COMMERCIAL_REGISTRY_CERT, applies_to: main_applicant }
+      - { doc: EMPLOYER_BOND_DECLARATION, applies_to: main_applicant }
+
+  - id: PT-AR-124B
+    name: { pt: "AR – Transferência dentro da empresa, ICT (art. 124.º-B)", en: "RP – Intra-company transfer, ICT (art. 124-B)", es: "AR – Traslado dentro de la empresa, ICT (art. 124.º-B)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-tde-ict-para-trabalhador-transferido-dentro-da-empresa-art-124-o-b]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: ICT_EMPLOYER_DECLARATION, applies_to: main_applicant }
+      - { doc: ICT_TRANSFER_TERMS, applies_to: main_applicant }
+      - { doc: SAME_GROUP_PROOF, applies_to: main_applicant }
+      - { doc: PRIOR_EMPLOYMENT_PROOF, applies_to: main_applicant }
+      - { doc: QUALIFICATION_CERT, applies_to: main_applicant }
+      - { doc: PROFESSIONAL_CERTIFICATE, applies_to: main_applicant, level: optional }
+      - { doc: HOST_COMPLIANCE_GUARANTEE, applies_to: main_applicant }
+      - { doc: HEALTH_INSURANCE, applies_to: main_applicant, level: optional }
+
+  - id: PT-AR-124E
+    name: { pt: "AR – ICT móvel, com título ICT de outro Estado-Membro (art. 124.º-E)", en: "RP – Mobile ICT, with an ICT permit from another member state (art. 124-E)", es: "AR – ICT móvil, con título ICT de otro Estado miembro (art. 124.º-E)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/trabalhar/autorizacao-de-residencia-ict-movel-para-mobilidade-de-trabalhador-transferido-dentro-da-empresa-detentor-de-titulo-de-residenci]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: ICT_PERMIT_OTHER_STATE, applies_to: main_applicant }
+      - { doc: HEALTH_INSURANCE, applies_to: main_applicant }
+      - { doc: ICT_EMPLOYER_DECLARATION, applies_to: main_applicant, unless: [certified_group] }
+      - { doc: ICT_TRANSFER_TERMS, applies_to: main_applicant }
+      - { doc: SAME_GROUP_PROOF, applies_to: main_applicant }
+      - { doc: PRIOR_EMPLOYMENT_PROOF, applies_to: main_applicant, unless: [certified_group] }
+      - { doc: QUALIFICATION_CERT, applies_to: main_applicant, unless: [certified_group] }
+      - { doc: PROFESSIONAL_CERTIFICATE, applies_to: main_applicant, level: optional }
+      - { doc: HOST_COMPLIANCE_GUARANTEE, applies_to: main_applicant, unless: [certified_group] }
+
+  - id: PT-AR-91
+    name: { pt: "AR – Estudantes do ensino superior (art. 91.º)", en: "RP – Higher education students (art. 91)", es: "AR – Estudiantes de enseñanza superior (art. 91.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/estudar/autorizacao-de-residencia-emitida-a-estudantes-do-ensino-superior-art-o-91]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant }
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: ENROLMENT_PROOF, applies_to: main_applicant }
+      - { doc: TUITION_PROOF, applies_to: main_applicant, level: optional }
+      - { doc: HEALTH_INSURANCE, applies_to: main_applicant }
+
+  - id: PT-AR-91A
+    name: { pt: "AR – Mobilidade de estudantes do ensino superior (art. 91.º-A)", en: "RP – Higher education student mobility (art. 91-A)", es: "AR – Movilidad de estudiantes de enseñanza superior (art. 91.º-A)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/estudar/mobilidade-de-estudantes-do-ensino-superior-art-91-o-a]
+    requirements:
+      - { doc: MOBILITY_FORM_M6, applies_to: main_applicant }
+      - { doc: EU_STUDENT_PERMIT, applies_to: main_applicant }
+      - { doc: PASSPORT_VALID, applies_to: main_applicant }
+      - { doc: ADMISSION_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: HEALTH_INSURANCE, applies_to: main_applicant }
+      - { doc: FEE_PAYMENT_PROOF, applies_to: main_applicant }
+
+  - id: PT-AR-91B
+    name: { pt: "AR – Investigadores (art. 91.º-B)", en: "RP – Researchers (art. 91-B)", es: "AR – Investigadores (art. 91.º-B)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/estudar/autorizacao-de-residencia-para-investigadores-art-91-o-b]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant, unless: [no_visa] }
+      - { doc: LEGAL_ENTRY_PROOF, applies_to: main_applicant, only_if: [no_visa] }
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { id: RESEARCH_BASIS, any_of: [EMPLOYMENT_CONTRACT, SERVICE_CONTRACT, SCHOLARSHIP_PROOF, RESEARCH_HOSTING], applies_to: main_applicant,
+          name: { pt: "Contrato, bolsa ou convenção de acolhimento", en: "Contract, grant or hosting agreement", es: "Contrato, beca o convenio de acogida" } }
+      - { doc: NISS_PROOF, applies_to: main_applicant, level: optional }
+      - { doc: HEALTH_INSURANCE, applies_to: main_applicant }
+
+  - id: PT-AR-91C
+    name: { pt: "AR – Investigadores em mobilidade de longa duração (art. 91.º-C)", en: "RP – Researchers on long-term mobility (art. 91-C)", es: "AR – Investigadores en movilidad de larga duración (art. 91.º-C)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/estudar/autorizacao-de-residencia-para-investigadores-em-mobilidade-art-91-o-c]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant, unless: [no_visa] }
+      - { doc: LEGAL_ENTRY_PROOF, applies_to: main_applicant, only_if: [no_visa] }
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: HEALTH_INSURANCE, applies_to: main_applicant }
+      - { doc: PROFESSIONAL_CERTIFICATE, applies_to: main_applicant, level: optional }
+      - { doc: NIF_PROOF, applies_to: main_applicant }
+      - { doc: NISS_PROOF, applies_to: main_applicant, level: optional }
+      - { doc: EU_RESIDENCE_PERMIT, applies_to: main_applicant }
+      - { id: RESEARCH_MOBILITY_BASIS, any_of: [SERVICE_CONTRACT, SCHOLARSHIP_PROOF, RESEARCH_HOSTING], applies_to: main_applicant,
+          name: { pt: "Contrato, bolsa ou convenção de acolhimento", en: "Contract, grant or hosting agreement", es: "Contrato, beca o convenio de acogida" } }
+
+  - id: PT-AR-92
+    name: { pt: "AR – Estudantes do ensino secundário e profissional (art. 92.º)", en: "RP – Secondary and vocational students (art. 92)", es: "AR – Estudiantes de secundaria y formación profesional (art. 92.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/estudar/autorizacao-de-residencia-para-estudantes-art-92-o]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant, unless: [no_visa] }
+      - { doc: LEGAL_ENTRY_PROOF, applies_to: main_applicant, only_if: [no_visa] }
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: ENROLMENT_PROOF, applies_to: main_applicant }
+      - { doc: TUITION_PROOF, applies_to: main_applicant, level: optional }
+      - { doc: HEALTH_INSURANCE, applies_to: main_applicant }
+
+  - id: PT-AR-93
+    name: { pt: "AR – Estagiários (art. 93.º)", en: "RP – Trainees (art. 93)", es: "AR – Personas en prácticas (art. 93.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/estudar/autorizacao-de-residencia-para-estagiarios-art-93-o]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant }
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: TRAINING_AGREEMENT, applies_to: main_applicant }
+      - { doc: HEALTH_INSURANCE, applies_to: main_applicant }
+
+  - id: PT-AR-94
+    name: { pt: "AR – Voluntários (art. 94.º)", en: "RP – Volunteers (art. 94)", es: "AR – Voluntarios (art. 94.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/estudar/autorizacao-de-residencia-para-voluntarios-art-94-o]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant }
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: VOLUNTEER_HOST_DECLARATION, applies_to: main_applicant }
+      - { doc: HOST_LIABILITY_INSURANCE, applies_to: main_applicant }
+      - { doc: HEALTH_INSURANCE, applies_to: main_applicant }
+
+  - id: PT-AR-89-4
+    name: { pt: "AR – Empreendedores imigrantes, Startup Visa (art. 89.º, 4)", en: "RP – Migrant entrepreneurs, Startup Visa (art. 89(4))", es: "AR – Emprendedores inmigrantes, Startup Visa (art. 89.º, 4)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/empreender/autorizacao-de-residencia-para-imigrantes-empreendedores-startup-visa-art-89-o-n-o-4]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: IAPMEI_DECLARATION, applies_to: main_applicant }
+      - { doc: PROFESSIONAL_CERTIFICATE, applies_to: main_applicant, level: optional }
+
+  - id: PT-AR-77
+    name: { pt: "AR – Regime geral (art. 77.º)", en: "RP – General regime (art. 77)", es: "AR – Régimen general (art. 77.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/autorizacao-de-residencia-regime-e-requisitos-gerais-art-o-77-o-n-o-1]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: PT_VISA, applies_to: main_applicant }
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: KINSHIP_PROOF, applies_to: main_applicant, level: optional }
+      - { doc: NIF_PROOF, applies_to: main_applicant, level: optional }
+      - { doc: NISS_PROOF, applies_to: main_applicant, level: optional }
+      - { doc: HEALTH_INSURANCE, applies_to: main_applicant }
+
+  - id: PT-AR-80
+    name: { pt: "AR – Residência permanente (art. 80.º)", en: "RP – Permanent residence (art. 80)", es: "AR – Residencia permanente (art. 80.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/autorizacao-de-residencia-permanente-art-80-o]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: TAX_SS_COMPLIANCE, applies_to: main_applicant }
+      - { doc: TEMP_PERMIT_5Y, applies_to: main_applicant }
+      - { doc: PORTUGUESE_A2, applies_to: main_applicant }
+
+  - id: PT-AR-90A-JOBS
+    name: { pt: "ARI – Investimento: criação de 10 postos de trabalho (art. 90.º-A)", en: "ARI – Investment: creating 10 jobs (art. 90-A)", es: "ARI – Inversión: creación de 10 puestos de trabajo (art. 90.º-A)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-investimento-art-90-o-a]
+    include: [PT-ARI-GENERAL]
+    requirements:
+      - { doc: LEGAL_STAY_PROOF, applies_to: main_applicant }
+      - { doc: WORKERS_CONTRACTS, applies_to: main_applicant }
+      - { doc: COMMERCIAL_REGISTRY_CERT, applies_to: main_applicant, level: optional }
+
+  - id: PT-AR-90A-RESEARCH
+    name: { pt: "ARI – Investimento: 500 mil € em investigação científica (art. 90.º-A)", en: "ARI – Investment: EUR 500,000 in scientific research (art. 90-A)", es: "ARI – Inversión: 500.000 € en investigación científica (art. 90.º-A)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-investimento-art-90-o-a]
+    include: [PT-ARI-GENERAL]
+    requirements:
+      - { doc: LEGAL_STAY_PROOF, applies_to: main_applicant }
+      - { doc: BANK_TRANSFER_DECLARATION, applies_to: main_applicant }
+      - { doc: RESEARCH_INSTITUTION_DECLARATION, applies_to: main_applicant }
+      - { doc: COMMERCIAL_REGISTRY_CERT, applies_to: main_applicant, level: optional }
+
+  - id: PT-AR-90A-CULTURE
+    name: { pt: "ARI – Investimento: 250 mil € em cultura e património (art. 90.º-A)", en: "ARI – Investment: EUR 250,000 in culture and heritage (art. 90-A)", es: "ARI – Inversión: 250.000 € en cultura y patrimonio (art. 90.º-A)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-investimento-art-90-o-a]
+    include: [PT-ARI-GENERAL]
+    requirements:
+      - { doc: LEGAL_STAY_PROOF, applies_to: main_applicant }
+      - { doc: BANK_TRANSFER_DECLARATION, applies_to: main_applicant }
+      - { doc: GEPAC_DECLARATION, applies_to: main_applicant }
+      - { doc: COMMERCIAL_REGISTRY_CERT, applies_to: main_applicant, level: optional }
+
+  - id: PT-AR-90A-FUNDS
+    name: { pt: "ARI – Investimento: 500 mil € em fundos de investimento (art. 90.º-A)", en: "ARI – Investment: EUR 500,000 in investment funds (art. 90-A)", es: "ARI – Inversión: 500.000 € en fondos de inversión (art. 90.º-A)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-investimento-art-90-o-a]
+    include: [PT-ARI-GENERAL]
+    requirements:
+      - { doc: LEGAL_STAY_PROOF, applies_to: main_applicant }
+      - { doc: BANK_TRANSFER_DECLARATION, applies_to: main_applicant }
+      - { doc: FUND_UNITS_CERT, applies_to: main_applicant }
+      - { doc: FUND_MANAGER_DECLARATION, applies_to: main_applicant }
+      - { doc: COMMERCIAL_REGISTRY_CERT, applies_to: main_applicant, level: optional }
+
+  - id: PT-AR-90A-COMPANY
+    name: { pt: "ARI – Investimento: 500 mil € em sociedade com 5 postos de trabalho (art. 90.º-A)", en: "ARI – Investment: EUR 500,000 in a company with 5 jobs (art. 90-A)", es: "ARI – Inversión: 500.000 € en sociedad con 5 puestos de trabajo (art. 90.º-A)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-investimento-art-90-o-a]
+    include: [PT-ARI-GENERAL]
+    requirements:
+      - { doc: LEGAL_STAY_PROOF, applies_to: main_applicant }
+      - { doc: BANK_TRANSFER_DECLARATION, applies_to: main_applicant }
+      - { id: COMPANY_INVESTMENT, any_of: [COMPANY_INCORPORATION_CERT, SHARE_ACQUISITION_PROOF], applies_to: main_applicant,
+          name: { pt: "Constituição ou participação na sociedade", en: "Company incorporation or shareholding", es: "Constitución o participación en la sociedad" } }
+      - { doc: COMMERCIAL_REGISTRY_CERT, applies_to: main_applicant, level: optional }
+
+  - id: PT-AR-98-1
+    name: { pt: "Reagrupamento familiar, familiar fora de Portugal (art. 98.º, 1)", en: "Family reunification, family member abroad (art. 98(1))", es: "Reagrupación familiar, familiar fuera de Portugal (art. 98.º, 1)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/reagrupamento-familiar-com-familiar-fora-de-territorio-nacional-art-98-o-n-o-1]
+    include: [PT-REUNIFICATION]
+    requirements:
+      - { doc: FAMILY_PASSPORT_COPY, applies_to: spouse }
+      - { doc: FAMILY_PASSPORT_COPY, applies_to: each_child }
+
+  - id: PT-AR-98-2
+    name: { pt: "Reagrupamento familiar, familiar já em Portugal (art. 98.º, 2)", en: "Family reunification, family member already in Portugal (art. 98(2))", es: "Reagrupación familiar, familiar ya en Portugal (art. 98.º, 2)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/reagrupamento-familiar-com-familiar-em-territorio-nacional-art-98-o-n-o-2]
+    include: [PT-REUNIFICATION]
+    requirements:
+      - { doc: PASSPORT_VALID, applies_to: spouse }
+      - { doc: PASSPORT_VALID, applies_to: each_child }
+      - { doc: LEGAL_ENTRY_PROOF, applies_to: spouse }
+      - { doc: LEGAL_ENTRY_PROOF, applies_to: each_child }
+
+  - id: PT-AR-109
+    name: { pt: "AR – Vítimas de tráfico de pessoas ou auxílio à imigração ilegal (art. 109.º)", en: "RP – Victims of human trafficking or migrant smuggling (art. 109)", es: "AR – Víctimas de trata de personas o de ayuda a la inmigración ilegal (art. 109.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-vitimas-de-trafico-de-pessoas-ou-de-acao-de-auxilio-a-imigracao-ilegal-art-109-]
+    requirements:
+      - { doc: AIMA_FORM, applies_to: main_applicant }
+
+  - id: PT-AR-116
+    name: { pt: "AR – Residentes de longa duração de outro Estado-Membro (art. 116.º)", en: "RP – Long-term residents of another member state (art. 116)", es: "AR – Residentes de larga duración de otro Estado miembro (art. 116.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/autorizacao-de-residencia-para-titulares-do-estatuto-de-residente-de-longa-duracao-em-outro-estado-membro-da-u]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: REASON_TO_SETTLE, applies_to: main_applicant }
+      - { doc: PROFESSIONAL_CERTIFICATE, applies_to: main_applicant, level: optional }
+      - { doc: LTR_OTHER_STATE, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: HEALTH_INSURANCE, applies_to: main_applicant }
+
+  - id: PT-AR-121A
+    name: { pt: "Cartão Azul UE (art. 121.º-A e seguintes)", en: "EU Blue Card (art. 121-A ff.)", es: "Tarjeta Azul UE (art. 121.º-A y ss.)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/concessao-de-cartao-azul-ue-e-autorizacao-de-residencia-para-titulares-de-cartao-azul-ue-noutro-estado-membro-]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { id: BLUE_CARD_ENTRY, any_of: [PT_VISA, BLUE_CARD_OTHER_STATE], applies_to: main_applicant,
+          name: { pt: "Visto de residência ou Cartão Azul UE de outro Estado", en: "Residence visa or EU Blue Card from another state", es: "Visado de residencia o Tarjeta Azul UE de otro Estado" } }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: BLUE_CARD_CONTRACT, applies_to: main_applicant }
+      - { doc: HEALTH_INSURANCE, applies_to: main_applicant }
+      - { id: BLUE_CARD_QUALIFICATIONS, any_of: [QUALIFICATION_CERT, PROFESSIONAL_CERTIFICATE], applies_to: main_applicant,
+          name: { pt: "Qualificações profissionais elevadas", en: "High professional qualifications", es: "Cualificaciones profesionales elevadas" } }
+
+  - id: PT-AR-122-A
+    name: { pt: "AR – Menores nascidos em Portugal, filhos de residentes (art. 122.º, 1, a)", en: "RP – Children born in Portugal to residents (art. 122(1)(a))", es: "AR – Menores nacidos en Portugal, hijos de residentes (art. 122.º, 1, a)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/menores-filhos-de-cidadaos-estrangeiros-titulares-de-autorizacao-de-residencia-nascidos-em-portugal-art-122-o-]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: BIRTH_CERTIFICATE, applies_to: main_applicant }
+      - { doc: CONSULAR_REGISTRATION, applies_to: main_applicant, level: optional }
+
+  - id: PT-AR-122-B
+    name: { pt: "AR – Menores nascidos em Portugal a estudar cá (art. 122.º, 1, b)", en: "RP – Children born in Portugal and in school here (art. 122(1)(b))", es: "AR – Menores nacidos en Portugal que estudian aquí (art. 122.º, 1, b)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/menores-nascidos-em-portugal-que-aqui-tenham-permanecido-e-se-encontrem-a-frequentar-a-educacao-pre-escolar-ou]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: BIRTH_CERTIFICATE, applies_to: main_applicant }
+      - { doc: SCHOOL_ATTENDANCE, applies_to: main_applicant }
+
+  - id: PT-AR-122-C
+    name: { pt: "AR – Filhos de residentes, maiores, em Portugal desde os 10 anos (art. 122.º, 1, c)", en: "RP – Adult children of residents, in Portugal since age 10 (art. 122(1)(c))", es: "AR – Hijos de residentes, mayores, en Portugal desde los 10 años (art. 122.º, 1, c)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/filhos-ou-filhas-de-titulares-de-autorizacao-de-residencia-que-tenham-atingido-a-maioridade-e-tenham-permaneci]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: STAY_IN_PT_PROOF, applies_to: main_applicant }
+
+  - id: PT-AR-122-D
+    name: { pt: "AR – Maiores nascidos em Portugal ou cá desde antes dos 10 anos (art. 122.º, 1, d)", en: "RP – Adults born in Portugal or here since before age 10 (art. 122(1)(d))", es: "AR – Mayores nacidos en Portugal o aquí desde antes de los 10 años (art. 122.º, 1, d)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/maiores-nascidos-em-portugal-que-daqui-nao-se-tenham-ausentado-ou-que-aqui-tenham-permanecido-desde-idade-infe]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: BIRTH_CERTIFICATE, applies_to: main_applicant }
+      - { doc: STAY_IN_PT_PROOF, applies_to: main_applicant }
+
+  - id: PT-AR-122-E
+    name: { pt: "AR – Menores sujeitos a tutela (art. 122.º, 1, e)", en: "RP – Minors under guardianship (art. 122(1)(e))", es: "AR – Menores sujetos a tutela (art. 122.º, 1, e)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/menores-obrigatoriamente-sujeitos-a-tutela-nos-termos-do-codigo-civil-art-122-o-1-al-e]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: GUARDIAN_ID, applies_to: main_applicant }
+      - { id: GUARDIANSHIP, any_of: [GUARDIANSHIP_DECISION, CPCJ_DECISION], applies_to: main_applicant,
+          name: { pt: "Decisão de tutela ou de proteção", en: "Guardianship or protection decision", es: "Resolución de tutela o de protección" } }
+
+  - id: PT-AR-122-F
+    name: { pt: "AR – Fim da proteção internacional (art. 122.º, 1, f)", en: "RP – End of international protection (art. 122(1)(f))", es: "AR – Fin de la protección internacional (art. 122.º, 1, f)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/que-tenham-deixado-de-beneficiar-do-direito-de-protecao-internacional-em-portugal-em-virtude-de-terem-cessado-]
+    include: [PT-AIMA-TAX]
+    requirements:
+      - { doc: AIMA_FORM, applies_to: main_applicant }
+      - { doc: ADDRESS_DECLARATION, applies_to: main_applicant }
+      - { id: AIMA_HOUSING, any_of: [LAND_REGISTRY_CERT, LANDLORD_DECLARATION], applies_to: main_applicant,
+          name: { pt: "Título de habitação", en: "Right to live at the address", es: "Título de vivienda" } }
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+
+  - id: PT-AR-122-G
+    name: { pt: "AR – Doença que exige assistência prolongada (art. 122.º, 1, g)", en: "RP – Illness needing long-term care (art. 122(1)(g))", es: "AR – Enfermedad que exige asistencia prolongada (art. 122.º, 1, g)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/que-sofram-de-doenca-que-requeira-assistencia-medica-prolongada-que-obste-ao-retorno-ao-pais-a-fim-de-evitar-r]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: MEDICAL_ILLNESS_DECLARATION, applies_to: main_applicant }
+
+  - id: PT-AR-122-H
+    name: { pt: "AR – Serviço militar nas Forças Armadas Portuguesas (art. 122.º, 1, h)", en: "RP – Military service in the Portuguese Armed Forces (art. 122(1)(h))", es: "AR – Servicio militar en las Fuerzas Armadas Portuguesas (art. 122.º, 1, h)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/que-tenham-cumprido-servico-militar-efetivo-nas-forcas-armadas-portuguesas-art-122-o-1-al-h]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: MILITARY_SERVICE_PROOF, applies_to: main_applicant }
+
+  - id: PT-AR-122-I
+    name: { pt: "AR – Perda da nacionalidade portuguesa, 15 anos em Portugal (art. 122.º, 1, i)", en: "RP – Lost Portuguese nationality, 15 years in Portugal (art. 122(1)(i))", es: "AR – Pérdida de la nacionalidad portuguesa, 15 años en Portugal (art. 122.º, 1, i)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/que-tendo-perdido-a-nacionalidade-portuguesa-hajam-permanecido-em-portugal-nos-ultimos-15-anos-art-122-o-1-al-]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: BIRTH_CERT_ANNOTATED, applies_to: main_applicant }
+      - { doc: STAY_15Y_PROOF, applies_to: main_applicant }
+
+  - id: PT-AR-122-J
+    name: { pt: "AR – Direito de residência caducado sem ausência de Portugal (art. 122.º, 1, j)", en: "RP – Expired residence right without leaving Portugal (art. 122(1)(j))", es: "AR – Derecho de residencia caducado sin ausentarse de Portugal (art. 122.º, 1, j)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/que-nao-se-tenham-ausentado-de-portugal-e-cujo-direito-de-residencia-tenha-caducado-art-122-o-1-al-j]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: STAY_IN_PT_PROOF, applies_to: main_applicant }
+
+  - id: PT-AR-122-K
+    name: { pt: "AR – Pais de menores residentes ou portugueses (art. 122.º, 1, k)", en: "RP – Parents of resident or Portuguese children (art. 122(1)(k))", es: "AR – Padres de menores residentes o portugueses (art. 122.º, 1, k)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/que-tenham-filhos-menores-residentes-em-portugal-ou-com-nacionalidade-portuguesa-sobre-os-quais-exercam-efetiv]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: BIRTH_CERTIFICATE, applies_to: main_applicant }
+      - { doc: PARENTAL_RESPONSIBILITY_PROOF, applies_to: main_applicant }
+
+  - id: PT-AR-122-M
+    name: { pt: "AR – Vítimas de infrações laborais (art. 122.º, 1, m)", en: "RP – Victims of labour offences (art. 122(1)(m))", es: "AR – Víctimas de infracciones laborales (art. 122.º, 1, m)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/vitimas-de-infracao-penal-ou-contraordenacional-referente-a-relacao-de-trabalho-e-em-condicoes-de-desprotecao-]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: COMPLAINT_REPORT, applies_to: main_applicant }
+      - { doc: ACT_COOPERATION_DECLARATION, applies_to: main_applicant }
+      - { doc: ACT_EXPLOITATION_DECLARATION, applies_to: main_applicant }
+
+  - id: PT-AR-122-N
+    name: { pt: "AR – Após autorização para vítimas de tráfico (art. 122.º, 1, n)", en: "RP – After a trafficking-victim permit (art. 122(1)(n))", es: "AR – Tras autorización para víctimas de trata (art. 122.º, 1, n)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/que-tenham-beneficiado-de-autorizacao-de-residencia-para-vitimas-de-trafico-de-pessoas-ou-de-acao-de-auxilio-a]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { id: WORK_MEANS, any_of: [EMPLOYMENT_CONTRACT, SERVICE_CONTRACT, ACTIVITY_START_PROOF], applies_to: main_applicant,
+          name: { pt: "Meios de subsistência (trabalho ou atividade)", en: "Means of subsistence (work or activity)", es: "Medios de subsistencia (trabajo o actividad)" } }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: JUDICIAL_CESSATION_DECLARATION, applies_to: main_applicant }
+
+  - id: PT-AR-122-R
+    name: { pt: "AR – Atividade de investimento, sem prova de entrada legal (art. 122.º, 1, r)", en: "RP – Investment activity, without proof of legal entry (art. 122(1)(r))", es: "AR – Actividad de inversión, sin prueba de entrada legal (art. 122.º, 1, r)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/que-facam-prova-de-atividade-de-investimento-nos-termos-a-que-se-refere-a-alinea-d-do-artigo-3-o-art-122-o-1-a]
+    include: [PT-ARI-GENERAL]
+    requirements:
+      - { doc: BANK_TRANSFER_DECLARATION, applies_to: main_applicant }
+      - { id: ARI_INVESTMENT, any_of: [WORKERS_CONTRACTS, RESEARCH_INSTITUTION_DECLARATION, GEPAC_DECLARATION, FUND_UNITS_CERT, COMPANY_INCORPORATION_CERT, SHARE_ACQUISITION_PROOF], applies_to: main_applicant,
+          name: { pt: "Prova do investimento (conforme o tipo)", en: "Proof of the investment (by type)", es: "Prueba de la inversión (según el tipo)" } }
+      - { doc: COMMERCIAL_REGISTRY_CERT, applies_to: main_applicant, level: optional }
+
+  - id: PT-AR-122-4
+    name: { pt: "AR – Pais de menores nascidos em Portugal a estudar cá (art. 122.º, 4)", en: "RP – Parents of children born and in school in Portugal (art. 122(4))", es: "AR – Padres de menores nacidos y escolarizados en Portugal (art. 122.º, 4)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/ascendentes-em-1-o-grau-dos-nacionais-de-paises-terceiros-abrangidos-pela-al-b-do-n-o-1-do-art-o-122-o-que-sob]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { id: WORK_MEANS, any_of: [EMPLOYMENT_CONTRACT, SERVICE_CONTRACT, ACTIVITY_START_PROOF], applies_to: main_applicant,
+          name: { pt: "Meios de subsistência (trabalho ou atividade)", en: "Means of subsistence (work or activity)", es: "Medios de subsistencia (trabajo o actividad)" } }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: BIRTH_CERTIFICATE, applies_to: main_applicant }
+      - { doc: PARENTAL_RESPONSIBILITY_PROOF, applies_to: main_applicant }
+      - { doc: SCHOOL_ATTENDANCE, applies_to: main_applicant }
+
+  - id: PT-AR-122-8
+    name: { pt: "AR – Acompanhante ou cuidador informal de doente (art. 122.º, 8)", en: "RP – Companion or informal carer of a patient (art. 122(8))", es: "AR – Acompañante o cuidador informal de enfermo (art. 122.º, 8)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/nacional-de-pais-terceiro-que-acompanhe-a-pessoa-que-requer-na-qualidade-de-acompanhante-ou-cuidador-a-informa]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: MEDICAL_ILLNESS_DECLARATION, applies_to: main_applicant }
+      - { doc: CAREGIVER_DECLARATION, applies_to: main_applicant }
+
+  - id: PT-AR-123
+    name: { pt: "AR – Regime excecional (art. 123.º)", en: "RP – Exceptional regime (art. 123)", es: "AR – Régimen excepcional (art. 123.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/regime-excecional-art-123-o]
+    requirements:
+      - { doc: EXCEPTIONAL_STATEMENT, applies_to: main_applicant }
+      - { doc: PASSPORT_VALID, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD_CONSENT, applies_to: main_applicant }
+      - { doc: EXCEPTIONALITY_PROOF, applies_to: main_applicant }
+      - { doc: RELEVANT_ACTIVITY_PROOF, applies_to: main_applicant, level: optional }
+
+  - id: PT-AR-125
+    name: { pt: "Estatuto de residente de longa duração (art. 125.º)", en: "Long-term resident status (art. 125)", es: "Estatuto de residente de larga duración (art. 125.º)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/aquisicao-do-estatuto-de-residente-de-longa-duracao-erld-art-125-o]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: STABLE_RESOURCES, applies_to: main_applicant }
+      - { doc: HEALTH_INSURANCE, applies_to: main_applicant }
+      - { doc: PORTUGUESE_A2, applies_to: main_applicant, level: optional }
+      - { doc: POSTING_ABSENCE_PROOF, applies_to: main_applicant, level: optional }
+      - { doc: TAX_SS_COMPLIANCE, applies_to: main_applicant }
+      - { doc: LEGAL_RESIDENCE_5Y, applies_to: main_applicant }
+
+  - id: PT-AR-131-11
+    name: { pt: "AR – Após perda do estatuto de residente de longa duração (art. 131.º, 11)", en: "RP – After losing long-term resident status (art. 131(11))", es: "AR – Tras perder el estatuto de residente de larga duración (art. 131.º, 11)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/nacionais-de-paises-terceiros-cuja-perda-do-estatuto-de-residente-de-longa-duracao-erld-nao-conduziu-ao-afasta]
+    include: [PT-AIMA-BASE, PT-AIMA-TAX]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }
+
+  - id: PT-AR-BLUE-CARD-CANCELLED
+    name: { pt: "AR – Após cancelamento do Cartão Azul UE (DR, art. 61.º, 24)", en: "RP – After an EU Blue Card was cancelled (DR art. 61(24))", es: "AR – Tras la cancelación de la Tarjeta Azul UE (DR, art. 61.º, 24)" }
+    last_reviewed: 2026-10-31
+    sources: [https://aima.gov.pt/pt/viver/nacionais-de-paises-terceiros-cujo-cancelamento-do-cartao-azul-ue-nao-conduziu-ao-afastamento-art-o-61-o-n-o-2]
+    include: [PT-AIMA-BASE]
+    requirements:
+      - { doc: SUBSISTENCE_PROOF, applies_to: main_applicant }
+      - { doc: CRIMINAL_RECORD, applies_to: main_applicant }

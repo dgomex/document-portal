@@ -33,7 +33,7 @@ class PortalRows(unittest.TestCase):
                           "invalid additional_emails: bad", "language must be pt, en or es"])
 
     def test_case_needs_an_active_known_client(self):
-        self.assertEqual(check_case({"client_id": "CL-AAAAAA", "case_name": "Divórcio"}, CLIENTS), [])
+        self.assertEqual(check_case({"client_id": "CL-AAAAAA", "case_name": "Visto D7 – família"}, CLIENTS), [])
         self.assertEqual(check_case({"client_id": "CL-ZZZZZZ", "case_name": "X"}, CLIENTS), ["unknown client_id: CL-ZZZZZZ"])
         self.assertEqual(check_case({"client_id": "CL-DDDDDD", "case_name": "X"}, CLIENTS), ["client CL-DDDDDD is inactive"])
         self.assertEqual(check_case({"client_id": "CL-AAAAAA", "case_name": "X", "status": "pending"}, CLIENTS),

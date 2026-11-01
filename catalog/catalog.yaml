@@ -1,7 +1,7 @@
 # Catalog of visas and required documents, maintained by us (no personal data).
 # Built by scripts/build-catalog.js into library/src/catalog/CatalogData.js and
 # dist/catalog.json. IDs never change; retire entries with `active: false`.
-version: "2026.11"   # bump on every change; firms see it in the update notice
+version: "2026.11.1"   # bump on every change; firms see it in the update notice
 format: 1            # bump only when the shape changes (the portal checks it)
 languages: [pt, en, es]
 disclaimer:
