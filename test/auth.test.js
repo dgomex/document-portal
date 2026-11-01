@@ -14,9 +14,10 @@ class FakeCache {
 class FakeProps {
   constructor(init = {}) { this.m = { ...init }; }
   getProperty(k) { return k in this.m ? this.m[k] : null; }
+  getProperties() { return { ...this.m }; }
   setProperty(k, v) { this.m[k] = String(v); }
 }
-const lock = () => ({ calls: 0, tryLock() { this.calls++; return true; }, releaseLock() {} });
+const lock =() => ({ calls: 0, tryLock() { this.calls++; return true; }, releaseLock() {} });
 
 function firm() {
   return new FakeSpreadsheet({

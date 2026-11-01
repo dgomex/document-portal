@@ -1,0 +1,28 @@
+name: CI
+
+# Every push and pull request: the unit tests, the built catalog files are
+# current (main serves dist/catalog.json as the firms' feed), and the
+# portal-clients skill's own test.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx jest
+      - name: Catalog outputs match the YAML
+        run: node scripts/build-catalog.js --check
+      - name: Skill test (portal-clients)
+        working-directory: skill/portal-clients/scripts
+        run: python3 test_portal_rows.py

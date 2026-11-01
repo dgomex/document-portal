@@ -108,11 +108,16 @@ const DriveRest = (function () {
     return { bytes: blob.getBytes(), mimeType: String(blob.getContentType() || '').split(';')[0] };
   }
 
+  function rename(token, fileId, name) {
+    return request_(token, 'patch', FILES + '/' + encodeURIComponent(fileId) + '?supportsAllDrives=true&fields=id,name',
+      { json: { name: name } });
+  }
+
     function trash(token, fileId) {
     return request_(token, 'patch', FILES + '/' + encodeURIComponent(fileId) + '?supportsAllDrives=true&fields=id,trashed',
       { json: { trashed: true } });
   }
 
   return { createFolder: createFolder, get: get, exists: exists, uploadSmall: uploadSmall,
-    startResumable: startResumable, head: head, download: download, trash: trash };
+    startResumable: startResumable, head: head, download: download, rename: rename, trash: trash };
 })();

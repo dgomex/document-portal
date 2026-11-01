@@ -13,22 +13,50 @@ function sheet({ clients = [], cases = [], root = 'ROOT' } = {}) {
   });
 }
 
-function fakeDrive({ failOn } = {}) {
+function fakeDrive({ failOn, folders = {} } = {}) {
   const created = [];
+  const renamed = [];
+  const gets = [];
   return {
     created,
+    renamed,
+    gets,
+    folders,
     createFolder(token, name, parentId) {
       if (failOn && name.includes(failOn)) throw new Error('Drive 500: boom');
       const id = 'F' + (created.length + 1);
       created.push({ id, name, parentId, token });
+      folders[id] = { name };
       return { id };
     },
+    get(token, id) {
+      gets.push(id);
+      if (!folders[id]) throw lib.Errors.make('drive', 'Drive 404', { status: 404 });
+      return { id, name: folders[id].name, trashed: !!folders[id].trashed };
+    },
+    rename(token, id, name) {
+      if (!folders[id]) throw lib.Errors.make('drive', 'Drive 404', { status: 404 });
+      renamed.push({ id, name });
+      folders[id].name = name;
+      return { id, name };
+    },
+  };
+}
+
+function fakeProps(initial = {}) {
+  const map = { ...initial };
+  return {
+    map,
+    getProperties: () => ({ ...map }),
+    getProperty: (k) => (k in map ? map[k] : null),
+    setProperty(k, v) { map[k] = String(v); },
+    deleteProperty(k) { delete map[k]; },
   };
 }
 
 function ctx(ss) {
   const lock = { held: false, tryLock() { this.held = true; return true; }, releaseLock() { this.held = false; } };
-  return { ss, lock, script: { getOAuthToken: () => 'TOKEN' }, props: {}, cache: {} };
+  return { ss, lock, script: { getOAuthToken: () => 'TOKEN' }, props: fakeProps(), cache: {} };
 }
 
 const clientRows = (ss) => lib.Clients.list(ss);
@@ -155,4 +183,69 @@ test('a busy lock skips the run', () => {
   const c = ctx(sheet());
   c.lock.tryLock = () => false;
   expect(lib.Provision.run(c, { drive: fakeDrive() }).skipped).toBe(true);
+});
+
+describe('renaming in the sheet renames the folder', () => {
+  const ana = { client_id: 'CL-AAAAAA', name: 'Ana Ferreira', email: 'ana@x.pt', active: true, provision_status: 'PENDING' };
+  const anaCase = { case_id: 'CS-111111', client_id: 'CL-AAAAAA', case_name: 'Acidente de viação', status: 'open', provision_status: 'PENDING' };
+
+  test('a renamed case and client get their folders renamed on the next run, once', () => {
+    const ss = sheet({ clients: [ana], cases: [anaCase] });
+    const drive = fakeDrive();
+    const c = ctx(ss);
+    lib.Provision.run(c, { drive });
+    expect(lib.Provision.hasRenames(c)).toBe(false);
+
+    lib.Cases.table(ss).update(caseRows(ss)[0]._row, { case_name: 'Reagrupamento familiar' });
+    lib.Clients.table(ss).update(clientRows(ss)[0]._row, { name: 'Ana F. Silva' });
+    expect(lib.Provision.hasWork(ss)).toBe(false);
+    expect(lib.Provision.hasRenames(c)).toBe(true);
+
+    expect(lib.Provision.run(c, { drive }).renamed).toBe(2);
+    expect(drive.renamed).toEqual([
+      { id: 'F1', name: 'Ana F. Silva [CL-AAAAAA]' },
+      { id: 'F2', name: 'Reagrupamento familiar [CS-111111]' },
+    ]);
+    expect(drive.gets).toEqual([]);  // names it gave itself are known: no Drive reads
+    expect(lib.Provision.hasRenames(c)).toBe(false);
+    expect(lib.Provision.run(c, { drive }).renamed).toBe(0);
+  });
+
+  test('folders made before this existed are read once and renamed only if they differ', () => {
+    const ss = sheet({
+      clients: [{ ...ana, provision_status: 'ACTIVE', folder_id: 'OLD1' }],
+      cases: [{ ...anaCase, case_name: 'Reagrupamento familiar', provision_status: 'ACTIVE', folder_id: 'OLD2' }],
+    });
+    const drive = fakeDrive({ folders: { OLD1: { name: 'Ana Ferreira [CL-AAAAAA]' }, OLD2: { name: 'Acidente de viação [CS-111111]' } } });
+    const c = ctx(ss);
+    expect(lib.Provision.hasRenames(c)).toBe(true);
+    expect(lib.Provision.run(c, { drive }).renamed).toBe(1);
+    expect(drive.gets).toEqual(['OLD1', 'OLD2']);
+    expect(drive.renamed).toEqual([{ id: 'OLD2', name: 'Reagrupamento familiar [CS-111111]' }]);
+    lib.Provision.run(c, { drive });
+    expect(drive.gets).toHaveLength(2);
+  });
+
+  test('a folder that is gone or trashed is left alone and not asked about again', () => {
+    const ss = sheet({
+      clients: [{ ...ana, name: 'Ana Nova', provision_status: 'ACTIVE', folder_id: 'GONE' }],
+      cases: [{ ...anaCase, provision_status: 'ACTIVE', folder_id: 'BIN' }],
+    });
+    const drive = fakeDrive({ folders: { BIN: { name: 'Old [CS-111111]', trashed: true } } });
+    const c = ctx(ss);
+    expect(lib.Provision.run(c, { drive }).renamed).toBe(0);
+    expect(drive.folders.BIN.name).toBe('Old [CS-111111]');
+    expect(lib.Provision.hasRenames(c)).toBe(false);
+  });
+
+  test('a Drive error leaves the name unknown, so the next run tries again', () => {
+    const ss = sheet({ clients: [{ ...ana, provision_status: 'ACTIVE', folder_id: 'F9' }] });
+    const drive = fakeDrive({ folders: { F9: { name: 'Ana [CL-AAAAAA]' } } });
+    drive.get = () => { throw lib.Errors.make('drive', 'Drive 500', { status: 500 }); };
+    const c = ctx(ss);
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    expect(lib.Provision.run(c, { drive }).renamed).toBe(0);
+    spy.mockRestore();
+    expect(lib.Provision.hasRenames(c)).toBe(true);
+  });
 });

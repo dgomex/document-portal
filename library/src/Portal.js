@@ -93,7 +93,7 @@ function cronProvision(ctx) {
   if (String(Settings.get(ctx.ss, 'library_version')) !== Config.LIBRARY_VERSION) {
     Settings.set(ctx.ss, 'library_version', Config.LIBRARY_VERSION);
   }
-  if (Provision.hasWork(ctx.ss)) Provision.run(ctx, {});
+  if (Provision.hasWork(ctx.ss) || Provision.hasRenames(ctx)) Provision.run(ctx, {});
   safe_(function () { CaseChecklist.sync(ctx); });
   if (Invite.hasWork(ctx.ss) && Settings.get(ctx.ss, 'portal_url')) safe_(function () { Invite.run(ctx); });
 }
