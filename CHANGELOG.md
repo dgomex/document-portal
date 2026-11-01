@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1 (library version 8, 2026-11-01)
+
+Checklist items show their own upload in progress (spinner, percentage, retry on failure); Drive folders follow client and case renames in the sheet; bundles visa catalog 2026.11.1 with the 57 AIMA residence permits (applied only when the lawyer clicks Apply).
+
 ## 0.4.0 (library version 7, 2026-10-31)
 
 Visa checklists: per-person document lists from a central catalog (Portugal, 12 visas), firm adjustments, reminders, catalog update notices, Spanish
