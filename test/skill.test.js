@@ -122,3 +122,19 @@ test('the skill asks about the columns the generated catalog actually has', () =
     expect(skill).toContain('**' + col + '**');
   });
 });
+
+// Every skill must find the firm's sheet the same way, and onboarding hands
+// over the very line the others look for in the project instructions.
+test('the skills share one way to find the portal sheet', () => {
+  const read = (s) => fs.readFileSync(path.join(__dirname, '..', 'skill', s, 'SKILL.md'), 'utf8');
+  const block = (text) => {
+    const m = /<!-- shared:find-sheet[^>]*-->[\s\S]*?<!-- \/shared:find-sheet -->/.exec(text);
+    return m && m[0];
+  };
+  const clients = block(read('portal-clients'));
+  expect(clients).toContain('## Find the portal sheet');
+  expect(block(read('portal-update'))).toBe(clients);
+  const line = 'O portal do escritório:';
+  expect(clients).toContain(line);
+  expect(read('portal-onboarding')).toContain('> ' + line);
+});

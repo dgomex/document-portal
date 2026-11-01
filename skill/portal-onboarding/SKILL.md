@@ -38,6 +38,8 @@ Check the emails look valid and the links start with `https://` before going on.
 
 ## 2. Copy the template (Drive connector)
 
+First, look for a portal that already exists: search Drive for spreadsheets whose title starts with "Portal - ", leaving out "Portal - Template", and read the Settings tab of any you find (a real portal has `schema_version` and `firm_name`). If the firm already has one, say so and ask before making a second: adding clients is the portal-clients skill, and a newer version is the portal-update skill. A second portal is only right for a separate firm or office.
+
 Copy the template file, titled `Portal - <firm name>`. Check that the copy's **owner** is the firm's account. If it isn't, the connector is signed into a different account: stop and sort that out first.
 
 The copy brings its script along: that's the whole portal.
@@ -128,7 +130,13 @@ Afterwards, untick the test client's `active` box. Don't delete rows.
 
 ## 7. Hand over
 
-Tell the lawyer, briefly:
+**First, the line to keep.** Every portal skill starts by finding the firm's portal sheet. Give the lawyer this line, with the real links, in their language (EN: "The firm's portal: sheet …, address …"):
+
+> O portal do escritório: folha <link to the sheet>, endereço <the /exec URL>.
+
+Ask them to paste it into the instructions of the Claude project they'll use for the portal (create one, e.g. "Portal do escritório", open it, and paste the line into its instructions), or to say "lembra-te disto" if Claude's memory is on. Then Claude never has to ask which sheet it is. Without it, Claude searches their Drive and asks them to confirm.
+
+Then tell the lawyer, briefly:
 - **Portal address:** the `/exec` URL. Put it on the website and in the email signature.
 - **Adding clients and cases:** ask Claude (portal-clients skill), or type rows in the sheet and use **Portal → Processar novas linhas** (EN: Process new rows · ES: Procesar filas nuevas).
 - **Inviting a client:** set `invite_status` to REQUESTED. The email goes out within 5 minutes.

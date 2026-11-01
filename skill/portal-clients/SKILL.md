@@ -11,16 +11,30 @@ The lawyer's portal is a Google Sheet that they own. You edit it through their G
 
 A bad row is worse than no row: a wrong email lets the wrong person upload into a client's case. So you validate first, show the lawyer exactly what you will write, and write only after they say yes.
 
-## 0. Find the sheet
+<!-- shared:find-sheet: the same text in every portal skill (test/skill.test.js checks it) -->
+## Find the portal sheet
 
-The sheet is usually named "Portal - <firm>". Get its URL or ID from, in order:
-1. the conversation;
-2. the project instructions or memory;
-3. asking the lawyer.
+The portal is a Google Sheet in the lawyer's Drive, titled "Portal - <firm>". Find it, in this order:
 
-Once found, suggest they save it in their project instructions so you don't have to ask again.
+1. **A link in this conversation.**
+2. **The project instructions or Claude's memory.** Onboarding gives the lawyer a line to keep there, starting "O portal do escritório:" (EN: "The firm's portal:"), with the sheet link and the portal address. Use both.
+3. **A Drive search** (Drive connector): spreadsheets whose title starts with "Portal - ", leaving out "Portal - Template". Read each one's **Settings** tab: a real portal has `schema_version` and `firm_name`.
+   - **One portal:** confirm before using it, e.g. "Encontrei a folha «Portal - Silva & Costa» (Silva & Costa Advogados). É esta?"
+   - **Several:** list them with their `firm_name` and ask which.
+   - **None:** ask the lawyer for the link. If they never set one up, that's the portal-onboarding skill.
 
-If no Google Sheets tool is available, tell the lawyer to connect Google Drive/Sheets in Claude's settings (Connectors), and stop. Don't ask them to paste data instead: hand-copied emails are how typos get in.
+Never use a sheet the lawyer hasn't confirmed, or one that isn't a portal: the wrong sheet means writing into another firm's data.
+
+Without a Drive connector, skip step 3 and ask the lawyer for the link. Never ask them to paste the sheet's contents instead: hand-copied emails are how typos get in.
+
+**Once found through step 3 or by asking**, offer the line to keep, so nobody has to ask again:
+
+> O portal do escritório: folha <sheet link>, endereço <`portal_url` from Settings>.
+
+Tell them where it goes: in the instructions of the Claude project they use for the portal (open the project → its instructions → paste), or say "lembra-te disto" if Claude's memory is on. Then carry on with what they asked.
+<!-- /shared:find-sheet -->
+
+This skill reads and writes the sheet through the **Google Sheets connector**. If it isn't available, tell the lawyer to connect Google Drive and Sheets in Claude's settings (Connectors), and stop.
 
 ## 1. Preflight: every time, before reading or writing anything else
 

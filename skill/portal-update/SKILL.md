@@ -19,10 +19,33 @@ It usually needs no clicks from the lawyer. The exception: if the new version ne
 ## What you need
 
 - **Claude in Chrome**, in a Chrome where the firm's Google account is signed in.
-- The portal sheet. Ask for its link, or find it with the Drive connector: a spreadsheet titled "Portal - <firm>" owned by the lawyer.
+- The portal sheet: see "Find the portal sheet" below.
 - The portal address: the `portal_url` key in the sheet's **Settings** tab (Sheets connector), or ask the lawyer.
 
 If Claude in Chrome isn't available, guide the lawyer through **Portal → Atualizar portal** (EN: Update portal · ES: Actualizar portal) in their sheet, which lists the same steps. Then use step 4 to check.
+
+<!-- shared:find-sheet: the same text in every portal skill (test/skill.test.js checks it) -->
+## Find the portal sheet
+
+The portal is a Google Sheet in the lawyer's Drive, titled "Portal - <firm>". Find it, in this order:
+
+1. **A link in this conversation.**
+2. **The project instructions or Claude's memory.** Onboarding gives the lawyer a line to keep there, starting "O portal do escritório:" (EN: "The firm's portal:"), with the sheet link and the portal address. Use both.
+3. **A Drive search** (Drive connector): spreadsheets whose title starts with "Portal - ", leaving out "Portal - Template". Read each one's **Settings** tab: a real portal has `schema_version` and `firm_name`.
+   - **One portal:** confirm before using it, e.g. "Encontrei a folha «Portal - Silva & Costa» (Silva & Costa Advogados). É esta?"
+   - **Several:** list them with their `firm_name` and ask which.
+   - **None:** ask the lawyer for the link. If they never set one up, that's the portal-onboarding skill.
+
+Never use a sheet the lawyer hasn't confirmed, or one that isn't a portal: the wrong sheet means writing into another firm's data.
+
+Without a Drive connector, skip step 3 and ask the lawyer for the link. Never ask them to paste the sheet's contents instead: hand-copied emails are how typos get in.
+
+**Once found through step 3 or by asking**, offer the line to keep, so nobody has to ask again:
+
+> O portal do escritório: folha <sheet link>, endereço <`portal_url` from Settings>.
+
+Tell them where it goes: in the instructions of the Claude project they use for the portal (open the project → its instructions → paste), or say "lembra-te disto" if Claude's memory is on. Then carry on with what they asked.
+<!-- /shared:find-sheet -->
 
 ## 0. Which update is it?
 
