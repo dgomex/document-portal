@@ -1,6 +1,6 @@
 # Portal sheet: columns, values, errors
 
-Schema versions 1 to 3 (Settings `schema_version`). Version 2 added `Clients.invited_at` and the Settings key `daily_email_limit`. Version 3 added visa checklists: `Cases.visa_type`, `Cases.facts`, `Cases.checklist_version`, and the People, Checklist and Adjustments tabs. Columns are only ever appended, never renamed. Always find a column by its header text in row 1.
+Schema versions 1 to 4 (Settings `schema_version`). Version 2 added `Clients.invited_at` and the Settings key `daily_email_limit`. Version 3 added visa checklists: `Cases.visa_type`, `Cases.facts`, `Cases.checklist_version`, and the People and Checklist tabs. Version 4 (portal 0.5.0) gave each firm its own process types and lists in the **Visa types** and **Document lists** tabs: read-only for this skill (`visa_type`, `name_*`, `active`, `family`, `facts_to_ask`), written by the portal-lists skill. The portal has no lists of its own. Sheets from before 0.5.0 keep hidden Adjustments and CatalogData tabs that are no longer used: never read or write them. Columns are only ever appended, never renamed. Always find a column by its header text in row 1.
 
 ## Settings (key | value | description)
 
@@ -42,9 +42,9 @@ Read-only for this skill. Useful keys:
 | `provision_status` | skill (PENDING only), portal | `PENDING`, `ACTIVE`, `ERROR` |
 | `provision_error`, `folder_id` | portal only | |
 | `created_at`, `created_by` | skill (new rows) | as for Clients |
-| `visa_type` | skill | a visa ID from the catalog, e.g. `PT-D7` (schema 3). Setting it builds the case's document checklist |
-| `facts` | skill | yes/no facts that change the list, `;`-separated, from the Facts table in `catalog.md` (`married` and `children` come from People). Ask only the ones in the visa's "Facts to ask" column |
-| `checklist_version` | portal only | which catalog version the checklist was built from; clear it to rebuild the checklist |
+| `visa_type` | skill | a process type ID from the Visa types tab (schema 4). Setting it builds the case's document checklist |
+| `facts` | skill | yes/no facts that change the list, `;`-separated, from the type's `facts_to_ask` in Visa types (`married` and `children` come from People). Ask only the ones in the visa's "Facts to ask" column |
+| `checklist_version` | portal only | which version of the firm's list the checklist was built from (a hash of the list and one of the case). Never write it: after a list changes, the lawyer updates open cases from **Portal → Listas de documentos** |
 
 ## People (schema 3)
 
@@ -67,26 +67,12 @@ Read-only for this skill. Useful keys:
 | `case_id` | skill (ad-hoc rows only) | the case |
 | `person_id` | portal only | which person the document is for (empty = the case) |
 | `person_name` | skill (ad-hoc rows only) | the person's name as in People; empty for the case |
-| `title`, `instructions` | skill | what the client sees. Written by the portal for catalog items; the skill writes them for ad-hoc requests |
+| `title`, `instructions` | skill | what the client sees. Written by the portal for list items; the skill writes them for ad-hoc requests |
 | `level` | skill | `required`, `optional`, `requested` (ad-hoc), `waived` (not needed for this case) |
 | `status` | skill, portal | `missing`, `received` (the portal sets this on upload), `accepted`, `rejected` |
 | `reason` | skill | why a document was rejected; the client sees it |
 | `due_date` | skill | YYYY-MM-DD, optional |
 | `upload_ids`, `doc_type`, `key`, `source`, `updated_at`, `text_json` | portal only | |
-
-## Adjustments (schema 3)
-
-The firm's changes to the catalog, as differences. They apply to lists built from then on.
-
-| Column | Values |
-|---|---|
-| `visa_type` | a visa ID, or `*` for every visa |
-| `applies_to` | `main_applicant`, `spouse`, `each_child`, `each_adult`, `each_person`, `case` (empty = all, for hide/change) |
-| `doc_type` | a document type or group from `catalog.md`; for `add`, also the firm's own name for a new document |
-| `action` | `add`, `change` (level, title or note), `hide` |
-| `level` | `required` or `optional` |
-| `title` | the firm's own wording for the document (optional) |
-| `note` | an extra line shown to the client (optional) |
 
 ## Tabs the skill never opens
 

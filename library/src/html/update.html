@@ -18,10 +18,27 @@
       .row2 button { flex: 1; }
       button.secondary { background: #fff; color: #1f4e8c; border: 1px solid #1f4e8c; }
       label.check { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
-      #catalogResult { margin-top: 8px; }
+      #listsResult { margin-top: 8px; }
+      ul.lists { padding-left: 0; list-style: none; margin: 6px 0; }
+      ul.lists li { border: 1px solid #d9dde5; border-radius: 6px; padding: 8px; }
+      ul.lists button { margin-top: 6px; }
+      .problem { color: #8a5a00; }
+      .error { color: #a12a2a; }
     </style>
   </head>
   <body>
+    <section id="lists" hidden>
+      <h2 data-t="lists.title" style="border-top:0;padding-top:0;margin-top:0"></h2>
+      <p id="listsSummary"></p>
+      <p id="listsEmpty" class="muted" data-t="lists.empty" hidden></p>
+      <ul id="listsUnknown" class="changes"></ul>
+      <ul id="listsProblems" class="changes"></ul>
+      <p id="listsNoneOlder" class="muted" data-t="lists.noneOlder" hidden></p>
+      <ul id="listsOlder" class="lists"></ul>
+      <button id="listsCheck" type="button" class="secondary" data-t="lists.check"></button>
+      <div id="listsResult" role="status"></div>
+      <h2 data-t="update.title"></h2>
+    </section>
     <p data-t="update.intro"></p>
     <ol>
       <li data-t="update.s1"></li>
@@ -34,21 +51,6 @@
     <button id="check" type="button" data-t="update.check"></button>
     <div id="result" role="status"></div>
 
-    <h2 data-t="catalog.title"></h2>
-    <p id="catalogCurrent" class="muted"></p>
-    <div id="catalogPending" hidden>
-      <p id="catalogPendingText"></p>
-      <p data-t="catalog.changes"></p>
-      <ul id="catalogChanges" class="changes"></ul>
-      <p class="muted" data-t="catalog.note"></p>
-      <div class="row2">
-        <button id="catalogApply" type="button" data-t="catalog.apply"></button>
-        <button id="catalogIgnore" type="button" class="secondary" data-t="catalog.ignore"></button>
-      </div>
-    </div>
-    <p id="catalogNone" class="muted" data-t="catalog.none" hidden></p>
-    <label class="check"><input id="catalogCheck" type="checkbox"> <span data-t="catalog.checkLabel"></span></label>
-    <div id="catalogResult" role="status"></div>
     <script>
       const BOOT = <?!= boot ?>;
       const S = BOOT.strings;
@@ -63,50 +65,59 @@
         lines.forEach((l) => { const p = document.createElement('div'); p.textContent = l; $('result').appendChild(p); });
       }
 
-      function renderCatalog(c) {
-        $('catalogCurrent').textContent = t('catalog.current', { version: c.current });
-        $('catalogPending').hidden = !c.pending;
-        $('catalogNone').hidden = !!c.pending;
-        $('catalogCheck').checked = c.check;
-        $('catalogChanges').textContent = '';
-        if (!c.pending) return;
-        $('catalogPendingText').textContent = t('catalog.pending', { version: c.pending.version });
-        (c.pending.changes.length ? c.pending.changes : [t('catalog.noChanges')]).forEach((line) => {
+      function renderLists(l) {
+        if (!l || !l.enabled) return;
+        $('lists').hidden = false;
+        const s = l.summary;
+        $('listsSummary').textContent = t('lists.summary', { types: s.types, documents: s.documents, problems: s.errors + s.warnings });
+        $('listsEmpty').hidden = s.types > 0;
+        const fill = (id, items, cls) => {
+          $(id).textContent = '';
+          items.forEach((text) => { const li = document.createElement('li'); li.textContent = text; if (cls) li.className = cls; $(id).appendChild(li); });
+        };
+        fill('listsUnknown', l.unknown.map((u) => t('lists.unknownType', { cases: u.cases, id: u.id })), 'error');
+        fill('listsProblems', (l.problems || []).slice(0, 8).map((p) => t('lists.problemAt', { tab: p.tab, row: p.row, text: p.text })), 'problem');
+        $('listsNoneOlder').hidden = l.visas.length > 0 || s.types === 0;
+        $('listsOlder').textContent = '';
+        l.visas.forEach((v) => {
           const li = document.createElement('li');
-          li.textContent = line;
-          $('catalogChanges').appendChild(li);
+          const p = document.createElement('div');
+          p.textContent = t('lists.older', { cases: v.older, visa: v.name });
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.textContent = t('lists.update');
+          b.onclick = () => listsCall('listsRefresh', { visaId: v.id }, (r) => {
+            renderLists(r.status);
+            $('listsResult').textContent = t('lists.updated', r.result);
+          });
+          li.appendChild(p);
+          li.appendChild(b);
+          $('listsOlder').appendChild(li);
         });
       }
 
-      function catalogCall(action, data, done) {
-        ['catalogApply', 'catalogIgnore', 'catalogCheck'].forEach((id) => { $(id).disabled = true; });
+      function listsCall(action, data, done) {
+        const buttons = () => Array.from(document.querySelectorAll('#lists button'));
+        buttons().forEach((b) => { b.disabled = true; });
+        $('listsResult').textContent = t('lists.working');
         google.script.run
           .withSuccessHandler((res) => {
-            ['catalogApply', 'catalogIgnore', 'catalogCheck'].forEach((id) => { $(id).disabled = false; });
-            if (!res.ok) { $('catalogResult').textContent = t('error.' + res.error) + (res.message ? ' ' + res.message : ''); return; }
+            buttons().forEach((b) => { b.disabled = false; });
+            if (!res.ok) { $('listsResult').textContent = t('error.' + res.error) + (res.message ? ' ' + res.message : ''); return; }
+            $('listsResult').textContent = '';
             done(res.data);
           })
           .withFailureHandler(() => {
-            ['catalogApply', 'catalogIgnore', 'catalogCheck'].forEach((id) => { $(id).disabled = false; });
-            $('catalogResult').textContent = t('error.generic');
+            buttons().forEach((b) => { b.disabled = false; });
+            $('listsResult').textContent = t('error.generic');
           })
           .admin(action, data);
       }
 
-      renderCatalog(BOOT.catalog);
-      $('catalogApply').onclick = () => catalogCall('catalogApply', { version: BOOT.catalog.pending.version }, (r) => {
-        BOOT.catalog = { current: r.version, pending: null, check: BOOT.catalog.check };
-        renderCatalog(BOOT.catalog);
-        $('catalogResult').textContent = t('catalog.applied', { version: r.version });
-      });
-      $('catalogIgnore').onclick = () => catalogCall('catalogIgnore', {}, () => {
-        BOOT.catalog.pending = null;
-        renderCatalog(BOOT.catalog);
-        $('catalogResult').textContent = t('catalog.ignored');
-      });
-      $('catalogCheck').onchange = () => catalogCall('catalogCheck', { on: $('catalogCheck').checked }, (c) => {
-        BOOT.catalog.check = c.check;
-        renderCatalog(BOOT.catalog);
+      renderLists(BOOT.lists);
+      $('listsCheck').onclick = () => listsCall('listsStatus', {}, (l) => {
+        renderLists(l);
+        $('listsResult').textContent = t('lists.checked');
       });
 
       $('check').onclick = () => {

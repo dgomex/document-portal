@@ -1,7 +1,7 @@
 /**
- * Builds a case's document checklist: catalog requirements for the visa,
- * changed by the firm's adjustments, filtered by the case's facts, and
- * multiplied out per person. Pure: no sheet or Drive access (CaseChecklist
+ * Builds a case's document checklist: the requirements of the case's
+ * process type in the firm's own lists (FirmLists), filtered by the case's
+ * facts, and multiplied out per person. Pure: no sheet or Drive access (CaseChecklist
  * does the I/O), so every rule here is unit-tested.
  *
  * An item: { key, person_id, person_name, doc_type, options, level, source,
@@ -10,8 +10,6 @@
  * to the row that already holds its status and uploads.
  */
 const Checklist = (function () {
-  const FIRM_PREFIX = 'FIRM-';
-
   /** The facts that hold for a case: ticked ones plus those the people imply. */
   function facts(ticked, people) {
     const out = new Set(String(ticked || '').split(/[\s,;]+/).map(function (f) { return f.trim().toLowerCase(); }).filter(String));
@@ -33,55 +31,6 @@ const Checklist = (function () {
     return years;
   }
 
-  function same_(lang) {
-    // The firm's own words: shown as typed, whatever the client's language.
-    const out = {};
-    Catalog.data().languages.forEach(function (l) { out[l] = lang; });
-    return out;
-  }
-
-  function slug_(s) {
-    return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 40);
-  }
-
-  /** The visa's requirements after the firm's adjustments (rows of the Adjustments tab). */
-  function requirements(visaId, adjustments) {
-    const visa = Catalog.visa(visaId);
-    if (!visa) return [];
-    let reqs = visa.requirements.map(function (r) { return Object.assign({ source: 'catalog', titleOverride: '', note: '' }, r); });
-    (adjustments || []).filter(function (a) {
-      const v = String(a.visa_type || '').trim();
-      return v === '' || v === '*' || v === visaId;
-    }).forEach(function (a) {
-      const action = String(a.action || '').trim().toLowerCase();
-      const key = String(a.doc_type || '').trim();
-      const appliesTo = String(a.applies_to || '').trim();
-      const matches = function (r) { return r.key === key && (!appliesTo || r.applies_to === appliesTo); };
-      if (action === 'hide') {
-        reqs = reqs.filter(function (r) { return !matches(r); });
-      } else if (action === 'change') {
-        reqs.forEach(function (r) {
-          if (!matches(r)) return;
-          if (a.level) r.level = String(a.level).trim();
-          if (a.title) r.titleOverride = String(a.title).trim();
-          if (a.note) r.note = String(a.note).trim();
-          r.source = 'firm';
-        });
-      } else if (action === 'add') {
-        const known = Catalog.docType(key);
-        const newKey = known ? key : FIRM_PREFIX + slug_(key || a.title);
-        if (newKey === FIRM_PREFIX) return;  // nothing to identify it by
-        reqs.push({
-          key: newKey, doc: known ? key : null, any_of: null, name: null, source: 'firm',
-          applies_to: Config.APPLIES_TO.indexOf(appliesTo) !== -1 ? appliesTo : 'main_applicant',
-          level: String(a.level || 'required').trim(), only_if: [], unless: [], min_age: appliesTo === 'each_adult' ? 16 : null,
-          titleOverride: String(a.title || (known ? '' : key)).trim(), note: String(a.note || '').trim(),
-        });
-      }
-    });
-    return reqs;
-  }
-
   function targets_(r, people, now) {
     switch (r.applies_to) {
       case 'case': return [null];
@@ -97,55 +46,27 @@ const Checklist = (function () {
     }
   }
 
-  function text_(r) {
-    const langs = Catalog.data().languages;
-    const join = function (a, b) {
-      const out = {};
-      langs.forEach(function (l) {
-        out[l] = [a && a[l], b && b[l]].map(function (s) { return String(s || '').trim(); }).filter(Boolean).join(' ');
-      });
-      return out;
-    };
-    let title;
-    let instructions;
-    let options = [];
-    if (r.any_of) {
-      title = r.name;
-      options = r.any_of.map(function (d) { return { doc: d, title: Catalog.docType(d).name }; });
-      instructions = {};
-    } else if (r.doc) {
-      const d = Catalog.docType(r.doc);
-      title = d.name;
-      instructions = join(d.instructions, Catalog.ruleNotes(d.rules));
-    } else {
-      title = same_('');
-      instructions = {};
-    }
-    if (r.titleOverride) title = same_(r.titleOverride);
-    if (r.note) instructions = join(instructions, same_(r.note));
-    return { title: title, instructions: instructions, options: options };
-  }
-
   /**
-   * input: { visaId, facts: 'cplp;other_residence', people: [{person_id, name, role, birth_date}],
-   *          adjustments: [...rows], lang: firm language for the title/instructions columns, now }
+   * input: { requirements: the process type's requirements (FirmLists), each
+   *          carrying its own text, facts: 'cplp;meios_a', people: [{person_id, name, role, birth_date}],
+   *          lang: firm language for the title/instructions columns, now }
    */
   function build(input) {
     const people = input.people || [];
     const have = facts(input.facts, people);
     const lang = input.lang || 'pt';
     const items = [];
-    requirements(input.visaId, input.adjustments).forEach(function (r) {
-      if (r.only_if.some(function (f) { return !have.has(f); })) return;
-      if (r.unless.some(function (f) { return have.has(f); })) return;
-      const text = text_(r);
+    (input.requirements || []).forEach(function (r) {
+      if ((r.only_if || []).some(function (f) { return !have.has(f); })) return;
+      if ((r.unless || []).some(function (f) { return have.has(f); })) return;
+      const text = r.text;
       targets_(r, people, input.now).forEach(function (p) {
         items.push({
           key: r.key + '|' + (p ? p.person_id : 'case'),
           person_id: p ? p.person_id : '', person_name: p ? p.name : '',
           doc_type: r.doc || (r.any_of ? r.key : r.key), options: r.any_of ? r.any_of.join(';') : '',
           level: r.level, source: r.source,
-          title: Catalog.text(text.title, lang), instructions: Catalog.text(text.instructions, lang),
+          title: Text.pick(text.title, lang), instructions: Text.pick(text.instructions, lang),
           text: text,
         });
       });
@@ -176,7 +97,7 @@ const Checklist = (function () {
       // The lawyer's waivers stay; items the portal itself waived (no longer
       // applied) come back when they apply again.
       const autoWaived = row.level === Config.ITEM_LEVEL.WAIVED &&
-        Catalog.data().languages.some(function (l) { return String(row.reason || '') === I18n.t(l, 'checklist.noLongerApplies'); });
+        Config.LANGUAGES.some(function (l) { return String(row.reason || '') === I18n.t(l, 'checklist.noLongerApplies'); });
       if (row.level !== Config.ITEM_LEVEL.WAIVED || autoWaived) partial.level = item.level;
       if (autoWaived) partial.reason = '';
       out.update.push({ row: row, partial: partial });
@@ -189,5 +110,5 @@ const Checklist = (function () {
     return out;
   }
 
-  return { facts: facts, age: age, requirements: requirements, build: build, merge: merge, FIRM_PREFIX: FIRM_PREFIX };
+  return { facts: facts, age: age, build: build, merge: merge };
 })();

@@ -1,0 +1,7 @@
+visa_type,name_pt,name_en,name_es,active,family,facts_to_ask,notes,check
+PT-D7,D7 – Reformados e rendimentos próprios,D7 – Retirees and passive income,D7 – Jubilados y rentas propias,TRUE,TRUE,cplp;other_residence;sole_custody,,ok
+PT-D8,D8 – Nómada digital,D8 – Digital nomad,D8 – Nómada digital,TRUE,TRUE,cplp,,ok
+PT-AR-88-1,AR art. 88.º n.º 1 – Atividade profissional subordinada,RP art. 88(1) – Employed work,AR art. 88.1 – Trabajo por cuenta ajena,TRUE,FALSE,,,ok
+PT-AR-88-7,AR art. 88.º n.º 7 – Trabalho subordinado (CPLP),RP art. 88(7) – Employed work (CPLP),AR art. 88.7 – Trabajo por cuenta ajena (CPLP),TRUE,FALSE,,,ok
+PT-AR-89-1,AR art. 89.º n.º 1 – Atividade profissional independente,RP art. 89(1) – Self-employed work,AR art. 89.1 – Trabajo por cuenta propia,TRUE,FALSE,,,ok
+F-AR-92-MENOR,Reagrupamento familiar – filho menor,Family reunification – minor child,Reagrupación familiar – hijo menor,TRUE,TRUE,,,ok

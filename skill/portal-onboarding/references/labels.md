@@ -15,12 +15,10 @@ They follow the firm's `default_language` in Settings (`pt`, `en` or `es`).
 | Processar novas linhas | Process new rows | Procesar filas nuevas | Menu item: create folders for new rows now |
 | Enviar convites pendentes | Send pending invitations | Enviar invitaciones pendientes | Menu item: send REQUESTED invitations now |
 | Atualizar portal | Update portal | Actualizar portal | Menu item: the update sidebar |
-| Atualizar portal (listas novas) | Update portal (new lists) | Actualizar portal (listas nuevas) | The same menu item while new document lists are waiting |
 | Verificar | Check | Comprobar | Button in the update sidebar |
-| Listas de documentos | Document lists | Listas de documentos | Update sidebar: the document lists section |
-| Aplicar | Apply | Aplicar | Button: use the new document lists (the lawyer's decision) |
-| Ignorar esta versão | Ignore this version | Ignorar esta versión | Button: keep the current lists |
-| Verificar diariamente se há listas novas | Check daily for new lists | Comprobar a diario si hay listas nuevas | Checkbox: the daily check for new lists (catalog_check) |
+| Listas de documentos | Document lists | Listas de documentos | Menu item: the document lists sidebar (shared with the update sidebar) |
+| Verificar | Check | Verificar | Button: check the lists now (fills IDs and keys, writes the check column) |
+| Atualizar estes processos | Update these cases | Actualizar estos expedientes | Button per process type: bring its open cases up to date |
 | Guardar | Save | Guardar | Button in the setup sidebar |
 
 ## Google's screens

@@ -5,3 +5,4 @@ node_modules/
 spike/testfiles/
 skill/portal-clients-workspace/
 skill/*.skill
+__pycache__/

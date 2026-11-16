@@ -13,6 +13,28 @@ The portal is for **immigration lawyers**. Each case is a visa application, and 
 | 5 | Languages | PT, EN, then **ES**: portal, emails, catalog texts, skill labels. |
 | 6 | Catalog updates | Bundled in each release. A daily check may **announce** a newer catalog, but nothing changes until the lawyer clicks **Apply**, and the check can be switched off (`catalog_check`). |
 
+## Since 0.5.0 (schema 4): the firm owns its lists, and there is no central catalog
+
+Decided 2026-11-16: each firm keeps **its own** checklists per process type (initial vs renewal, adult vs minor, its own wording, numbering and validation criteria). The same day the central catalog was removed: **the portal ships no lists**. Decisions 1 and 6 below no longer hold; decision 4 is now simply "the lawyer owns the list, in the sheet". Issue #1.
+
+```
+the firm's lists (Visa types + Document lists tabs)  →  case checklist (a snapshot per case)
+```
+
+- **New firms start with empty tabs** and import their own checklists with the `portal-lists` skill (in the firm's own Claude, with the firm's own connector) or type them. A case only gets a checklist when its process type has a list.
+- **Firms that ran 0.4.x:** the schema 4 migration copies the lists they were using (their own `CatalogData` tab, changed by their `Adjustments`) into the two tabs, once, so no existing case changes. Both old tabs are then hidden and never read again (`admin/LegacyLists.js` is migration-only).
+- **Tabs:** `Visa types` (`visa_type`, `name_*`, `active`, `family`, `facts_to_ask`, `notes`, `check`) and `Document lists` (`visa_type`, `order`, `applies_to`, `level`, `title_*`, `instructions_*`, `group_*`, `group_key`, `only_if`, `unless`, `min_age`, `check_criteria`, `active`, `doc_key`, `check`). `check_criteria` is for the lawyer's review and never reaches clients.
+- **Stable keys:** `doc_key` and `group_key` (script-owned) tie a case's items to a row across renames. An item identity is unique per visa type and overlapping `applies_to`; copied keys are re-keyed with a warning.
+- **IDs:** a blank `visa_type` is generated from the name (`F-` prefix); a typed ID in capitals, digits and dashes stays as typed; Document lists may name a type instead of giving its ID.
+- **Conditions** (`only_if`, `unless`, `facts_to_ask`) are the firm's own `snake_case` IDs; `married` and `children` still follow from the case's people.
+- **Validation** on every sync and from the sidebar (Verificar): errors skip a row, warnings don't; the `check` column says why.
+- **`checklist_version` = list hash | case hash**, the list hash covering that type's client-facing columns only. Editing a list marks only that type's open cases as older; the sidebar's **Atualizar estes processos** refreshes them with the same merge (nothing received is lost).
+- **Code:** `lists/FirmLists.js` (pure `process()` + I/O), `CaseChecklist.refresh/status`, migration step 4 with `admin/LegacyLists.js`.
+
+## History: 0.4.x, built on a central catalog (removed in 0.5.0)
+
+The rest of this document describes the 0.4.x design, kept for the record.
+
 ## Three layers
 
 ```
