@@ -13,6 +13,25 @@ The portal is for **immigration lawyers**. Each case is a visa application, and 
 | 5 | Languages | PT, EN, then **ES**: portal, emails, catalog texts, skill labels. |
 | 6 | Catalog updates | Bundled in each release. A daily check may **announce** a newer catalog, but nothing changes until the lawyer clicks **Apply**, and the check can be switched off (`catalog_check`). |
 
+## Since 0.5.0 (schema 4): the firm owns its lists
+
+Decided 2026-11-16 after talking to law firms: each firm wants **its own** checklists per process type (initial vs renewal, adult vs minor, its own wording, numbering and validation criteria), not ours plus patches. This replaces the three layers below for every migrated sheet (issue #1):
+
+```
+catalog (ours, a template)  →  the firm's lists (Visa types + Document lists tabs)  →  case checklist (a snapshot per case)
+```
+
+- **Decision 1 changes:** our catalog is a **template**. It seeds the two tabs at setup and at the schema 4 migration (with the firm's Adjustments applied, so nothing changes for existing cases), and update notices compare against it for the firm's types `based_on` ours. Applying a newer catalog never changes the firm's rows.
+- **Decision 4 is stronger:** the lawyer owns the list, in the sheet.
+- **Tabs:** `Visa types` (`visa_type`, `name_*`, `active`, `family`, `facts_to_ask`, `based_on`, `notes`, `check`) and `Document lists` (`visa_type`, `order`, `applies_to`, `level`, `title_*`, `instructions_*`, `group_*`, `group_key`, `only_if`, `unless`, `min_age`, `check_criteria`, `active`, `doc_key`, `check`). `check_criteria` is for the lawyer's review and never reaches clients.
+- **Stable keys:** `doc_key` and `group_key` (script-owned) tie a case's items to a row across renames. An item identity is unique per visa type and overlapping `applies_to`; copied keys are re-keyed with a warning.
+- **IDs:** a blank `visa_type` is generated from the name (`F-` prefix); Document lists may name a type instead of giving its ID.
+- **Validation** on every sync and from the sidebar (Verificar): errors skip a row, warnings don't; the `check` column says why.
+- **`checklist_version` = list hash | case hash**, the list hash covering that type's client-facing columns only. Editing a list marks only that type's open cases as older; the sidebar's **Atualizar estes processos** refreshes them with the same merge (nothing received is lost).
+- **Code:** `catalog/FirmLists.js` (pure `process()` + I/O), `CaseChecklist.refresh/status`, migration step 4. `Catalog.use()` stays the template's; firm lists never go through it.
+- **Adjustments** is hidden and no longer applied (kept for reference).
+- **Skills:** `portal-lists` imports and edits a firm's lists in the firm's own Claude, with the firm's own connector. We never open or write a firm's sheet.
+
 ## Three layers
 
 ```
