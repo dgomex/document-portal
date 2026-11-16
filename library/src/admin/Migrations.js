@@ -24,7 +24,13 @@ const Migrations = (function () {
     4: function (ctx) {
       const ss = ctx.ss;
       const stored = LegacyLists.read(ss);
-      if (!stored) return;
+      if (!stored) {
+        // A new sheet: empty lists. A 0.4.x sheet with built cases but no stored lists can't be
+        // copied: its cases keep their rows (shown as they are); log it so it can be looked at.
+        const built = ss.getSheetByName(Config.TABS.CASES) && Cases.list(ss).some(function (c) { return String(c.checklist_version || '').split('|').length === 3; });
+        if (built && ss.getSheetByName(Config.TABS.EVENTS)) Events.log(ss, 'lists_migration_no_stored_lists', '', '');
+        return;
+      }
       const adjustments = ss.getSheetByName(Config.TABS.ADJUSTMENTS) ? Table.open(ss, Config.TABS.ADJUSTMENTS).rows() : [];
       const countries = String(Settings.get(ss, 'countries') || 'PT').split(/[\s,;]+/).map(function (c) { return c.trim().toUpperCase(); }).filter(String);
       FirmLists.seed(ss, LegacyLists.seedRows(stored, countries, adjustments, Settings.language(ss)));

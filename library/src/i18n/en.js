@@ -224,4 +224,5 @@ const I18N_EN = {
   'lists.check.groupOfOne': 'Group with only one active document: treated as a plain document.',
   'lists.legacyReplaced': 'The portal\'s old list (up to version 0.4). Replaced by the Visa types and Document lists tabs on {date}; no longer used, kept for reference only.',
   'lists.empty': 'No lists yet. Import the firm\'s checklists with Claude (portal-lists skill) or type them into the Visa types and Document lists tabs.',
+  'lists.check.condition': 'Invalid condition: "{value}". Use one word, lower case and _ (e.g. meios_a).',
 };

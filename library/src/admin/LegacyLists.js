@@ -170,7 +170,7 @@ const LegacyLists = (function () {
             active: !hidden(r),
           };
           if (r.any_of) {
-            r.any_of.forEach(function (d, i) {
+            r.any_of.forEach(function (d) {
               const dt = data.documentTypes[d] || {};
               const row = Object.assign({}, base, {
                 order: ++n, doc_key: d, group_key: r.key,
@@ -180,8 +180,9 @@ const LegacyLists = (function () {
                 group_pt: pick(r.text.title, 'pt'), group_en: pick(r.text.title, 'en'), group_es: pick(r.text.title, 'es'),
                 instructions_pt: '', instructions_en: '', instructions_es: '',
               });
-              // A firm note on a whole group (an Adjustment change) stays visible: on the first option.
-              if (i === 0 && r.note) LANGS.forEach(function (l) { row['instructions_' + l] = r.note; });
+              // A firm note on a whole group (an Adjustment change): the same text on every
+              // option, which FirmLists shows once as the group's instructions, as 0.4.2 did.
+              if (r.note) LANGS.forEach(function (l) { row['instructions_' + l] = r.note; });
               docs.push(row);
             });
           } else {

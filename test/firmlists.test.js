@@ -549,3 +549,109 @@ describe('the dev seed', () => {
     expect(JSON.stringify(view)).not.toContain('apostilado');  // check_criteria stays with the lawyer
   });
 });
+
+describe('review fixes (PR #2)', () => {
+  test('#1 a case whose process type breaks still shows its list on the client page', () => {
+    const f = firm({ cases: [d7], people: family.slice(0, 1) });
+    f.migrate();
+    f.sync();
+    // The lawyer clears the type's name in the firm's language: the type drops out of the model.
+    lib.Table.open(f.ss, VT).update(f.types().find((t) => t.visa_type === 'PT-D7')._row, { name_pt: '' });
+    lib.FirmLists.reset_();
+    expect(lib.FirmLists.visa(f.model(), 'PT-D7')).toBeNull();
+    const client = lib.Clients.list(f.ss)[0];
+    const me = lib.me_(Object.assign({}, f.ctx, { ss: f.ss }), client, 'pt');
+    expect(me.cases[0].visa).toBe('');
+    expect(me.cases[0].checklist.flatMap((g) => g.items).length).toBe(f.items('CS-111111').length);
+  });
+
+  test('#2 a group copied for people who never overlap is its own group; copied with other text, a new group', () => {
+    const f = firm({ cases: [d7], people: family });
+    f.migrate();
+    const add = (r) => f.addDoc(Object.assign({ visa_type: 'PT-D7', active: true }, r));
+    add({ applies_to: 'spouse', title_pt: 'Extrato bancário', group_pt: 'Meios', doc_key: 'FIRM-EXTRATO', group_key: 'FIRM-G-MEIOS' });
+    add({ applies_to: 'spouse', title_pt: 'IRS', group_pt: 'Meios', doc_key: 'FIRM-IRS', group_key: 'FIRM-G-MEIOS' });
+    // Copied for each child (keys copied too): a separate group, same key; items differ by person.
+    add({ applies_to: 'each_child', title_pt: 'Extrato bancário', group_pt: 'Meios', doc_key: 'FIRM-EXTRATO', group_key: 'FIRM-G-MEIOS' });
+    add({ applies_to: 'each_child', title_pt: 'IRS', group_pt: 'Meios', doc_key: 'FIRM-IRS', group_key: 'FIRM-G-MEIOS' });
+    // Copied for the spouse again and renamed: a new group with a new key.
+    add({ applies_to: 'spouse', title_pt: 'Extrato bancário', group_pt: 'Rendimentos', doc_key: 'FIRM-EXTRATO', group_key: 'FIRM-G-MEIOS' });
+    add({ applies_to: 'spouse', title_pt: 'IRS', group_pt: 'Rendimentos', doc_key: 'FIRM-IRS', group_key: 'FIRM-G-MEIOS' });
+    const reqs = f.model().visas['PT-D7'].requirements.filter((r) => /^FIRM-G-MEIOS/.test(r.key));
+    expect(reqs.map((r) => [r.key, r.applies_to, r.any_of])).toEqual([
+      ['FIRM-G-MEIOS', 'spouse', ['FIRM-EXTRATO', 'FIRM-IRS']],
+      ['FIRM-G-MEIOS', 'each_child', ['FIRM-EXTRATO', 'FIRM-IRS']],
+      ['FIRM-G-MEIOS_2', 'spouse', ['FIRM-EXTRATO', 'FIRM-IRS']],
+    ]);
+    expect(f.docs('PT-D7').filter((d) => d.group_pt === 'Rendimentos').every((d) => d.group_key === 'FIRM-G-MEIOS_2' && /Chave copiada/.test(d.check))).toBe(true);
+    // An option copied inside its own group (same text) is an extra option, not a new group.
+    add({ applies_to: 'spouse', title_pt: 'Declaração da entidade patronal', group_pt: 'Meios', doc_key: 'FIRM-IRS', group_key: 'FIRM-G-MEIOS' });
+    expect(f.model().visas['PT-D7'].requirements.find((r) => r.key === 'FIRM-G-MEIOS' && r.applies_to === 'spouse').any_of).toEqual(['FIRM-EXTRATO', 'FIRM-IRS', 'FIRM-IRS_2']);
+    f.sync();
+    const items = f.items('CS-111111').filter((i) => /^FIRM-G-MEIOS/.test(i.key)).map((i) => i.key).sort();
+    expect(items).toEqual(['FIRM-G-MEIOS_2|PE-BBBBBB', 'FIRM-G-MEIOS|PE-BBBBBB', 'FIRM-G-MEIOS|PE-CCCCCC', 'FIRM-G-MEIOS|PE-DDDDDD']);
+  });
+
+  test('#3 opening the sidebar writes nothing; Verificar writes under the script lock', () => {
+    const f = firm();
+    f.migrate();
+    f.addDoc({ visa_type: 'PT-D7', title_pt: 'Novo documento', active: true });
+    const before = JSON.stringify(f.ss.getSheetByName(DL).data);
+    lib.CaseChecklist.status(f.ctx);
+    expect(JSON.stringify(f.ss.getSheetByName(DL).data)).toBe(before);
+    let locked = false;
+    const ctx = Object.assign({}, f.ctx, { lock: { tryLock: () => { locked = true; return true; }, releaseLock() { locked = false; } } });
+    lib.CaseChecklist.status(ctx, { write: true });
+    expect(f.docs('PT-D7').find((d) => d.title_pt === 'Novo documento').doc_key).toBe('FIRM-NOVO_DOCUMENTO');
+    expect(locked).toBe(false);
+    const busy = Object.assign({}, f.ctx, { lock: { tryLock: () => false, releaseLock() {} } });
+    expect(() => lib.CaseChecklist.status(busy, { write: true })).toThrow(expect.objectContaining({ code: 'busy' }));
+  });
+
+  test('#5 a 0.4.x sheet with built cases but no stored lists is logged, and its cases keep their rows', () => {
+    const f = firm({ fresh: true, cases: [d7], people: family.slice(0, 1) });
+    lib.Cases.table(f.ss).update(f.caseRow('CS-111111')._row, { checklist_version: '2026.11.1|abc|def' });
+    f.migrate();
+    expect(lib.Table.open(f.ss, 'Events').rows().map((e) => e.type)).toContain('lists_migration_no_stored_lists');
+    expect(f.caseRow('CS-111111').checklist_version).toBe('2026.11.1|abc|def');
+  });
+
+  test('#7 a condition with a space is an error, so the document is never silently lost', () => {
+    const f = firm();
+    f.migrate();
+    f.addDoc({ visa_type: 'PT-D7', title_pt: 'Contrato', only_if: 'meios a', active: true });
+    f.model();
+    expect(f.docs('PT-D7').find((d) => d.title_pt === 'Contrato').check).toContain('Condição inválida: "meios a"');
+  });
+
+  test('#9 a new process type reaches the Document lists dropdown even when Cases IDs don\'t change', () => {
+    const calls = [];
+    const orig = lib.Schema.visaDropdown;
+    const f = firm();
+    f.migrate();
+    f.ctx.props = new FakeProps();
+    const sch = lib.Schema;
+    sch.visaDropdown = (ss, caseIds, all) => calls.push(all.slice());
+    try {
+      f.sync();
+      f.addType({ name_pt: 'Tipo novo', active: true });
+      f.sync();
+      expect(calls.length).toBe(2);
+      expect(calls[1]).toContain('F-TIPO-NOVO');
+    } finally {
+      sch.visaDropdown = orig;
+    }
+  });
+
+  test('#10 a migrated note on a whole group shows once, as the group\'s instructions, as in 0.4.2', () => {
+    const adjustments = [{ visa_type: 'PT-D7', doc_type: 'ACCOMMODATION', action: 'change', note: 'Contrato com pelo menos 12 meses.' }];
+    const f = firm({ adjustments });
+    f.migrate();
+    const before = lib.Checklist.build({ requirements: lib.LegacyLists.requirements(fixtures.CATALOG_04, 'PT-D7', adjustments), people: family.slice(0, 1), lang: 'pt', now: NOW })
+      .find((i) => i.key === 'ACCOMMODATION|case');
+    const after = lib.Checklist.build({ requirements: f.model().visas['PT-D7'].requirements, people: family.slice(0, 1), lang: 'pt', now: NOW })
+      .find((i) => i.key === 'ACCOMMODATION|case');
+    expect(after.instructions).toBe('Contrato com pelo menos 12 meses.');
+    expect(allLangs(after.text)).toEqual(allLangs(before.text));
+  });
+});

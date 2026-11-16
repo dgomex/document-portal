@@ -224,4 +224,5 @@ const I18N_ES = {
   'lists.check.groupOfOne': 'Grupo con un solo documento activo: se trata como documento normal.',
   'lists.legacyReplaced': 'Lista antigua del portal (hasta la versión 0.4). Sustituida por las pestañas Visa types y Document lists el {date}; ya no se usa, se conserva solo como referencia.',
   'lists.empty': 'Todavía no hay listas. Importe las checklists del despacho con Claude (skill portal-lists) o escríbalas en las pestañas Visa types y Document lists.',
+  'lists.check.condition': 'Condición no válida: "{value}". Use una sola palabra, minúsculas y _ (p. ej., meios_a).',
 };

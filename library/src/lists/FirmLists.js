@@ -51,7 +51,7 @@ const FirmLists = (function () {
   }
 
   function list_(v) {
-    return str_(v).split(/[;,]+/).map(function (s) { return s.trim().toLowerCase().replace(/\s+/g, '_'); }).filter(Boolean);
+    return str_(v).split(/[;,]+/).map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean);
   }
 
   function plain_(s) {
@@ -212,30 +212,54 @@ const FirmLists = (function () {
         }
       });
 
-      // 3b. Copied keys. Groups claim their keys first (a group's key is
-      // shared by its rows on purpose), then plain rows in sheet order.
+      // 3b. Groups and copied keys. A group is identified by its group_key
+      // within a scope of people: the same key used for people that never
+      // overlap (spouse, each_child) is a separate group, as for plain keys.
+      // A row repeating an option of its group is a copy: with the group's
+      // text, an extra option (new doc_key); with other text, a copied group
+      // (new group_key). Groups claim their keys first, then plain rows.
       const appliesOf = function (r) { return str_(r.applies_to) || 'main_applicant'; };
       const claims = [];  // { id, applies, row, group }
-      const groups = {};
+      const byKey = {};   // group_key -> [group]
+      let groupCount = 0;
+      const newGroup = function (key, r, applies) {
+        const g = { id: ++groupCount, key: key, first: r, applies: applies, docKeys: {}, copies: [] };
+        (byKey[key] = byKey[key] || []).push(g);
+        claims.push({ id: key, applies: applies, row: r._row, group: g.id });
+        return g;
+      };
+      const textOf = function (r) { return str_(r['group_' + lang]).toLowerCase(); };
       rows.forEach(function (r) {
         const gk = str_(r.group_key);
         if (!gk) return;
-        if (!groups[gk]) {
-          groups[gk] = { key: gk, first: r, docKeys: {} };
-          claims.push({ id: gk, applies: appliesOf(r), row: r._row, group: gk });
-        }
-        const g = groups[gk];
+        const applies = appliesOf(r);
+        const same = byKey[gk] || [];
+        let g = same.filter(function (e) { return e.applies === applies; })[0] ||
+          same.filter(function (e) { return overlap_(e.applies, applies); })[0];
+        if (!g) g = newGroup(gk, r, applies);
         const dk = str_(r.doc_key);
-        if (g.docKeys[dk]) {
+        if (g.docKeys[dk] && textOf(r) !== textOf(g.first)) {
+          const from = g.docKeys[dk];
+          let copy = g.copies.filter(function (c) { return textOf(c.first) === textOf(r) && !c.docKeys[dk]; })[0];
+          if (!copy) {
+            const fresh = unique_(gk, keys, '_');
+            keys.add(fresh);
+            copy = newGroup(fresh, r, applies);
+            g.copies.push(copy);
+          }
+          set(T.docs, r, { group_key: copy.key });
+          note(T.docs, r._row, 'warning', 'lists.check.keyCopied', { row: from });
+          g = copy;
+        } else if (g.docKeys[dk]) {
           const fresh = unique_(dk, keys, '_');
           keys.add(fresh);
           set(T.docs, r, { doc_key: fresh });
           note(T.docs, r._row, 'warning', 'lists.check.keyCopied', { row: g.docKeys[dk] });
-        }
-        g.docKeys[str_(r.doc_key)] = r._row;
-        if (str_(r['group_' + lang]).toLowerCase() !== str_(g.first['group_' + lang]).toLowerCase()) {
+        } else if (textOf(r) !== textOf(g.first)) {
           note(T.docs, r._row, 'warning', 'lists.check.groupName', { row: g.first._row });
         }
+        g.docKeys[str_(r.doc_key)] = r._row;
+        r._grp = g.id;
       });
       rows.forEach(function (r) {
         if (str_(r.group_key)) return;
@@ -263,6 +287,11 @@ const FirmLists = (function () {
         if (!str_(r['title_' + lang])) { note(T.docs, r._row, 'error', 'lists.check.noTitle', { lang: lang }); bad = true; }
         const minAge = str_(r.min_age);
         if (minAge && !/^\d{1,3}$/.test(minAge)) { note(T.docs, r._row, 'error', 'lists.check.minAge', { value: minAge }); bad = true; }
+        // A case's facts are split on spaces too, so a condition must be one snake_case word.
+        list_(r.only_if).concat(list_(r.unless)).filter(function (c) { return !/^[a-z][a-z0-9_]*$/.test(c); }).forEach(function (c) {
+          note(T.docs, r._row, 'error', 'lists.check.condition', { value: c });
+          bad = true;
+        });
         if (bad) return;
         const missing = LANGS.filter(function (l) { return l !== lang && !str_(r['title_' + l]); });
         if (missing.length) note(T.docs, r._row, 'warning', 'lists.check.noTranslation', { langs: missing.join(', ').toUpperCase() });
@@ -291,9 +320,9 @@ const FirmLists = (function () {
           visa.requirements.push(requirement_(v, str_(v.r.doc_key), [v], lang));
           return;
         }
-        if (done[gk]) return;
-        done[gk] = true;
-        const members = valid.filter(function (w) { return str_(w.r.group_key) === gk; });
+        if (done[v.r._grp]) return;
+        done[v.r._grp] = true;
+        const members = valid.filter(function (w) { return w.r._grp === v.r._grp; });
         const first = members[0];
         members.slice(1).forEach(function (w) {
           const differs = ['applies', 'level', 'min_age'].some(function (f) { return w[f] !== first[f]; }) ||
@@ -352,11 +381,11 @@ const FirmLists = (function () {
       const instructions = {};
       let any = false;
       LANGS.forEach(function (l) {
-        instructions[l] = members.map(function (w) {
-          const ins = texts_(w.r, 'instructions_', lang)[l];
-          if (ins) any = true;
-          return ins ? texts_(w.r, 'title_', lang)[l] + ': ' + ins : '';
-        }).filter(Boolean).join(' ');
+        const each = members.map(function (w) { return texts_(w.r, 'instructions_', lang)[l]; });
+        if (each.some(Boolean)) any = true;
+        // The same text on every option is the group's own instructions; otherwise each option's, by title.
+        instructions[l] = each[0] && each.every(function (x) { return x === each[0]; }) ? each[0]
+          : members.map(function (w, k) { return each[k] ? texts_(w.r, 'title_', lang)[l] + ': ' + each[k] : ''; }).filter(Boolean).join(' ');
       });
       text = {
         title: texts_(r, 'group_', lang),
@@ -449,6 +478,14 @@ const FirmLists = (function () {
     return { model: out.model, problems: out.problems, summary: summary_(out) };
   }
 
+  /** Like check(), without writing anything: for the sidebar, which runs outside the script lock. */
+  function inspect(ss) {
+    const raw = read_(ss);
+    const copy = function (rows) { return rows.map(function (r) { return Object.assign({}, r); }); };
+    const out = process(copy(raw.types), copy(raw.docs), Settings.language(ss));
+    return { model: out.model, problems: out.problems, summary: summary_(out) };
+  }
+
   function summary_(out) {
     const visas = out.model.order.map(function (id) { return out.model.visas[id]; });
     return {
@@ -486,7 +523,11 @@ const FirmLists = (function () {
     rows.types.forEach(function (r, i) { r._row = i + 2; });
     rows.docs.forEach(function (r, i) { r._row = i + 2; });
     process(rows.types, rows.docs, Settings.language(ss));
-    const clean = function (r) { const o = Object.assign({}, r); delete o._row; return o; };
+    const clean = function (r) {  // without process()'s own markers (_row, _grp)
+      const o = {};
+      Object.keys(r).forEach(function (k) { if (k.charAt(0) !== '_') o[k] = r[k]; });
+      return o;
+    };
     typesTable.appendMany(rows.types.map(clean));
     docsTable.appendMany(rows.docs.map(clean));
     memo_ = null;
@@ -495,6 +536,6 @@ const FirmLists = (function () {
 
   function reset_() { memo_ = null; }
 
-  return { process: process, enabled: enabled, get: get, check: check, visa: visa, dropdownIds: dropdownIds,
+  return { process: process, enabled: enabled, get: get, check: check, inspect: inspect, visa: visa, dropdownIds: dropdownIds,
     seed: seed, ownId: ownId, reset_: reset_, HASHED_DOC_COLUMNS: HASHED_DOC_COLUMNS };
 })();

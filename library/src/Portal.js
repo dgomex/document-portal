@@ -264,7 +264,8 @@ function me_(ctx, client, lang) {
       return {
         id: c.case_id, name: String(c.case_name || ''), reference: String(c.firm_reference || ''),
         visa: visa ? Text.pick(visa.name, language) : '',
-        checklist: withChecklists && visa ? CaseChecklist.view(ctx.ss, c.case_id, language) : [],
+        // The case's own rows are its list (a snapshot): shown even if its process type was renamed or broken.
+        checklist: withChecklists ? CaseChecklist.view(ctx.ss, c.case_id, language) : [],
       };
     }),
   };
@@ -274,7 +275,7 @@ const ADMIN_ = {
   saveSetup: function (data, ctx) { return Setup.save(ctx, data); },
   updateStatus: function (data, ctx) { return Update.status(ctx); },
   // "Document lists": Verificar (fills IDs and keys, writes the check column) and "Update these cases".
-  listsStatus: function (data, ctx) { return CaseChecklist.status(ctx); },
+  listsStatus: function (data, ctx) { return CaseChecklist.status(ctx, { write: true }); },
   listsRefresh: function (data, ctx) {
     const r = CaseChecklist.refresh(ctx, String(data.visaId || ''));
     return { result: r, status: CaseChecklist.status(ctx) };

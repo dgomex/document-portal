@@ -218,13 +218,22 @@ const CaseChecklist = (function () {
 
   /**
    * For the "Document lists" sidebar: per process type, how many open cases
-   * use an older version of its list; and IDs cases use that aren't in Visa types.
+   * use an older version of its list; and IDs cases use that aren't in Visa
+   * types. Read-only, unless opts.write (Verificar): then it fills IDs, keys
+   * and the check column, under the script lock like the sync.
    */
-  function status(ctx) {
+  function status(ctx, opts) {
+    opts = opts || {};
     const ss = ctx.ss;
     if (!FirmLists.enabled(ss)) return { enabled: false, visas: [], unknown: [], summary: null };
     const lang = lang_(ss);
-    const checked = FirmLists.check(ss);
+    let checked;
+    if (opts.write) {
+      if (!ctx.lock.tryLock(30000)) throw Errors.make('busy', 'Another portal task is running');
+      try { checked = FirmLists.check(ss); } finally { ctx.lock.releaseLock(); }
+    } else {
+      checked = FirmLists.inspect(ss);
+    }
     const model = checked.model;
     const older = older_(ss, model);
     const visas = model.order.map(function (id) {
@@ -247,7 +256,7 @@ const CaseChecklist = (function () {
   /** Cases visa_type dropdown: refreshed when the set of IDs changes. */
   function refreshDropdown_(ctx, model, allCases) {
     const ids = FirmLists.dropdownIds(model, allCases.map(function (c) { return c.visa_type; }));
-    const key = hash_(ids);
+    const key = hash_([ids, model.order]);  // the Document lists dropdown lists every type
     if (ctx.props && ctx.props.getProperty('LISTS_DROPDOWN') === key) return;
     Schema.visaDropdown(ctx.ss, ids, model.order);
     if (ctx.props) ctx.props.setProperty('LISTS_DROPDOWN', key);
