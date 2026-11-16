@@ -19,6 +19,8 @@ function onOpen(e) {
     .addItem(t('menu.provision'), 'menuProvision')
     .addItem(t('menu.invite'), 'menuInvite')
     .addSeparator()
+    // The shell is frozen (no new entry points for existing firms): the lists sidebar is part of menuUpdate's.
+    .addItem(t('menu.lists'), 'menuUpdate')
     .addItem(t(ss && safe_(function () { return Settings.get(ss, 'catalog_pending'); }) ? 'menu.updateLists' : 'menu.update'), 'menuUpdate');
   if (ss && safe_(function () { return Seed.enabled(ss); })) {
     menu.addSeparator().addItem(t('menu.devSeed'), 'menuDevSeed');
@@ -64,7 +66,8 @@ function menuInvite(ctx) {
 function menuUpdate(ctx) {
   sheetAction_(ctx, function (lang) {
     const template = HtmlService.createTemplateFromFile('html/update');
-    template.boot = bootJson_({ sheetVersion: Config.LIBRARY_VERSION, catalog: CatalogUpdates.status(ctx), strings: I18n.bundle()[lang] });
+    template.boot = bootJson_({ sheetVersion: Config.LIBRARY_VERSION, catalog: CatalogUpdates.status(ctx),
+      lists: safe_(function () { return CaseChecklist.status(ctx); }), strings: I18n.bundle()[lang] });
     SpreadsheetApp.getUi().showSidebar(template.evaluate().setTitle(I18n.t(lang, 'update.title')));
   });
 }
@@ -257,11 +260,13 @@ const API_ = {
 function me_(ctx, client, lang) {
   const language = Catalog.data().languages.indexOf(lang) !== -1 ? lang : I18n.lang(String(client.language || ''));
   const withChecklists = !!ctx.ss.getSheetByName(Config.TABS.CHECKLIST);
+  const firm = FirmLists.enabled(ctx.ss) ? FirmLists.get(ctx.ss, ctx.cache) : null;
+  const visaOf = function (id) { return firm ? FirmLists.visa(firm, id) : Catalog.visa(id); };
   return {
     name: String(client.name || ''),
     language: I18n.lang(String(client.language || '')),
     cases: Cases.uploadableForClient(ctx.ss, client.client_id).map(function (c) {
-      const visa = String(c.visa_type || '').trim() ? Catalog.visa(String(c.visa_type).trim()) : null;
+      const visa = String(c.visa_type || '').trim() ? visaOf(String(c.visa_type).trim()) : null;
       return {
         id: c.case_id, name: String(c.case_name || ''), reference: String(c.firm_reference || ''),
         visa: visa ? Catalog.text(visa.name, language) : '',
@@ -278,6 +283,12 @@ const ADMIN_ = {
   catalogApply: function (data, ctx) { return CatalogUpdates.apply(ctx, data.version); },
   catalogIgnore: function (data, ctx) { return CatalogUpdates.ignore(ctx); },
   catalogCheck: function (data, ctx) { return CatalogUpdates.setCheck(ctx, !!data.on); },
+  // "Document lists": Verificar (fills IDs and keys, writes the check column) and "Update these cases".
+  listsStatus: function (data, ctx) { return CaseChecklist.status(ctx); },
+  listsRefresh: function (data, ctx) {
+    const r = CaseChecklist.refresh(ctx, String(data.visaId || ''));
+    return { result: r, status: CaseChecklist.status(ctx) };
+  },
 };
 
 /** detailed: owner-only callers also get the internal message, to report problems. */

@@ -1,6 +1,7 @@
 /**
- * Builds a case's document checklist: catalog requirements for the visa,
- * changed by the firm's adjustments, filtered by the case's facts, and
+ * Builds a case's document checklist: the visa's requirements (from the
+ * firm's own lists, FirmLists, since schema 4; before that our catalog
+ * changed by the firm's adjustments), filtered by the case's facts, and
  * multiplied out per person. Pure: no sheet or Drive access (CaseChecklist
  * does the I/O), so every rule here is unit-tested.
  *
@@ -97,7 +98,9 @@ const Checklist = (function () {
     }
   }
 
+  /** Text shown to the client. A firm list's requirement carries its own (r.text); a catalog one is looked up. */
   function text_(r) {
+    if (r.text) return r.text;
     const langs = Catalog.data().languages;
     const join = function (a, b) {
       const out = {};
@@ -129,13 +132,14 @@ const Checklist = (function () {
   /**
    * input: { visaId, facts: 'cplp;other_residence', people: [{person_id, name, role, birth_date}],
    *          adjustments: [...rows], lang: firm language for the title/instructions columns, now }
+   * or, for a firm list: { requirements: FirmLists visa requirements, facts, people, lang, now }.
    */
   function build(input) {
     const people = input.people || [];
     const have = facts(input.facts, people);
     const lang = input.lang || 'pt';
     const items = [];
-    requirements(input.visaId, input.adjustments).forEach(function (r) {
+    (input.requirements || requirements(input.visaId, input.adjustments)).forEach(function (r) {
       if (r.only_if.some(function (f) { return !have.has(f); })) return;
       if (r.unless.some(function (f) { return have.has(f); })) return;
       const text = text_(r);
@@ -189,5 +193,5 @@ const Checklist = (function () {
     return out;
   }
 
-  return { facts: facts, age: age, requirements: requirements, build: build, merge: merge, FIRM_PREFIX: FIRM_PREFIX };
+  return { facts: facts, age: age, requirements: requirements, build: build, merge: merge, text: text_, FIRM_PREFIX: FIRM_PREFIX };
 })();

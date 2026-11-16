@@ -63,6 +63,9 @@ class FakeSheet {
   deleteRows(start, n) { this.data.splice(start - 1, n); }
   getMaxRows() { return Math.max(this.maxRows || 0, this.data.length); }
   insertRowsAfter(after, n) { this.maxRows = this.getMaxRows() + n; }
+  clear() { this.data = []; }
+  hideSheet() { this.hidden = true; }
+  isSheetHidden() { return !!this.hidden; }
   getRange(row, col, numRows = 1, numCols = 1) {
     const sheet = this;
     return {
@@ -91,6 +94,8 @@ class FakeSpreadsheet {
     this.sheets = Object.entries(tabs).map(([name, rows]) => new FakeSheet(name, rows));
   }
   getSheetByName(name) { return this.sheets.find((s) => s.name === name) || null; }
+  getSheets() { return this.sheets.slice(); }
+  insertSheet(name) { const sh = new FakeSheet(name, []); this.sheets.push(sh); return sh; }
 }
 
 module.exports = { load, libraryFiles, FakeSheet, FakeSpreadsheet, SRC };

@@ -11,6 +11,11 @@
  *
  * Only the lists for new (or refreshed) checklists change; existing case
  * checklists are snapshots and stay as they are.
+ *
+ * Since schema 4 the firm keeps its own lists (FirmLists) and this catalog
+ * is only a template: the notice lists changes for the firm's types that are
+ * based_on ours, and applying one only updates the template (used to seed
+ * and to compare). It never changes the firm's Visa types or Document lists.
  */
 const CatalogUpdates = (function () {
   const TAB = 'CatalogData';
@@ -102,7 +107,7 @@ const CatalogUpdates = (function () {
   }
 
   /** What changed between two catalogs, in the firm's language (a few lines per visa). */
-  function changes(from, to, lang) {
+  function changes(from, to, lang, onlyVisaIds) {
     const t = function (key, p) { return I18n.t(lang, key, p); };
     const name = function (data, id) { return Catalog.text(data.documentTypes[id] ? data.documentTypes[id].name : null, lang) || id; };
     const visas = function (data) {
@@ -114,6 +119,7 @@ const CatalogUpdates = (function () {
     const b = visas(to);
     const lines = [];
     Object.keys(b).forEach(function (id) {
+      if (onlyVisaIds && onlyVisaIds.indexOf(id) === -1) return;
       const vb = b[id];
       const va = a[id];
       const label = Catalog.text(vb.name, lang);
@@ -158,7 +164,9 @@ const CatalogUpdates = (function () {
     }
     const lang = Settings.language(ss);
     const from = stored || CATALOG_DATA;
-    const summary = changes(from, best.data, lang).slice(0, 60);
+    const firm = FirmLists.enabled(ss) ? FirmLists.get(ss, ctx.cache) : null;
+    const based = firm ? firm.order.map(function (id) { return firm.visas[id].basedOn; }).filter(String) : null;
+    const summary = changes(from, best.data, lang, based).slice(0, 60);
     ctx.props.setProperty(PENDING_KEY, JSON.stringify({ version: best.data.version, source: best.source, changes: summary }));
     Settings.set(ss, 'catalog_pending', best.data.version);
     return best.data.version;

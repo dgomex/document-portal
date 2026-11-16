@@ -3,8 +3,8 @@
  * with the sheet and with the Claude skill: add columns, never rename them.
  */
 const Config = Object.freeze({
-  LIBRARY_VERSION: '0.4.2',
-  SCHEMA_VERSION: 3,  // bump with a step in admin/Migrations.js
+  LIBRARY_VERSION: '0.5.0',
+  SCHEMA_VERSION: 4,  // bump with a step in admin/Migrations.js
 
   LANGUAGES: ['pt', 'en', 'es'],
   DEFAULT_LANGUAGE: 'pt',
@@ -46,7 +46,8 @@ const Config = Object.freeze({
   INVITE: { NONE: '', REQUESTED: 'REQUESTED', SENT: 'SENT', ERROR: 'ERROR' },
 
   TABS: { SETTINGS: 'Settings', CLIENTS: 'Clients', CASES: 'Cases', PEOPLE: 'People', CHECKLIST: 'Checklist',
-    ADJUSTMENTS: 'Adjustments', UPLOADS: 'Uploads', EVENTS: 'Events' },
+    ADJUSTMENTS: 'Adjustments', UPLOADS: 'Uploads', EVENTS: 'Events',
+    VISA_TYPES: 'Visa types', DOC_LISTS: 'Document lists' },  // schema 4: the firm's own lists
 
   // People in a case, and what each checklist item is (docs/VISA-CHECKLISTS.md).
   ROLES: ['main_applicant', 'spouse', 'child', 'dependant'],
@@ -95,6 +96,11 @@ const Config = Object.freeze({
       'original_name', 'mime_type', 'size_bytes', 'md5', 'drive_link', 'uploader_email', 'note', 'status',
       'item_id', 'person_id'],  // schema 3
     Events: ['timestamp', 'type', 'email_hash', 'detail'],
+    // schema 4: the firm's own process types and document lists (catalog/FirmLists.js)
+    'Visa types': ['visa_type', 'name_pt', 'name_en', 'name_es', 'active', 'family', 'facts_to_ask', 'based_on', 'notes', 'check'],
+    'Document lists': ['visa_type', 'order', 'applies_to', 'level', 'title_pt', 'title_en', 'title_es',
+      'instructions_pt', 'instructions_en', 'instructions_es', 'group_pt', 'group_en', 'group_es', 'group_key',
+      'only_if', 'unless', 'min_age', 'check_criteria', 'active', 'doc_key', 'check'],
   },
 
   // Columns only the script writes. Protected warning-only: the lawyer owns
@@ -107,6 +113,8 @@ const Config = Object.freeze({
     Checklist: ['item_id', 'person_id', 'upload_ids', 'doc_type', 'key', 'source', 'updated_at', 'text_json'],
     Uploads: '*',
     Events: '*',
+    'Visa types': ['check'],
+    'Document lists': ['group_key', 'doc_key', 'check'],
   },
 
   VALIDATIONS: {
@@ -119,7 +127,7 @@ const Config = Object.freeze({
     Cases: {
       status: ['open', 'closed'],
       provision_status: ['PENDING', 'ACTIVE', 'ERROR'],
-      visa_type: 'visa_types',  // filled from the catalog for the firm's countries
+      visa_type: 'visa_types',  // the firm's process types (schema 4), else the catalog's for its countries
     },
     People: {
       role: ['main_applicant', 'spouse', 'child', 'dependant'],
@@ -127,6 +135,16 @@ const Config = Object.freeze({
     Checklist: {
       level: ['required', 'optional', 'requested', 'waived'],
       status: ['missing', 'received', 'accepted', 'rejected'],
+    },
+    'Visa types': {
+      active: 'checkbox',
+      family: 'checkbox',
+    },
+    'Document lists': {
+      visa_type: 'firm_visa_types',  // IDs; a typed name is allowed and replaced on sync
+      applies_to: ['main_applicant', 'spouse', 'each_child', 'each_adult', 'each_person', 'case'],
+      level: ['required', 'optional'],
+      active: 'checkbox',
     },
     Adjustments: {
       action: ['add', 'change', 'hide'],
