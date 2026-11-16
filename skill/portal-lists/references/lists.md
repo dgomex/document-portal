@@ -8,12 +8,11 @@ Schema version 4 (Settings `schema_version`, portal 0.5.0). Columns are only eve
 
 | Column | Who writes | Values |
 |---|---|---|
-| `visa_type` | skill, or blank | The ID. Seeded rows keep the catalog ID (`PT-D7`, `PT-AR-91`). Blank: the portal generates one from the name (`F-` + the name in capitals, e.g. `F-AR-92-MENOR-RENOVACAO`). A typed ID of the firm's own type is normalised the same way (`ar 92` → `F-AR-92`). Once cases use an ID, don't change it: those cases would lose their type |
+| `visa_type` | skill, or blank | The ID. Blank: the portal generates one from the name (`F-` + the name in capitals, e.g. `F-AR-92-MENOR-RENOVACAO`). A typed ID in capitals, digits and dashes stays as typed (`PT-D7`, kept from earlier versions); other typed text is normalised like a name (`ar 92` → `F-AR-92`). Once cases use an ID, don't change it: those cases would lose their type |
 | `name_pt`, `name_en`, `name_es` | skill | What the lawyer and the client see. The firm's language is required |
 | `active` | skill | TRUE / FALSE. Only active types are offered for new cases; inactive ones keep working in existing cases |
 | `family` | skill | TRUE when the list has spouse or child documents (portal-clients then asks about the family) |
-| `facts_to_ask` | skill | `;`-separated conditions asked when a case is opened: catalog facts (`cplp`, `other_residence`, `sole_custody`, `self_employed`, …) or the firm's own `snake_case` IDs (`meios_a`) |
-| `based_on` | portal (seeding) only | The catalog ID a seeded type came from; empty for the firm's own types. Catalog update notices only mention types with a `based_on` |
+| `facts_to_ask` | skill | `;`-separated conditions asked when a case is opened: the firm's own `snake_case` IDs (`cplp`, `meios_a`, `self_employed`…) |
 | `notes` | skill (if asked) | The lawyer's notes. Never shown to clients |
 | `check` | portal only | `ok`, or what's wrong (below) |
 

@@ -76,8 +76,7 @@ const Schema = (function () {
         const firm = FirmLists.enabled(ss) ? FirmLists.get(ss) : null;
         let ids;
         if (rules[column] === 'firm_visa_types') ids = firm ? firm.order : [];
-        else ids = firm ? FirmLists.dropdownIds(firm, Cases.list(ss).map(function (c) { return c.visa_type; }))
-          : Catalog.visas(Catalog.countriesOf(ss)).map(function (v) { return v.id; });
+        else ids = firm ? FirmLists.dropdownIds(firm, Cases.list(ss).map(function (c) { return c.visa_type; })) : [];
         if (!ids.length) return;
         // Document lists may name a type instead of its ID (replaced on sync): a warning, not a block.
         sheet.getRange(2, col, rows, 1).setDataValidation(builder.requireValueInList(ids, true)

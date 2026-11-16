@@ -5,7 +5,7 @@ description: Keep a law firm's own process types and document checklists in its 
 
 # Portal lists
 
-Since portal 0.5.0 each firm keeps **its own** process types and document lists in two tabs of its portal sheet. They were seeded from the portal makers' catalog of Portuguese visas and residence permits; that catalog is now only a starting template. The lawyer owns the lists, and the portal builds every new case's checklist from them.
+Since portal 0.5.0 each firm keeps **its own** process types and document lists in two tabs of its portal sheet. The portal has no lists of its own: a new firm starts with empty tabs and imports or types its lists; a firm that used an earlier version had the lists it was using copied in. The lawyer owns the lists, and the portal builds every new case's checklist from them.
 
 You run in **the firm's own Claude account, with the firm's own Google Sheets connector**. The data goes only between the lawyer, you and their Google account. Nobody else ever opens or writes the firm's sheet.
 
@@ -50,12 +50,12 @@ Columns, allowed values and every `check` message: `references/lists.md`. Read i
 
 | Tab | You write | Never write |
 |---|---|---|
-| Visa types | `visa_type` (or leave it blank: the portal makes the ID from the name), `name_pt`, `name_en`, `name_es`, `active`, `family`, `facts_to_ask`, `notes` | `check`, and `based_on` (only the portal's seeding sets it) |
+| Visa types | `visa_type` (or leave it blank: the portal makes the ID from the name), `name_pt`, `name_en`, `name_es`, `active`, `family`, `facts_to_ask`, `notes` | `check` |
 | Document lists | `visa_type` (the ID, or the type's name: the portal replaces a name with the ID), `order`, `applies_to`, `level`, `title_*`, `instructions_*`, `group_*`, `only_if`, `unless`, `min_age`, `check_criteria`, `active` | `doc_key`, `group_key`, `check` |
 
 The portal owns `doc_key`, `group_key` and `check`: it fills them within 5 minutes (or with **Portal → Processar novas linhas**, EN: Process new rows · ES: Procesar filas nuevas). The keys tie each client's received documents to a row, so **when you change a row, change it in place; never delete it and add a new one**, or the client's received document loses its slot. To remove a document, untick `active`. Never delete rows.
 
-Never write the Clients, Cases, People, Checklist, Uploads or Events tabs here (that is portal-clients, or the portal itself). The Adjustments tab is no longer used since 0.5.0.
+Never write the Clients, Cases, People, Checklist, Uploads or Events tabs here (that is portal-clients, or the portal itself). The hidden Adjustments and CatalogData tabs of sheets from before 0.5.0 are no longer used: never read or write them.
 
 ## 3. Import the firm's own list
 
@@ -71,7 +71,7 @@ The lawyer gives you a file or a link: the firm's checklist for one process type
    - **Age rules** ("registo criminal, se maior de 16 anos"): `each_adult` with `min_age` 16, or `min_age` on the row.
    - **Validation criteria** for the lawyer's review ("emitido há menos de 90 dias", "sem apostila para o Brasil, mas com o número do passaporte") go in `check_criteria`. Clients never see that column; never put them in `instructions`.
 3. **Leave out what the client doesn't upload:** documents the office prepares or fills (power of attorney drafted by the firm, the firm's own declarations, forms the firm completes). List them separately for the lawyer, so they can tell you if one should be on the client's list after all.
-4. **Never invent a document** that isn't in the source, and never "complete" the list from the catalog or from what you know. If an item is unclear (a missing word, "outros documentos", an illegible line), don't guess: ask about it as a question after the table.
+4. **Never invent a document** that isn't in the source, and never "complete" the list from another firm's list or from what you know. If an item is unclear (a missing word, "outros documentos", an illegible line), don't guess: ask about it as a question after the table.
 5. **Personal data:** if the source is a real client's checklist (names, numbers, filled-in fields), use only the list's structure and say so. Never copy a client's personal data into the sheet.
 6. **Show a table** against the current list of that type: each row marked **new**, **changed** (old → new) or **unticked** (on the current list, not in the source). For an existing type, the source replaces the list's content: rows that match keep their place and key (change them in place); rows not in the source get `active` unticked, never deleted. Ask for a yes.
 
@@ -93,9 +93,9 @@ A case's checklist is a snapshot: editing a list never changes open cases by its
 
 Before they click, tell them what will happen, from the change you made: new documents appear as missing; unticked ones disappear ("no longer applies"); renamed ones keep what was already received; nothing received is lost. Count the open cases of that type (Cases tab, `status` open) so they know how many clients will see the change. Editing `check_criteria` or `notes` never marks cases as older.
 
-## 6. The catalog is guidance
+## 6. The lawyer owns the lists
 
-The seeded lists come from official sources on a review date; requirements change and consulates differ, so the lawyer is responsible for each list. When the portal finds a newer catalog, the update sidebar lists what changed for the firm's types based on it. Nothing changes in the firm's lists by itself: if the lawyer wants a change, make it here like any other edit.
+Requirements change and consulates differ: the lawyer is responsible for what each list asks for, and nobody else changes it. When a lawyer asks "is this everything?", say what the list is based on (their own source) and that the final word is theirs.
 
 ## Style
 

@@ -58,10 +58,7 @@ The copy has a single empty tab. Rename it to `Settings` and write, from A1:
 | logo_url | https link to the logo, or leave empty | |
 | max_file_mb | 100 | |
 | daily_email_limit | 95 for free Gmail; 1000 for Workspace | |
-| countries | PT | |
 | reminder_days | 7, or what the lawyer chose (0 = no reminders) | |
-
-`countries` picks which visa lists the firm sees. The catalog covers Portugal (`PT`) today; more countries come with later releases.
 
 The header row is exactly `key`, `value`, `description`. Leave the descriptions empty: the portal fills them in. Don't create other tabs or columns: the portal builds Clients, Cases, People, Checklist, Uploads and the rest itself.
 
@@ -110,15 +107,25 @@ Open `<portal URL>?portal=status` in the browser (or fetch it). The first visit 
 
 Then read the Settings tab back: `root_folder_id`, `portal_url` and `schema_version` should now be filled in.
 
-## 6. First test client
+## 6. The firm's process types and lists
 
-If the portal-clients skill is available, use it to add the lawyer's test email as a client with a case called `Teste` and visa **PT-D7** (any visa works; D7 is a short, familiar list). Otherwise write the rows as that skill describes:
+The portal has no lists of its own: every document list a client sees is the firm's, kept in two tabs of the sheet, **Visa types** (the process types: visas, residence permits, renewals, adult or minor…) and **Document lists** (each type's documents). They start empty.
+
+Ask: **"Tem as checklists do escritório por tipo de processo (PDF, Word, folha de cálculo)?"**
+- **Yes:** the **portal-lists** skill imports them, in this Claude account, with the firm's own Sheets connector: the lawyer gives it a file and confirms the table before anything is written. Do one now, the process type they use most, so the test below shows a real list; the rest can follow after this call (a few minutes per list).
+- **Not yet:** for the test, create one process type called `Teste` with two documents (e.g. "Passaporte" and "Comprovativo de morada"), with portal-lists or by typing the rows (Visa types: `name_<language>` and `active` TRUE, leaving `visa_type` empty; Document lists: `visa_type` = the type's name, `title_<language>`, `active` TRUE). Tell the lawyer clients only get a document list for process types that have one, so their own lists are the next step.
+
+Within 5 minutes the portal gives each type its ID and checks every row: read the `check` column, which says `ok` or what to fix.
+
+## 7. First test client
+
+If the portal-clients skill is available, use it to add the lawyer's test email as a client with a case called `Teste` and the process type from step 6. Otherwise write the rows as that skill describes:
 - **Clients:** a new row with `client_id` CL- plus 6 characters from `0123456789ABCDEFGHJKMNPQRSTVWXYZ`, `name`, `email`, `language`, `active` TRUE, `provision_status` PENDING, `created_by` claude-skill.
-- **Cases:** a matching row with `status` open and `visa_type` PT-D7.
+- **Cases:** a matching row with `status` open and `visa_type` = the ID the portal gave that process type (read it from Visa types).
 
 The folders and the case's document checklist appear within 5 minutes: the lawyer is added to People as the main applicant, and the Checklist tab gets one row per document.
 
-Then ask the lawyer to open the portal URL **on their phone** and log in with the code that arrives by email. They see the D7 checklist. Ask them to send a PDF into one item (its **Enviar** button · EN: Send) and a photo under **Outros documentos** (EN: Other documents). Check together:
+Then ask the lawyer to open the portal URL **on their phone** and log in with the code that arrives by email. They see the checklist. Ask them to send a PDF into one item (its **Enviar** button · EN: Send) and a photo under **Outros documentos** (EN: Other documents). Check together:
 - the files are in Drive under "Portal - <firm>" → the client → Teste (the item's file in the person's own folder);
 - that item's row in Checklist now says `received`;
 - there's a row in Uploads;
@@ -128,14 +135,7 @@ If the phone shows "Não é possível abrir o ficheiro", that phone's browser is
 
 Afterwards, untick the test client's `active` box. Don't delete rows.
 
-## 6a. The firm's process types and lists
-
-Setup seeded two tabs from the portal's catalog: **Visa types** (every Portuguese visa and residence permit) and **Document lists** (their documents). They are now the firm's own lists. Two questions, and neither blocks the hand-over:
-
-1. **Which process types does the firm handle?** Show the Visa types names (grouped: visas, then residence permits) and ask which to keep. Untick `active` on the others (never delete rows): they stop being offered for new cases. If the portal-lists skill is available it does this; otherwise write only the `active` cells.
-2. **Does the firm have its own checklists** (PDF, Word, a spreadsheet)? If yes, the **portal-lists** skill imports them, in this Claude account, with the firm's own Sheets connector: the lawyer gives it the file and confirms the table before anything is written. This can happen after this call; a list per process type takes a few minutes.
-
-## 7. Hand over
+## 8. Hand over
 
 **First, the line to keep.** Every portal skill starts by finding the firm's portal sheet. Give the lawyer this line, with the real links, in their language (EN: "The firm's portal: sheet …, address …"):
 
@@ -148,9 +148,8 @@ Then tell the lawyer, briefly:
 - **Adding clients and cases:** ask Claude (portal-clients skill), or type rows in the sheet and use **Portal → Processar novas linhas** (EN: Process new rows · ES: Procesar filas nuevas).
 - **Inviting a client:** set `invite_status` to REQUESTED. The email goes out within 5 minutes.
 - **Visa checklists:** set a case's `visa_type` (and its family members in People, with birth dates) and the portal builds each person's document list. In the Checklist tab the lawyer sets an item to `accepted` or `rejected` (with a `reason` the client sees), sets `level` to `waived` for items they don't need, or adds a row of their own to ask for something extra. The portal-clients skill does all of this on request.
-- **The lists are the firm's; the lawyer decides.** The seeded lists come from a catalog the portal's makers maintain, with sources and review dates; from now on they are the firm's to change, in the **Visa types** and **Document lists** tabs, by hand or with the portal-lists skill (new process types, renewals, adult/minor lists, a document added or removed, validation criteria for the review in `check_criteria`, which clients never see). Requirements change and consulates differ, so the lawyer remains responsible for what their firm asks for.
+- **The lists are the firm's.** Every list lives in the **Visa types** and **Document lists** tabs and is the firm's to change, by hand or with the portal-lists skill (new process types, renewals, adult/minor lists, a document added or removed, validation criteria for the review in `check_criteria`, which clients never see). The portal never changes them by itself.
 - **After changing a list:** open cases keep their list until the lawyer updates them in **Portal → Listas de documentos** (EN: Document lists · ES: Listas de documentos) → **Atualizar estes processos**. Nothing already received is lost.
-- **Catalog updates:** when a newer catalog is published, the menu shows **Atualizar portal (listas novas)** and the sidebar lists what changed for the firm's types based on it. The firm's lists never change by themselves: to use a change, ask Claude or copy it into Document lists. The daily check can be switched off in the same place.
 - **Reminders:** clients with missing documents get a reminder email every `reminder_days` days (0 turns them off).
 - **Updates:** when a new version is announced, **Portal → Atualizar portal** (EN: Update portal · ES: Actualizar portal) walks them through it (about 3 minutes; the address stays the same).
 - **Privacy:** their privacy policy should mention the portal. There are templates in Portuguese and English. If they use Claude to manage clients, it should also say client names and emails are processed by Anthropic.

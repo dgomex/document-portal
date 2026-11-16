@@ -5,20 +5,42 @@
  */
 const Seed = (function () {
   const FIRM = 'Silva & Costa Advogados';
-  // Real immigration cases, each with its catalog visa or AIMA permit, so the
-  // test firm shows checklists. [case name, status, visa_type]
+  // Cases with the demo process types below, so the test firm shows
+  // checklists. [case name, status, visa_type]
   const CLIENTS = [
     { tag: 'ana', name: 'Ana Ferreira', language: 'pt', active: true,
-      cases: [['Visto D7 – família', 'open', 'PT-D7'],
-        ['Autorização de residência – trabalho subordinado', 'open', 'PT-AR-88-1']] },  // two open: case dropdown
+      cases: [['Visto D7 – família', 'open', 'F-DEMO-D7'],
+        ['Autorização de residência – trabalho', 'open', 'F-DEMO-AR']] },  // two open: case dropdown
     { tag: 'bruno', name: 'Bruno Mendes', language: 'pt', active: true,
-      cases: [['Autorização de residência – Tech Visa', 'open', 'PT-AR-90-TECH'],
-        ['Visto D8 – nómada digital', 'closed', 'PT-D8']] },  // one open: no dropdown
+      cases: [['Autorização de residência – trabalho', 'open', 'F-DEMO-AR'],
+        ['Visto D7', 'closed', 'F-DEMO-D7']] },  // one open: no dropdown
     { tag: 'carla', name: 'Carla Duarte', language: 'en', active: true,
-      cases: [['Intra-company transfer (ICT) residence permit', 'closed', 'PT-AR-124B']] },  // none open: "contact your lawyer"
+      cases: [['Residence permit – work', 'closed', 'F-DEMO-AR']] },  // none open: "contact your lawyer"
     { tag: 'diogo', name: 'Diogo Santos', language: 'pt', active: false,
-      cases: [['Visto para procura de trabalho', 'open', 'PT-JOB-SEEKER']] },  // inactive: behaves like an unknown email
+      cases: [['Visto D7', 'open', 'F-DEMO-D7']] },  // inactive: behaves like an unknown email
   ];
+
+  // A small fictitious list of the firm's own (the portal ships none), written
+  // only when the firm has no lists yet.
+  const TYPES = [
+    { visa_type: 'F-DEMO-D7', name_pt: 'Demo – Visto D7', name_en: 'Demo – D7 visa', name_es: 'Demo – Visado D7', active: true, family: true, facts_to_ask: 'cplp' },
+    { visa_type: 'F-DEMO-AR', name_pt: 'Demo – Autorização de residência (trabalho)', name_en: 'Demo – Residence permit (work)', name_es: 'Demo – Autorización de residencia (trabajo)', active: true, family: false, facts_to_ask: '' },
+  ];
+  const DOCS = [
+    ['F-DEMO-D7', 'each_person', 'required', 'Passaporte válido', 'Valid passport', 'Pasaporte válido', '', '', ''],
+    ['F-DEMO-D7', 'each_person', 'required', 'Fotografia tipo passe', 'Passport photo', 'Fotografía de pasaporte', '', '', ''],
+    ['F-DEMO-D7', 'each_adult', 'required', 'Registo criminal', 'Criminal record certificate', 'Certificado de antecedentes penales', '', '', 'Emitido há menos de 90 dias; apostilado.'],
+    ['F-DEMO-D7', 'main_applicant', 'required', 'Comprovativo de rendimentos', 'Proof of income', 'Justificante de ingresos', '', '', ''],
+    ['F-DEMO-D7', 'main_applicant', 'required', 'Seguro de viagem', 'Travel insurance', 'Seguro de viaje', '', 'cplp', ''],
+    ['F-DEMO-D7', 'case', 'required', 'Contrato de arrendamento', 'Lease', 'Contrato de alquiler', 'Alojamento (um dos seguintes)', '', ''],
+    ['F-DEMO-D7', 'case', 'required', 'Escritura do imóvel', 'Property deed', 'Escritura del inmueble', 'Alojamento (um dos seguintes)', '', ''],
+    ['F-DEMO-AR', 'main_applicant', 'required', 'Passaporte válido', 'Valid passport', 'Pasaporte válido', '', '', ''],
+    ['F-DEMO-AR', 'main_applicant', 'required', 'Contrato de trabalho', 'Employment contract', 'Contrato de trabajo', '', '', ''],
+    ['F-DEMO-AR', 'case', 'optional', 'Comprovativo de alojamento', 'Proof of accommodation', 'Justificante de alojamiento', '', '', ''],
+  ].map(function (d, i) {
+    return { visa_type: d[0], order: i + 1, applies_to: d[1], level: d[2], title_pt: d[3], title_en: d[4], title_es: d[5],
+      group_pt: d[6], unless: d[7], check_criteria: d[8], active: true };
+  });
 
   function enabled(ss) {
     return !!ss.getSheetByName(Config.TABS.SETTINGS) && Validate.toBool(Settings.get(ss, 'dev_mode'));
@@ -32,6 +54,9 @@ const Seed = (function () {
     const domain = inbox.slice(at + 1);
 
     if (!Settings.get(ss, 'firm_name')) Settings.set(ss, 'firm_name', FIRM);
+    if (ss.getSheetByName(Config.TABS.VISA_TYPES) && ss.getSheetByName(Config.TABS.DOC_LISTS)) {
+      FirmLists.seed(ss, { types: TYPES.map(function (t) { return Object.assign({}, t); }), docs: DOCS.map(function (d) { return Object.assign({}, d); }) });
+    }
     const clientsTable = Clients.table(ss);
     const casesTable = Cases.table(ss);
     const existing = Clients.list(ss);

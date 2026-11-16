@@ -41,9 +41,9 @@ Copy link for new firms (always the latest release): `https://docs.google.com/sp
    - one digest email arrived.
 
    **If the phone shows "Não é possível abrir o ficheiro":** that phone's browser is signed into several Google accounts. Open the link in a private tab or another browser. For clients, the fix is to link the portal from the firm's website.
-8. **Process types and lists.** The setup seeded **Visa types** and **Document lists** from our catalog; they're now the firm's own.
-   - Ask which process types the firm handles and untick `active` on the rest (never delete rows), or have Claude do it.
-   - If the firm has its own checklists, the import is a job for **their** Claude with the `portal-lists` skill, after the call: the lawyer gives Claude the file and confirms the table. You never import into a firm's sheet yourself.
+8. **Process types and lists.** The portal has no lists of its own: **Visa types** and **Document lists** start empty, and a case only gets a checklist when its process type has a list.
+   - If the firm has its own checklists, the import is a job for **their** Claude with the `portal-lists` skill: the lawyer gives Claude a file and confirms the table. Do the type they use most during the call, then set the test case's `visa_type` to it and look at the checklist on the phone; the rest after. You never import into a firm's sheet yourself.
+   - No checklists yet: create a `Teste` type with two documents for the test, and agree when they'll send their lists.
 9. **Try an invite.** Set the test client's `invite_status` to `REQUESTED`, then run **Portal → Enviar convites pendentes**. Read the email together.
 10. **Clean up.** Untick the test client's `active` box. Don't delete rows.
 11. **Hand over:**

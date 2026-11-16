@@ -5,6 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const { load, FakeSpreadsheet, SRC } = require('./harness');
+const fixtures = require('./fixtures/lists');
 
 const lib = load();
 const { Config } = lib;
@@ -26,23 +27,54 @@ class FakeCache {
   put(k, v) { if (String(v).length > 100000) throw new Error('value over 100 KB'); this.m[k] = v; this.puts++; }
 }
 
+const ADJ_HEADERS = ['visa_type', 'applies_to', 'doc_type', 'action', 'level', 'title', 'note'];
+
 /**
- * A firm at schema 3 (0.4.2): one client, cases as given, people, checklist
- * rows and Adjustments. Every SCHEMA tab exists, as Schema.ensure leaves it.
+ * A firm at schema 3 (0.4.x): one client, cases as given, people, and, unless
+ * fresh, the 0.4.x tabs: CatalogData (its stored lists, the fixture's two
+ * visas) and Adjustments. Every SCHEMA tab exists, as Schema.ensure leaves it.
  */
-function firm({ cases = [], people = [], adjustments = [], lang = 'pt' } = {}) {
+function firm({ cases = [], people = [], adjustments = [], lang = 'pt', fresh = false } = {}) {
   const tabs = {};
   Object.keys(Config.SCHEMA).forEach((name) => { tabs[name] = [Config.SCHEMA[name]]; });
   tabs.Settings = [['key', 'value', 'description'], ['default_language', lang, ''], ['countries', 'PT', ''], ['schema_version', '3', '']];
+  if (!fresh) {
+    tabs.CatalogData = fixtures.catalogDataTab();
+    tabs.Adjustments = [ADJ_HEADERS];
+  }
   tabs.Clients.push(row(Config.SCHEMA.Clients, { client_id: 'CL-AAAAAA', name: 'Ana Ferreira', email: 'ana@x.pt', language: 'en', active: true, provision_status: 'ACTIVE' }));
   cases.forEach((c) => tabs.Cases.push(row(Config.SCHEMA.Cases, Object.assign({ client_id: 'CL-AAAAAA', status: 'open', provision_status: 'ACTIVE', folder_id: 'F' }, c))));
   people.forEach((p) => tabs.People.push(row(Config.SCHEMA.People, p)));
-  adjustments.forEach((a) => tabs.Adjustments.push(row(Config.SCHEMA.Adjustments, a)));
+  adjustments.forEach((a) => tabs.Adjustments.push(row(ADJ_HEADERS, a)));
   const ss = new FakeSpreadsheet(tabs);
   const ctx = { ss, lock: lock(), props: new FakeProps(), cache: new FakeCache() };
   const f = {
     ss, ctx,
     sync: () => lib.CaseChecklist.sync(ctx, { now: NOW }),
+    // What 0.4.2 did for every case with a visa: build from the stored catalog + Adjustments.
+    build042: () => {
+      lib.CaseChecklist.sync(ctx, { now: NOW });  // schema 3: main applicants only
+      const adj = ss.getSheetByName('Adjustments') ? lib.Table.open(ss, 'Adjustments').rows() : [];
+      const peopleRows = lib.CaseChecklist.people(ss);
+      const ids = new Set();
+      const out = [];
+      lib.Cases.list(ss).forEach((c) => {
+        const visa = String(c.visa_type || '').trim();
+        if (!visa) return;
+        const casePeople = peopleRows.filter((p) => p.case_id === c.case_id && p.person_id);
+        const visaAdj = adj.filter((a) => [visa, '*', ''].includes(String(a.visa_type || '').trim()));
+        lib.Checklist.build({ requirements: lib.LegacyLists.requirements(fixtures.CATALOG_04, visa, visaAdj), facts: c.facts, people: casePeople, lang: 'pt', now: NOW })
+          .forEach((item) => {
+            const id = lib.Ids.generate('IT', ids);
+            ids.add(id);
+            out.push({ item_id: id, case_id: c.case_id, person_id: item.person_id, person_name: item.person_name, title: item.title,
+              instructions: item.instructions, level: item.level, status: 'missing', doc_type: item.doc_type, key: item.key,
+              source: item.source, text_json: JSON.stringify(item.text) });
+          });
+        lib.Cases.table(ss).update(c._row, { checklist_version: lib.LegacyLists.version(fixtures.CATALOG_04, visa, c.facts, casePeople, adj) });
+      });
+      lib.Table.open(ss, 'Checklist').appendMany(out);
+    },
     migrate: () => { lib.Migrations.STEPS[4](ctx); lib.Settings.set(ss, 'schema_version', 4); lib.FirmLists.reset_(); },
     items: (caseId) => lib.CaseChecklist.items(ss).filter((i) => !caseId || i.case_id === caseId),
     caseRow: (id) => lib.Cases.list(ss).find((c) => c.case_id === id),
@@ -71,34 +103,49 @@ const shape = (items) => items.map((i) => ({
   key: i.key, person_id: i.person_id, doc_type: i.doc_type, options: i.options, level: i.level,
   title: i.title, instructions: i.instructions, text: JSON.parse(JSON.stringify(i.text)),
 }));
-const allLangs = (text) => ['pt', 'en', 'es'].map((l) => [l, lib.Catalog.text(text.title, l), lib.Catalog.text(text.instructions, l),
-  (text.options || []).map((o) => lib.Catalog.text(o.title, l))]);
+const allLangs = (text) => ['pt', 'en', 'es'].map((l) => [l, lib.Text.pick(text.title, l), lib.Text.pick(text.instructions, l),
+  (text.options || []).map((o) => lib.Text.pick(o.title, l))]);
 
-describe('1. seeding from the bundled catalog', () => {
-  test('a fresh sheet gets every PT process type and their documents', () => {
-    const f = firm();
+describe('1. no central catalog: a firm\'s lists are its own', () => {
+  test('a new sheet starts with empty lists, and builds nothing until the firm has some', () => {
+    const f = firm({ fresh: true, cases: [{ case_id: 'CS-111111', case_name: 'X', visa_type: 'PT-D7' }] });
     f.migrate();
-    const types = f.types();
-    expect(types.length).toBe(lib.CATALOG_DATA.countries.PT.visas.length);
-    expect(types.length).toBe(69);
-    expect(types.every((t) => t.based_on === t.visa_type)).toBe(true);
-    expect(f.docs().length).toBe(856);
-    const model = f.model();
-    expect(model.order.length).toBe(69);
-    expect(f.docs().every((d) => d.check === 'ok' || d.check === '')).toBe(true);
+    expect(f.types()).toEqual([]);
+    expect(f.docs()).toEqual([]);
+    expect(f.sync()).toMatchObject({ built: 0, unknown: 1 });
+    expect(f.items()).toEqual([]);
+    expect(f.status()).toMatchObject({ enabled: true, summary: { types: 0, documents: 0 }, unknown: [{ id: 'PT-D7', cases: 1 }] });
   });
 
-  test('every visa, with a family and with and without facts, builds the same items as 0.4.2, in every language', () => {
+  test('the library ships no catalog and fetches none', () => {
+    const files = require('./harness').libraryFiles();
+    const source = files.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
+    expect(source).not.toMatch(/CATALOG_DATA|CatalogUpdates|raw\.githubusercontent|catalog\.json/);
+    expect(files.some((file) => /catalog/i.test(path.relative(SRC, file)))).toBe(false);
+    // The stored 0.4.x lists are read only by the schema 4 migration.
+    const users = files.filter((file) => !/LegacyLists\.js$/.test(file) && /LegacyLists\.\w+\(/.test(fs.readFileSync(file, 'utf8')));
+    expect(users.map((file) => path.relative(SRC, file))).toEqual(['admin/Migrations.js']);
+  });
+
+  test('a 0.4.x sheet gets the lists it stored, one row per type and per document', () => {
+    const f = firm();
+    f.migrate();
+    expect(f.types().map((t) => t.visa_type)).toEqual(['PT-D7', 'PT-AR-98-2']);
+    expect(f.docs().length).toBe(fixtures.rows(lib).docs.length);
+    expect(f.docs().every((d) => d.check === 'ok')).toBe(true);
+  });
+
+  test('every stored visa, with a family and with and without facts, builds the same items as 0.4.2, in every language', () => {
     const f = firm();
     f.migrate();
     const model = f.model();
     const people = family.map((p) => Object.assign({}, p));
-    const factSets = ['', lib.CATALOG_DATA.facts.map((x) => x.id).join(';')];
+    const factSets = ['', fixtures.CATALOG_04.facts.map((x) => x.id).join(';')];
     let compared = 0;
-    lib.CATALOG_DATA.countries.PT.visas.forEach((v) => {
+    fixtures.CATALOG_04.countries.PT.visas.forEach((v) => {
       factSets.forEach((facts) => {
         ['pt', 'en'].forEach((lang) => {
-          const before = lib.Checklist.build({ visaId: v.id, facts, people, adjustments: [], lang, now: NOW });
+          const before = lib.Checklist.build({ requirements: lib.LegacyLists.requirements(fixtures.CATALOG_04, v.id, []), facts, people, lang, now: NOW });
           const after = lib.Checklist.build({ requirements: model.visas[v.id].requirements, facts, people, lang, now: NOW });
           expect([v.id, shape(after).map((i) => [i.key, i.person_id, i.doc_type, i.options, i.level, i.title])])
             .toEqual([v.id, shape(before).map((i) => [i.key, i.person_id, i.doc_type, i.options, i.level, i.title])]);
@@ -107,12 +154,12 @@ describe('1. seeding from the bundled catalog', () => {
         });
       });
     });
-    expect(compared).toBeGreaterThan(1000);
+    expect(compared).toBeGreaterThan(100);
   });
 
-  test('a D7 case with spouse and child builds the same rows through the sync', () => {
+  test('a D7 case with spouse and children builds the same rows through the sync as 0.4.2 did', () => {
     const before = firm({ cases: [d7], people: family });
-    before.sync();
+    before.build042();
     const after = firm({ cases: [d7], people: family });
     after.migrate();
     after.sync();
@@ -143,7 +190,7 @@ describe('2. migration of a schema 3 sheet', () => {
 
   function migrated() {
     const f = firm({ cases, people, adjustments });
-    f.sync();  // 0.4.2 builds every case with a visa
+    f.build042();  // 0.4.2 built every case with a visa
     // Case 2 gets its visa after the build; case 3 goes stale (an older catalog version); case 4 gains a spouse.
     lib.Cases.table(f.ss).update(f.caseRow('CS-222222')._row, { visa_type: 'PT-D7' });
     const stale = f.caseRow('CS-333333').checklist_version.split('|');
@@ -164,6 +211,7 @@ describe('2. migration of a schema 3 sheet', () => {
     ['pt', 'en', 'es'].forEach((l) => expect(crim['instructions_' + l]).toContain('Com apostila.'));
     expect(d7docs.find((d) => d.doc_key === 'FIRM-CARTA_DO_SENHORIO')).toMatchObject({ title_pt: 'Carta do senhorio', active: true });
     expect(f.ss.getSheetByName('Adjustments').isSheetHidden()).toBe(true);
+    expect(f.ss.getSheetByName('CatalogData').isSheetHidden()).toBe(true);
   });
 
   test('no Checklist row changes; each case state migrates as it should', () => {
@@ -275,13 +323,16 @@ describe('4. a new process type typed by name only', () => {
   test('a typed ID of the firm\'s own type is normalised with the F- prefix', () => {
     expect(lib.FirmLists.ownId('ar 92 menor')).toBe('F-AR-92-MENOR');
     expect(lib.FirmLists.ownId('F-AR-92')).toBe('F-AR-92');
+    // A typed ID that is already valid stays as typed (0.4.x cases use PT-D7).
+    const m = lib.FirmLists.process([{ _row: 2, visa_type: 'PT-D7', name_pt: 'D7', active: true }], [], 'pt');
+    expect(m.writes.types.filter((w) => 'visa_type' in w.partial)).toEqual([]);
     expect(lib.FirmLists.ownId('Renovação à pressa!')).toBe('F-RENOVACAO-A-PRESSA');
   });
 });
 
 describe('5–6. editing a list, and Update these cases', () => {
   function withReceived() {
-    const f = firm({ cases: [d7, { case_id: 'CS-666666', case_name: 'Other', visa_type: 'PT-D2' }], people: family.slice(0, 1) });
+    const f = firm({ cases: [d7, { case_id: 'CS-666666', case_name: 'Other', visa_type: 'PT-AR-98-2' }], people: family.slice(0, 1) });
     f.migrate();
     f.sync();
     return f;
@@ -383,9 +434,10 @@ describe('8. validation', () => {
   test('two types with the same ID: the second is skipped; a broken row never stops the others', () => {
     const { f, out } = checked([{ visa_type: 'PT-D7', title_pt: 'H', level: 'nope', active: true }],
       [{ visa_type: 'F-DUP', name_pt: 'Um', active: true }, { visa_type: 'f dup', name_pt: 'Dois', active: true },
-        { visa_type: 'PT-D7', name_pt: 'Meu D7', active: true }]);
+        { visa_type: 'PT-D7', name_pt: 'Outro D7', active: true }, { visa_type: 'meu d7', name_pt: 'Meu D7', active: true }]);
     expect(f.types().find((t) => t.name_pt === 'Dois').check).toContain('já existe noutra linha');
-    expect(f.types().find((t) => t.name_pt === 'Meu D7').visa_type).toBe('F-PT-D7');  // the firm's own type never takes a catalog ID
+    expect(f.types().find((t) => t.name_pt === 'Outro D7').check).toContain('já existe noutra linha');
+    expect(f.types().find((t) => t.name_pt === 'Meu D7').visa_type).toBe('F-MEU-D7');  // typed free text is normalised
     expect(out.model.visas['PT-D7'].requirements.length).toBeGreaterThan(5);
     expect(out.summary.errors).toBeGreaterThan(0);
   });
@@ -430,6 +482,10 @@ describe('9. cache', () => {
   test('lists over 100 KB round-trip through parts; a missing part means a rebuild', () => {
     const f = firm();
     f.migrate();
+    const long = 'Instruções detalhadas para o cliente. '.repeat(60);
+    lib.Table.open(f.ss, DL).appendMany(Array.from({ length: 80 }, (_, i) => ({ visa_type: 'PT-D7', title_pt: 'Documento ' + i, instructions_pt: long, active: true })));
+    lib.FirmLists.check(f.ss);
+    lib.FirmLists.reset_();
     const fresh = lib.FirmLists.get(f.ss, f.ctx.cache);
     const keys = Object.keys(f.ctx.cache.m);
     const index = keys.find((k) => /^lists:[0-9a-f]+$/.test(k));
@@ -445,29 +501,15 @@ describe('9. cache', () => {
   });
 });
 
-describe('10. our catalog is only a template now', () => {
-  test('applying a newer catalog never changes the firm\'s lists', () => {
-    const f = firm();
+describe('10. the firm\'s lists change only when the firm changes them', () => {
+  test('nothing in the portal rewrites the lists: a sync and a refresh leave the rows as they are', () => {
+    const f = firm({ cases: [d7], people: family.slice(0, 1) });
     f.migrate();
+    f.model();
     const before = JSON.stringify([f.ss.getSheetByName(VT).data, f.ss.getSheetByName(DL).data]);
-    const newer = JSON.parse(JSON.stringify(lib.CATALOG_DATA));
-    newer.version = '2099.1';
-    newer.countries.PT.visas[0].requirements = newer.countries.PT.visas[0].requirements.slice(1);
-    f.ctx.props.setProperty('CATALOG_PENDING', JSON.stringify({ version: '2099.1', source: 'feed', changes: [] }));
-    lib.CatalogUpdates.apply(f.ctx, '2099.1', { fetch: () => ({ getResponseCode: () => 200, getContentText: () => JSON.stringify(newer) }) });
-    lib.FirmLists.reset_();
+    f.sync();
+    lib.CaseChecklist.refresh(f.ctx, 'PT-D7', { now: NOW });
     expect(JSON.stringify([f.ss.getSheetByName(VT).data, f.ss.getSheetByName(DL).data])).toBe(before);
-    lib.Catalog.use(null);
-  });
-
-  test('the notice lists changes only for the firm\'s types based on ours', () => {
-    const from = lib.CATALOG_DATA;
-    const to = JSON.parse(JSON.stringify(from));
-    to.countries.PT.visas.forEach((v) => { v.requirements = v.requirements.slice(1); });
-    const all = lib.CatalogUpdates.changes(from, to, 'pt');
-    const onlyD7 = lib.CatalogUpdates.changes(from, to, 'pt', ['PT-D7']);
-    expect(all.length).toBeGreaterThan(onlyD7.length);
-    expect(onlyD7.length).toBeGreaterThan(0);
   });
 });
 
@@ -479,4 +521,31 @@ describe('formula safety of what the portal writes', () => {
     ['@x', "'@x"],  // a formula in Excel, where lawyers export to
     ['Passaporte - cópia', 'Passaporte - cópia'],
   ])('Sanitize.cell(%j)', (input, out) => expect(lib.Sanitize.cell(input)).toBe(out));
+});
+
+describe('the sheet sidebar', () => {
+  test('its script parses and declares each function once', () => {
+    const html = fs.readFileSync(path.join(SRC, 'html', 'update.html'), 'utf8');
+    const js = html.slice(html.indexOf('<script>') + 8, html.indexOf('</script>')).replace('<?!= boot ?>', '{}');
+    expect(() => new Function(js)).not.toThrow();
+    const names = [...js.matchAll(/function (\w+)\s*\(/g)].map((m) => m[1]);
+    expect(names.filter((n, i) => names.indexOf(n) !== i)).toEqual([]);
+    expect(html).not.toMatch(/catalog/i);
+  });
+});
+
+describe('the dev seed', () => {
+  test('gives the test firm its own demo lists, and its cases build from them', () => {
+    const f = firm({ fresh: true });
+    f.migrate();
+    lib.Settings.set(f.ss, 'dev_mode', 'TRUE');
+    expect(lib.Seed.run(f.ss, 'dev@example.com')).toBe(4);
+    expect(f.types().map((t) => t.visa_type)).toEqual(['F-DEMO-D7', 'F-DEMO-AR']);
+    expect(f.docs().every((d) => d.check === 'ok')).toBe(true);
+    lib.Cases.list(f.ss).forEach((c) => lib.Cases.table(f.ss).update(c._row, { provision_status: 'ACTIVE' }));
+    expect(f.sync().built).toBeGreaterThan(0);
+    const view = lib.CaseChecklist.view(f.ss, lib.Cases.list(f.ss)[0].case_id, 'en');
+    expect(view.flatMap((g) => g.items.map((i) => i.title))).toContain('Valid passport');
+    expect(JSON.stringify(view)).not.toContain('apostilado');  // check_criteria stays with the lawyer
+  });
 });

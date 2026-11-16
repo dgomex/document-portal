@@ -33,9 +33,7 @@ const Config = Object.freeze({
     GLOBAL_PER_HOUR: 300,       // beyond this, requests are dropped silently (flood)
     WRONG_PER_6H: 20,           // wrong codes per email per 6 hours (the cache's longest life), across all codes
   },
-  CRON_MIN_GAP_SECONDS: 60,
-  // Published catalog (main branch of our repo): only ever offered, never applied by itself.
-  CATALOG_FEED_URL: 'https://raw.githubusercontent.com/dgomex/document-portal/main/dist/catalog.json',     // the page can call any shell function, crons included: throttle them
+  CRON_MIN_GAP_SECONDS: 60,  // the page can call any shell function, crons included: throttle them
   SESSION_TTL_SECONDS: 45 * 60, // sliding: renewed on every request
   SESSION_MAX_SECONDS: 8 * 3600,
   EVENTS_RETENTION_DAYS: 90,
@@ -46,7 +44,7 @@ const Config = Object.freeze({
   INVITE: { NONE: '', REQUESTED: 'REQUESTED', SENT: 'SENT', ERROR: 'ERROR' },
 
   TABS: { SETTINGS: 'Settings', CLIENTS: 'Clients', CASES: 'Cases', PEOPLE: 'People', CHECKLIST: 'Checklist',
-    ADJUSTMENTS: 'Adjustments', UPLOADS: 'Uploads', EVENTS: 'Events',
+    ADJUSTMENTS: 'Adjustments' /* 0.4.x only: read once by the schema 4 migration */, UPLOADS: 'Uploads', EVENTS: 'Events',
     VISA_TYPES: 'Visa types', DOC_LISTS: 'Document lists' },  // schema 4: the firm's own lists
 
   // People in a case, and what each checklist item is (docs/VISA-CHECKLISTS.md).
@@ -69,10 +67,6 @@ const Config = Object.freeze({
     ['max_file_mb', '100'],
     ['daily_email_limit', '95'],
     ['logo_url', ''],
-    ['countries', 'PT'],
-    ['catalog_version', ''],
-    ['catalog_check', 'on'],
-    ['catalog_pending', ''],
     ['reminder_days', '7'],
     ['schema_version', ''],
     ['library_version', ''],
@@ -90,14 +84,12 @@ const Config = Object.freeze({
     // schema 3: one row per document per person, frozen when the case's list is built
     Checklist: ['item_id', 'case_id', 'person_id', 'person_name', 'title', 'instructions', 'level', 'status', 'reason',
       'due_date', 'upload_ids', 'doc_type', 'key', 'source', 'updated_at', 'text_json'],
-    // schema 3: the firm's changes to the catalog (differences, not a copy)
-    Adjustments: ['visa_type', 'applies_to', 'doc_type', 'action', 'level', 'title', 'note'],
     Uploads: ['upload_id', 'timestamp', 'client_id', 'client_name', 'case_id', 'case_name', 'stored_name',
       'original_name', 'mime_type', 'size_bytes', 'md5', 'drive_link', 'uploader_email', 'note', 'status',
       'item_id', 'person_id'],  // schema 3
     Events: ['timestamp', 'type', 'email_hash', 'detail'],
-    // schema 4: the firm's own process types and document lists (catalog/FirmLists.js)
-    'Visa types': ['visa_type', 'name_pt', 'name_en', 'name_es', 'active', 'family', 'facts_to_ask', 'based_on', 'notes', 'check'],
+    // schema 4: the firm's own process types and document lists (lists/FirmLists.js)
+    'Visa types': ['visa_type', 'name_pt', 'name_en', 'name_es', 'active', 'family', 'facts_to_ask', 'notes', 'check'],
     'Document lists': ['visa_type', 'order', 'applies_to', 'level', 'title_pt', 'title_en', 'title_es',
       'instructions_pt', 'instructions_en', 'instructions_es', 'group_pt', 'group_en', 'group_es', 'group_key',
       'only_if', 'unless', 'min_age', 'check_criteria', 'active', 'doc_key', 'check'],
@@ -127,7 +119,7 @@ const Config = Object.freeze({
     Cases: {
       status: ['open', 'closed'],
       provision_status: ['PENDING', 'ACTIVE', 'ERROR'],
-      visa_type: 'visa_types',  // the firm's process types (schema 4), else the catalog's for its countries
+      visa_type: 'visa_types',  // the firm's process types (Visa types tab)
     },
     People: {
       role: ['main_applicant', 'spouse', 'child', 'dependant'],
@@ -145,11 +137,6 @@ const Config = Object.freeze({
       applies_to: ['main_applicant', 'spouse', 'each_child', 'each_adult', 'each_person', 'case'],
       level: ['required', 'optional'],
       active: 'checkbox',
-    },
-    Adjustments: {
-      action: ['add', 'change', 'hide'],
-      applies_to: ['main_applicant', 'spouse', 'each_child', 'each_adult', 'each_person', 'case'],
-      level: ['required', 'optional'],
     },
   },
 });

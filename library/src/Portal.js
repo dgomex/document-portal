@@ -21,7 +21,7 @@ function onOpen(e) {
     .addSeparator()
     // The shell is frozen (no new entry points for existing firms): the lists sidebar is part of menuUpdate's.
     .addItem(t('menu.lists'), 'menuUpdate')
-    .addItem(t(ss && safe_(function () { return Settings.get(ss, 'catalog_pending'); }) ? 'menu.updateLists' : 'menu.update'), 'menuUpdate');
+    .addItem(t('menu.update'), 'menuUpdate');
   if (ss && safe_(function () { return Seed.enabled(ss); })) {
     menu.addSeparator().addItem(t('menu.devSeed'), 'menuDevSeed');
   }
@@ -66,7 +66,7 @@ function menuInvite(ctx) {
 function menuUpdate(ctx) {
   sheetAction_(ctx, function (lang) {
     const template = HtmlService.createTemplateFromFile('html/update');
-    template.boot = bootJson_({ sheetVersion: Config.LIBRARY_VERSION, catalog: CatalogUpdates.status(ctx),
+    template.boot = bootJson_({ sheetVersion: Config.LIBRARY_VERSION,
       lists: safe_(function () { return CaseChecklist.status(ctx); }), strings: I18n.bundle()[lang] });
     SpreadsheetApp.getUi().showSidebar(template.evaluate().setTitle(I18n.t(lang, 'update.title')));
   });
@@ -91,7 +91,6 @@ function cronProvision(ctx) {
   if (!cronSlot_(ctx, 'provision')) return;
   if (!String(Settings.get(ctx.ss, 'root_folder_id') || '')) return;
   if (Migrations.needed(ctx.ss)) Migrations.run(ctx);
-  safe_(function () { CatalogUpdates.load(ctx.ss); });
   // After an update the sheet runs the new library before anything rewrites Settings.
   if (String(Settings.get(ctx.ss, 'library_version')) !== Config.LIBRARY_VERSION) {
     Settings.set(ctx.ss, 'library_version', Config.LIBRARY_VERSION);
@@ -106,7 +105,6 @@ function cronDigest(ctx) {
   Context.check(ctx);
   if (!cronSlot_(ctx, 'digest')) return;
   pruneDaily_(ctx);
-  safe_(function () { CatalogUpdates.load(ctx.ss); });
   remindDaily_(ctx);
   if (!ctx.props.getProperty('DIGEST_QUEUE') || ctx.props.getProperty('DIGEST_QUEUE') === '{}') return;
   Upload.flush(ctx);
@@ -156,7 +154,6 @@ function remindDaily_(ctx) {
   const day = Utilities.formatDate(new Date(), Config.TIME_ZONE, 'yyyy-MM-dd');
   if (ctx.props.getProperty('REMINDERS_RUN') === day) return;
   ctx.props.setProperty('REMINDERS_RUN', day);
-  safe_(function () { CatalogUpdates.check(ctx); });
   safe_(function () { Reminders.run(ctx); });
 }
 
@@ -172,7 +169,6 @@ function pruneDaily_(ctx) {
 function doGet(e, ctx) {
   Context.check(ctx);
   const ready = !!ctx.ss.getSheetByName(Config.TABS.SETTINGS);
-  if (ready) safe_(function () { CatalogUpdates.load(ctx.ss); });
   let settings = ready ? Settings.read(ctx.ss) : {};
   // Onboarding skill path: Settings filled through the connector, then the
   // first visit (as the owner's deployment) finishes the setup.
@@ -218,7 +214,6 @@ function doGet(e, ctx) {
  */
 function api(action, data, ctx) {
   Context.check(ctx);
-  safe_(function () { CatalogUpdates.load(ctx.ss); });
   return dispatch_(API_, action, data, ctx);
 }
 
@@ -230,7 +225,6 @@ function admin(action, data, ctx) {
   } catch (err) {
     return { ok: false, error: 'forbidden' };
   }
-  safe_(function () { CatalogUpdates.load(ctx.ss); });
   return dispatch_(ADMIN_, action, data, ctx, true);
 }
 
@@ -258,10 +252,10 @@ const API_ = {
 
 /** What the page may know about the logged-in client: never IDs of other clients or folder IDs. */
 function me_(ctx, client, lang) {
-  const language = Catalog.data().languages.indexOf(lang) !== -1 ? lang : I18n.lang(String(client.language || ''));
+  const language = Config.LANGUAGES.indexOf(lang) !== -1 ? lang : I18n.lang(String(client.language || ''));
   const withChecklists = !!ctx.ss.getSheetByName(Config.TABS.CHECKLIST);
   const firm = FirmLists.enabled(ctx.ss) ? FirmLists.get(ctx.ss, ctx.cache) : null;
-  const visaOf = function (id) { return firm ? FirmLists.visa(firm, id) : Catalog.visa(id); };
+  const visaOf = function (id) { return firm ? FirmLists.visa(firm, id) : null; };
   return {
     name: String(client.name || ''),
     language: I18n.lang(String(client.language || '')),
@@ -269,7 +263,7 @@ function me_(ctx, client, lang) {
       const visa = String(c.visa_type || '').trim() ? visaOf(String(c.visa_type).trim()) : null;
       return {
         id: c.case_id, name: String(c.case_name || ''), reference: String(c.firm_reference || ''),
-        visa: visa ? Catalog.text(visa.name, language) : '',
+        visa: visa ? Text.pick(visa.name, language) : '',
         checklist: withChecklists && visa ? CaseChecklist.view(ctx.ss, c.case_id, language) : [],
       };
     }),
@@ -279,10 +273,6 @@ function me_(ctx, client, lang) {
 const ADMIN_ = {
   saveSetup: function (data, ctx) { return Setup.save(ctx, data); },
   updateStatus: function (data, ctx) { return Update.status(ctx); },
-  catalogStatus: function (data, ctx) { return CatalogUpdates.status(ctx); },
-  catalogApply: function (data, ctx) { return CatalogUpdates.apply(ctx, data.version); },
-  catalogIgnore: function (data, ctx) { return CatalogUpdates.ignore(ctx); },
-  catalogCheck: function (data, ctx) { return CatalogUpdates.setCheck(ctx, !!data.on); },
   // "Document lists": Verificar (fills IDs and keys, writes the check column) and "Update these cases".
   listsStatus: function (data, ctx) { return CaseChecklist.status(ctx); },
   listsRefresh: function (data, ctx) {
@@ -312,7 +302,6 @@ function sheetAction_(ctx, fn) {
   const lang = languageOf_(ctx.ss);
   try {
     Context.requireOwner();
-    safe_(function () { CatalogUpdates.load(ctx.ss); });
     fn(lang);
   } catch (err) {
     console.error(err && err.stack || err);

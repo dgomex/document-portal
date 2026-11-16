@@ -1,12 +1,16 @@
 /**
  * The firm's own process types and document lists (schema 4): two tabs of
- * the firm's sheet, "Visa types" and "Document lists", seeded from our
- * catalog (now only a template, see Catalog / CatalogUpdates) and then the
- * firm's to edit. This module turns the two tabs into the lists cases are
+ * the firm's sheet, "Visa types" and "Document lists". They are the only
+ * source of every case's document list: the portal ships no catalog. A new
+ * firm starts with empty tabs and imports or types its own lists (the
+ * portal-lists skill); a 0.4.x firm got its own stored lists copied in by the
+ * schema 4 migration (admin/LegacyLists.js). This module turns the two tabs into the lists cases are
  * built from, and keeps the script-owned columns in order:
  *
  *   - IDs: a blank visa_type gets an ID from the type's name (F- prefix);
- *     a Document lists row may name its type instead of giving the ID.
+ *     a typed ID that is already valid stays as typed; other typed text is
+ *     normalised the same way. A Document lists row may name its type
+ *     instead of giving the ID.
  *   - Keys: doc_key and group_key tie a case's items to a row across edits,
  *     so renaming a document or a group never loses a received document.
  *     An item identity (group_key for grouped rows, else doc_key) is unique
@@ -15,8 +19,7 @@
  *   - check: "ok", or what's wrong (errors skip the row, warnings don't).
  *
  * process() is pure (rows in, model + writes out), so every rule is
- * unit-tested; check() does the I/O. The firm's lists never go through
- * Catalog.use(): that stays our template catalog.
+ * unit-tested; check() does the I/O.
  */
 const FirmLists = (function () {
   const OWN_PREFIX = 'F-';
@@ -55,7 +58,12 @@ const FirmLists = (function () {
     return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
   }
 
-  /** Visa type IDs: dashes, F- prefix for the firm's own types. */
+  /** A typed ID kept as it is: capitals, digits and dashes (PT-D7, F-AR-92). */
+  function isId_(text) {
+    return /^[A-Z0-9][A-Z0-9-]{0,39}$/.test(text);
+  }
+
+  /** IDs made from a name or from free text: dashes, F- prefix. */
   function ownId(text) {
     let s = plain_(text).replace(/[^A-Z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     if (!s) return '';
@@ -94,7 +102,7 @@ const FirmLists = (function () {
   /**
    * The heart of it. typeRows/docRows: Table rows (objects with _row).
    * Returns { model, writes: { types: [{ row, partial }], docs: [...] }, problems: [{ tab, row, level, key, params }] }.
-   * model: { lang, visas: { id: { id, name, active, offer, family, factsToAsk, basedOn, listHash, requirements } }, order }.
+   * model: { lang, visas: { id: { id, name, active, offer, family, factsToAsk, listHash, requirements } }, order }.
    */
   function process(typeRows, docRows, lang) {
     lang = LANGS.indexOf(lang) !== -1 ? lang : 'pt';
@@ -121,13 +129,12 @@ const FirmLists = (function () {
     const taken = new Set();
     typeRows.forEach(function (r) {
       const raw = str_(r.visa_type);
-      if (raw) taken.add(str_(r.based_on) ? raw : ownId(raw));
+      if (raw) taken.add(isId_(raw) ? raw : ownId(raw));
     });
     const seen = new Set();
     typeRows.forEach(function (r) {
       const name = str_(r['name_' + lang]);
       const raw = str_(r.visa_type);
-      const based = str_(r.based_on);
       let id = '';
       if (!raw) {
         if (name) {
@@ -135,7 +142,7 @@ const FirmLists = (function () {
           taken.add(id);
         }
       } else {
-        id = based ? raw : ownId(raw);
+        id = isId_(raw) ? raw : ownId(raw);
       }
       if (!name) note(T.types, r._row, 'error', 'lists.check.noName', { lang: lang });
       if (id && seen.has(id)) {
@@ -148,7 +155,7 @@ const FirmLists = (function () {
       if (!name) return;
       const t = {
         id: id, row: r._row, name: texts_(r, 'name_', lang), active: bool_(r.active), family: bool_(r.family),
-        factsToAsk: list_(r.facts_to_ask), basedOn: based, requirements: [], offer: false, listHash: '',
+        factsToAsk: list_(r.facts_to_ask), requirements: [], offer: false, listHash: '',
       };
       types[id] = t;
       order.push(id);
@@ -160,7 +167,7 @@ const FirmLists = (function () {
     const rowsByVisa = {};
     docRows.forEach(function (r) {
       const raw = str_(r.visa_type);
-      let id = types[raw] ? raw : (types[ownId(raw)] ? ownId(raw) : byName[raw.toLowerCase()]);
+      let id = types[raw] ? raw : (!isId_(raw) && types[ownId(raw)] ? ownId(raw) : byName[raw.toLowerCase()]);
       if (!raw || !id) {
         note(T.docs, r._row, 'error', 'lists.check.noType', { value: raw });
         return;
@@ -467,93 +474,18 @@ const FirmLists = (function () {
   }
 
   /**
-   * Rows for the two tabs from our template catalog (Catalog, as loaded for
-   * this firm) for these countries, with the firm's Adjustments applied:
-   * hide → active off, change → new level / title / note, add → a new row.
-   * The text written is what 0.4.2 shows clients, so cases stay the same.
+   * Writes rows into the two empty tabs (the schema 4 migration, from a 0.4.x
+   * sheet's own stored lists). Keys and the check column are filled in memory
+   * first, so each tab is written in one batch. Returns the type rows written.
    */
-  function seedRows(countries, adjustments, lang) {
-    const data = Catalog.data();
-    const types = [];
-    const docs = [];
-    const pick = function (value, l) { return value ? String(value[l] || '') : ''; };
-    (countries || []).forEach(function (code) {
-      ((data.countries[code] || {}).visas || []).forEach(function (v) {
-        const adj = (adjustments || []).filter(function (a) { return [v.id, '*', ''].indexOf(str_(a.visa_type)) !== -1; });
-        const hides = adj.filter(function (a) { return str_(a.action).toLowerCase() === 'hide'; });
-        const hidden = function (r) {
-          return hides.some(function (a) { return str_(a.doc_type) === r.key && (!str_(a.applies_to) || str_(a.applies_to) === r.applies_to); });
-        };
-        const reqs = Checklist.requirements(v.id, adj.filter(function (a) { return hides.indexOf(a) === -1; }));
-        const facts = [];
-        v.requirements.forEach(function (r) {
-          (r.only_if || []).concat(r.unless || []).forEach(function (f) {
-            if (DERIVED_FACTS.indexOf(f) === -1 && facts.indexOf(f) === -1) facts.push(f);
-          });
-        });
-        types.push({
-          visa_type: v.id, name_pt: pick(v.name, 'pt'), name_en: pick(v.name, 'en'), name_es: pick(v.name, 'es'),
-          active: !!v.active, family: v.requirements.some(function (r) { return ['spouse', 'each_child'].indexOf(r.applies_to) !== -1; }),
-          facts_to_ask: facts.join(';'), based_on: v.id, notes: '',
-        });
-        let n = 0;
-        reqs.forEach(function (r) {
-          const text = Checklist.text(r);
-          const base = {
-            visa_type: v.id, applies_to: r.applies_to, level: r.level, only_if: (r.only_if || []).join(';'),
-            unless: (r.unless || []).join(';'), min_age: r.min_age === null || r.min_age === undefined ? '' : r.min_age,
-            active: !hidden(r),
-          };
-          if (r.any_of) {
-            r.any_of.forEach(function (d, i) {
-              const dt = Catalog.docType(d) || {};
-              const guidance = Catalog.text(joinTexts_(dt.instructions, Catalog.ruleNotes(dt.rules)), lang);
-              const row = Object.assign({}, base, {
-                order: ++n, doc_key: d, group_key: r.key, check_criteria: guidance,
-                title_pt: pick(dt.name, 'pt'), title_en: pick(dt.name, 'en'), title_es: pick(dt.name, 'es'),
-                group_pt: pick(text.title, 'pt'), group_en: pick(text.title, 'en'), group_es: pick(text.title, 'es'),
-                instructions_pt: '', instructions_en: '', instructions_es: '',
-              });
-              // A firm note on a whole group (an Adjustment change) stays visible: on the first option.
-              if (i === 0 && r.note) LANGS.forEach(function (l) { row['instructions_' + l] = r.note; });
-              docs.push(row);
-            });
-          } else {
-            docs.push(Object.assign({}, base, {
-              order: ++n, doc_key: r.key, group_key: '', check_criteria: '',
-              title_pt: pick(text.title, 'pt'), title_en: pick(text.title, 'en'), title_es: pick(text.title, 'es'),
-              instructions_pt: pick(text.instructions, 'pt'), instructions_en: pick(text.instructions, 'en'),
-              instructions_es: pick(text.instructions, 'es'),
-              group_pt: '', group_en: '', group_es: '',
-            }));
-          }
-        });
-      });
-    });
-    return { types: types, docs: docs };
-  }
-
-  function joinTexts_(a, b) {
-    const out = {};
-    LANGS.forEach(function (l) {
-      out[l] = [a && a[l], b && b[l]].map(function (s) { return String(s || '').trim(); }).filter(Boolean).join(' ');
-    });
-    return out;
-  }
-
-  /** Seeds the tabs once (they are empty). Returns the number of type rows written. */
-  function seed(ss, adjustments) {
+  function seed(ss, rows) {
     const T = tabs_();
     const typesTable = Table.open(ss, T.types);
     const docsTable = Table.open(ss, T.docs);
     if (typesTable.rows().length || docsTable.rows().length) return 0;  // safe to run twice
-    const lang = Settings.language(ss);
-    const rows = seedRows(Catalog.countriesOf(ss), adjustments, lang);
-    // Fill keys and the check column in memory, so the tabs are written in
-    // one batch each (not ~900 single cells on the first sync).
     rows.types.forEach(function (r, i) { r._row = i + 2; });
     rows.docs.forEach(function (r, i) { r._row = i + 2; });
-    process(rows.types, rows.docs, lang);
+    process(rows.types, rows.docs, Settings.language(ss));
     const clean = function (r) { const o = Object.assign({}, r); delete o._row; return o; };
     typesTable.appendMany(rows.types.map(clean));
     docsTable.appendMany(rows.docs.map(clean));
@@ -564,5 +496,5 @@ const FirmLists = (function () {
   function reset_() { memo_ = null; }
 
   return { process: process, enabled: enabled, get: get, check: check, visa: visa, dropdownIds: dropdownIds,
-    seedRows: seedRows, seed: seed, ownId: ownId, reset_: reset_, HASHED_DOC_COLUMNS: HASHED_DOC_COLUMNS };
+    seed: seed, ownId: ownId, reset_: reset_, HASHED_DOC_COLUMNS: HASHED_DOC_COLUMNS };
 })();

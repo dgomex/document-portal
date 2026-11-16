@@ -13,7 +13,7 @@ const skill = fs.readFileSync(path.join(DIR, 'SKILL.md'), 'utf8');
 const schema = fs.readFileSync(path.join(DIR, 'references', 'schema.md'), 'utf8');
 
 test('the schema reference documents every column of the tabs the skill writes', () => {
-  ['Clients', 'Cases', 'People', 'Checklist', 'Adjustments'].forEach((tab) => {
+  ['Clients', 'Cases', 'People', 'Checklist'].forEach((tab) => {
     const missing = Config.SCHEMA[tab].filter((col) => !schema.includes('`' + col + '`'));
     expect([tab, missing]).toEqual([tab, []]);
   });
@@ -115,11 +115,19 @@ describe('labels in both languages', () => {
   });
 });
 
-test('the skill asks about the columns the generated catalog actually has', () => {
-  const catalog = fs.readFileSync(path.join(DIR, 'references', 'catalog.md'), 'utf8');
-  ['Family documents', 'Facts to ask'].forEach((col) => {
-    expect(catalog).toContain('| ' + col + ' |');
-    expect(skill).toContain('**' + col + '**');
+test('the skill reads the firm\'s process types from the Visa types columns the portal has', () => {
+  ['family', 'facts_to_ask', 'active', 'check'].forEach((col) => {
+    expect(Config.SCHEMA[Config.TABS.VISA_TYPES]).toContain(col);
+    expect(skill).toContain('`' + col + '`');
+  });
+  ['Family documents', 'Facts to ask'].forEach((col) => expect(skill).toContain('**' + col + '**'));
+});
+
+test('no skill points to a central catalog any more', () => {
+  ['portal-clients', 'portal-onboarding', 'portal-update', 'portal-lists'].forEach((s) => {
+    const dir = path.join(__dirname, '..', 'skill', s);
+    const files = [path.join(dir, 'SKILL.md'), ...fs.readdirSync(path.join(dir, 'references')).map((f) => path.join(dir, 'references', f))];
+    files.forEach((f) => expect([f, /catalog\.md|catalog_version|catalog_pending|listas novas/i.test(fs.readFileSync(f, 'utf8'))]).toEqual([f, false]));
   });
 });
 

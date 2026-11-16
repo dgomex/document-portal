@@ -6,11 +6,10 @@
  *     case with a visa gets its main applicant, taken from the client.
  *   - Rows the lawyer adds to Checklist by hand (case_id + title) become
  *     ad-hoc requests: an item_id, level "requested", status "missing".
- *   - A case whose visa is set and checklist_version is empty gets its list
- *     built. Since schema 4 (the firm's own lists, FirmLists)
+ *   - A case whose process type is set and checklist_version is empty gets
+ *     its list built from the firm's own lists (FirmLists).
  *     checklist_version = list hash | case hash, the list hash covering that
- *     visa type's client-facing columns only; before, catalog version |
- *     adjustments hash | case hash.
+ *     type's client-facing columns only.
  *   - When the people or facts change (the case hash), the list is rebuilt
  *     and merged: nothing received is lost, nothing is deleted.
  *   - When only the list changes, the case keeps its snapshot and shows as
@@ -46,23 +45,9 @@ const CaseChecklist = (function () {
     });
   }
 
-  function adjustments(ss) {
-    return Table.open(ss, Config.TABS.ADJUSTMENTS).rows();
-  }
-
   /** The part of checklist_version that changes with the case: visa, facts, people. */
   function caseHash(visaId, factsText, casePeople) {
     return hash_([visaId, String(factsText || ''), casePeople.map(function (p) { return [p.person_id, p.role, p.birth_date, p.name]; })]);
-  }
-
-  /** checklist_version as 0.4.2 wrote it (catalog | adjustments | case), for the schema 4 migration. */
-  function legacyVersion(visaId, factsText, casePeople, adj) {
-    const visaAdj = adj.filter(function (a) { return [visaId, '*', ''].indexOf(String(a.visa_type || '').trim()) !== -1; });
-    return [
-      Catalog.version(),
-      hash_(visaAdj.map(function (a) { return [a.visa_type, a.applies_to, a.doc_type, a.action, a.level, a.title, a.note]; })),
-      caseHash(visaId, factsText, casePeople),
-    ].join('|');
   }
 
   /** Rebuild one case's list and merge it into its rows (never loses a received document). */
@@ -151,42 +136,29 @@ const CaseChecklist = (function () {
         report.requests++;
       });
 
-      // 3. Build or rebuild each case's list.
-      const firm = FirmLists.enabled(ss);
-      const model = firm ? FirmLists.check(ss).model : null;
-      const adj = firm ? [] : adjustments(ss);
+      // 3. Build or rebuild each case's list (once the sheet has the firm's lists: schema 4).
+      if (!FirmLists.enabled(ss)) return report;
+      const model = FirmLists.check(ss).model;
       const creates = [];
-      if (firm) {
-        report.unknown = 0;
-        safe_(function () { refreshDropdown_(ctx, model, Cases.list(ss)); });
-      }
+      report.unknown = 0;
+      safe_(function () { refreshDropdown_(ctx, model, Cases.list(ss)); });
       cases.forEach(function (c) {
         const visaId = String(c.visa_type || '').trim();
         if (!visaId) return;
         const casePeople = peopleRows.filter(function (p) { return p.case_id === c.case_id && p.person_id; });
         const current = String(c.checklist_version || '');
-        let version;
-        let build;
-        if (firm) {
-          const visa = FirmLists.visa(model, visaId);
-          if (!visa) { report.unknown++; return; }   // ID changed or deleted: the case keeps its list
-          if (!visa.offer) return;                    // no valid rows: never waive a whole list
-          version = [visa.listHash, caseHash(visaId, c.facts, casePeople)].join('|');
-          build = function () { return Checklist.build({ requirements: visa.requirements, facts: c.facts, people: casePeople, lang: lang, now: now }); };
-        } else {
-          if (!Catalog.visa(visaId)) return;
-          version = legacyVersion(visaId, c.facts, casePeople, adj);
-          const visaAdj = adj.filter(function (a) { return [visaId, '*', ''].indexOf(String(a.visa_type || '').trim()) !== -1; });
-          build = function () { return Checklist.build({ visaId: visaId, facts: c.facts, people: casePeople, adjustments: visaAdj, lang: lang, now: now }); };
-        }
+        const visa = FirmLists.visa(model, visaId);
+        if (!visa) { report.unknown++; return; }   // ID changed or deleted: the case keeps its list
+        if (!visa.offer) return;                    // no valid rows: never waive a whole list
+        const version = [visa.listHash, caseHash(visaId, c.facts, casePeople)].join('|');
         if (current === version) return;
-        const parts = version.split('|');
-        const caseChanged = !current || current.split('|')[parts.length - 1] !== parts[parts.length - 1];
+        const caseChanged = !current || current.split('|')[1] !== version.split('|')[1];
         if (!caseChanged) {
           report.stale++;  // the list changed: keep the snapshot until the lawyer refreshes
           return;
         }
-        apply_(checklist, rows, c, build(), lang, stamp, itemIds, creates);
+        const fresh = Checklist.build({ requirements: visa.requirements, facts: c.facts, people: casePeople, lang: lang, now: now });
+        apply_(checklist, rows, c, fresh, lang, stamp, itemIds, creates);
         Cases.table(ss).update(c._row, { checklist_version: version });
         if (current) report.rebuilt++; else report.built++;
       });
@@ -257,7 +229,7 @@ const CaseChecklist = (function () {
     const older = older_(ss, model);
     const visas = model.order.map(function (id) {
       const v = model.visas[id];
-      return { id: id, name: Catalog.text(v.name, lang), active: v.active, offer: v.offer,
+      return { id: id, name: Text.pick(v.name, lang), active: v.active, offer: v.offer,
         older: older.filter(function (c) { return c.visa_type === id; }).length };
     }).filter(function (v) { return v.older > 0; });
     const counts = {};
@@ -298,11 +270,11 @@ const CaseChecklist = (function () {
     }).map(function (r) {
       let text = null;
       try { text = JSON.parse(r.text_json || 'null'); } catch (err) { text = null; }
-      const options = text && text.options ? text.options.map(function (o) { return Catalog.text(o.title, lang); }) : [];
+      const options = text && text.options ? text.options.map(function (o) { return Text.pick(o.title, lang); }) : [];
       return {
         id: r.item_id, personId: String(r.person_id || ''), level: r.level || Config.ITEM_LEVEL.REQUIRED, status: r.status,
-        title: text ? Catalog.text(text.title, lang) || String(r.title || '') : String(r.title || ''),
-        instructions: text ? Catalog.text(text.instructions, lang) || String(r.instructions || '') : String(r.instructions || ''),
+        title: text ? Text.pick(text.title, lang) || String(r.title || '') : String(r.title || ''),
+        instructions: text ? Text.pick(text.instructions, lang) || String(r.instructions || '') : String(r.instructions || ''),
         options: options, reason: r.status === Config.ITEM_STATUS.REJECTED ? String(r.reason || '') : '',
         due: Validate.ymd(r.due_date) || String(r.due_date || ''),
       };
@@ -317,5 +289,5 @@ const CaseChecklist = (function () {
   }
 
   return { sync: sync, refresh: refresh, status: status, view: view, people: people, items: items,
-    caseHash: caseHash, legacyVersion: legacyVersion };
+    caseHash: caseHash };
 })();
