@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: imports-art-92-minor-age-rule
+expected_outcome: |
+  The lawyer pre-approved, so the list is written. One new Visa types row named "Art. 92 – filho menor" (visa_type blank or an F- ID, active TRUE, based_on empty). Seven Document lists rows from row 7, in the source's order. The criminal record is limited to 16 or older with min_age 16 (applies_to each_adult, or the main applicant with min_age 16), never asked of every minor; its "less than 90 days" rule is in check_criteria. The other parent's authorisation is conditioned on a firm condition (listed in facts_to_ask) or marked as something to confirm, and the school enrolment is optional. Nothing invented; doc_key, group_key and check never written.
+context:
+  scaffold_script: place-files.sh
+---
+tags: [skill-creator]
+max_turns: 30
+timeout_seconds: 600
+allowed_tools: [Read, Glob, Grep, Skill, Write, Edit, Bash]

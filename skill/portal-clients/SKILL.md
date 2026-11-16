@@ -39,7 +39,7 @@ This skill reads and writes the sheet through the **Google Sheets connector**. I
 ## 1. Preflight: every time, before reading or writing anything else
 
 1. Read the **Settings** tab (key/value). Check `schema_version`:
-   - **1 to 3:** supported. (3 adds visa types, people and document checklists.)
+   - **1 to 4:** supported. (3 adds visa types, people and document checklists; 4 gives the firm its own process types and lists, in the Visa types and Document lists tabs.)
    - **Empty:** the portal isn't set up yet. Tell them to run Portal → Configurar (EN: Set up · ES: Configurar) in the sheet first, and stop.
    - **Anything higher:** stop. The portal is newer than this skill, so writing could break it. Tell them to get an updated skill.
 2. Read the **header row** (row 1) of Clients and Cases, and build a map from column name to column letter. **Always address columns by header name.** Lawyers add their own columns and reorder things, so position means nothing. If a column you need is missing, stop and say which one. Never create columns: the portal's setup does that.
@@ -60,13 +60,13 @@ Write only these, never anything else:
 | Change emails | That row's `email` and/or `additional_emails` |
 | Invite | That row's `invite_status` = REQUESTED |
 | Retry a row in error | That row's `provision_status` = PENDING, after the cause is fixed |
-| Set or change a case's visa | That Cases row's `visa_type`: an ID from `references/catalog.md`, e.g. `PT-D7` |
-| Set the case's facts | That Cases row's `facts`: `;`-separated IDs from `references/catalog.md` (`married` and `children` are automatic) |
+| Set or change a case's visa | That Cases row's `visa_type`: an ID from the **Visa types** tab (schema 4: an active row), or from `references/catalog.md` (schema 3), e.g. `PT-D7` |
+| Set the case's facts | That Cases row's `facts`: `;`-separated IDs from the type's `facts_to_ask` (schema 4) or `references/catalog.md` (schema 3) (`married` and `children` are automatic) |
 | Add a person to a case | A new People row: `case_id`, `name`, `role` (spouse, child or dependant), `birth_date` (YYYY-MM-DD), `notes`, `created_by`=claude-skill |
 | Accept or reject a document | That Checklist row's `status` (accepted / rejected) and, when rejecting, `reason` in words the client understands |
 | Waive a document for this case | That Checklist row's `level` = waived (and `reason` for the record) |
 | Ask for something not on the list | A new Checklist row: `case_id`, `person_name` (empty = the case), `title`, `instructions`, `level` = requested, `due_date` if given |
-| Change how the firm works for a visa | A new Adjustments row: `visa_type` (or `*` for all), `applies_to`, `doc_type` (from `references/catalog.md`, or the firm's own name for a new document), `action` (add / change / hide), `level`, `title`, `note` |
+| Change how the firm works for a visa (schema 3 only) | A new Adjustments row: `visa_type` (or `*` for all), `applies_to`, `doc_type` (from `references/catalog.md`, or the firm's own name for a new document), `action` (add / change / hide), `level`, `title`, `note`. With schema 4 the firm's lists are in Visa types and Document lists, and changing them is the **portal-lists** skill: never write Adjustments |
 
 The portal's script owns `folder_id`, `provision_error` and `invited_at`, and the Uploads and Events tabs. Never write them, and never read Uploads or Events: they hold the clients' documents and a security log, which you don't need for any of these tasks. Never delete rows. To remove someone, deactivate them, which keeps the history the firm may be legally required to keep.
 
@@ -74,12 +74,16 @@ The People tab's `person_id` and the Checklist tab's `item_id`, `person_id`, `up
 
 **Always set `active` and `created_by` explicitly on new client rows.** The portal treats a row with an empty `created_by` as typed by hand and ticks `active` itself. Writing both means the lawyer gets exactly what they asked for, including a deliberately inactive client.
 
-## New cases: visa and family (schema 3)
+## New cases: visa and family (schema 3 and 4)
 
-Every case at an immigration firm is a visa or residence permit application, and the visa is what gives the client a document list. With `schema_version` 3, don't open a case without asking about it. Before the confirmation table, make sure you have:
+Every case at an immigration firm is a visa or residence permit application, and the visa is what gives the client a document list. With `schema_version` 3 or 4, don't open a case without asking about it.
+
+**Where the process types are.** Schema 4: the firm's own **Visa types** tab (read it, address columns by header). Offer only rows with `active` TRUE and a `check` that is not an error; match on `name_<lang>` and `visa_type`. Its `family` column is the **Family documents** column below, and its `facts_to_ask` the **Facts to ask** column. Schema 3: `references/catalog.md`.
+
+Before the confirmation table, make sure you have:
 
 1. **The visa.** Ask "Qual é o tipo de visto ou autorização de residência deste processo?" unless the lawyer already named it.
-   - Match what they say ("D7", "nómada digital", "reagrupamento familiar") to a `visa_type` in `references/catalog.md`, and show its full name in the table so the lawyer can see you picked the right one. Several matches (for example "autorização de residência para trabalhar" fits 88-1, 88-7, 89-1 and others): list them with one line each and ask which.
+   - Match what they say ("D7", "nómada digital", "reagrupamento familiar", "renovação art. 92 menor") to a `visa_type` in the Visa types tab (schema 4) or `references/catalog.md` (schema 3), and show its full name in the table so the lawyer can see you picked the right one. Several matches (for example "autorização de residência para trabalhar" fits 88-1, 88-7, 89-1 and others): list them with one line each and ask which.
    - If the lawyer describes the client's situation instead of naming a visa, lay out the candidates and why each fits. **The lawyer chooses**; never write a visa they haven't confirmed.
    - "Ainda não sei" is a fine answer: open the case without a visa, and tell them the client won't see a document list until one is set.
    - Write the ID in `visa_type`. The case name is the lawyer's label: use theirs, or the visa's Portuguese name if they gave none.
@@ -127,14 +131,15 @@ If the lawyer asks later ("já está?", "did it work?"), read the rows back: `pr
 
 ## Visas and document checklists
 
-Each case is a visa application. When a case gets a `visa_type`, the portal builds its **checklist**: one row per document per person, from the catalog, changed by the firm's Adjustments, filtered by the case's facts and people. The client sees it on the portal, and sends each document into its own slot.
+Each case is a visa application. When a case gets a `visa_type`, the portal builds its **checklist**: one row per document per person, from the firm's own list (schema 4; before that, the catalog changed by the firm's Adjustments), filtered by the case's facts and people. The client sees it on the portal, and sends each document into its own slot.
 
 - **Choosing the visa is the lawyer's decision.** If they ask what fits, you may lay out the candidates from `references/catalog.md` with the reasons, but say clearly that the choice is theirs, and write `visa_type` only once they confirm.
 - **The catalog is guidance.** Every list in it comes from official sources on a review date, and the lawyer is responsible for each case's final list. Say so when it matters, for example when a lawyer asks "is this everything?".
 - **Family:** add each family member to People with their role and date of birth. Criminal records are asked from 16, so birth dates matter. Adding or removing a person, or changing the facts, rebuilds the list within 5 minutes. Documents already received stay received.
 - **"What's missing for Ana?":** read the case's Checklist rows (not Uploads). Group them by `person_name`, and show the ones with `status` missing or rejected and `level` required or requested. Mention optional ones separately.
 - **Reviewing:** "aceita o passaporte da Ana" sets `status` accepted. "rejeita o registo criminal do Pedro, tem mais de 90 dias" sets `status` rejected and `reason`. The client sees the reason at once, and gets reminded about it.
-- **The firm's way of working:** "no D7 pedimos sempre o CV do cônjuge" becomes an Adjustments row (`visa_type` PT-D7, `applies_to` spouse, `doc_type` CV, `action` add). This affects **new** lists. Existing cases keep theirs until the lawyer asks to refresh one: then clear that case's `checklist_version`. Nothing already received is lost.
+- **The firm's way of working, schema 4:** the firm's lists are its own (Visa types and Document lists tabs). "No D7 pedimos sempre o CV do cônjuge" is a change to that list: use the **portal-lists** skill, which also imports a firm's existing checklists. After a list changes, open cases are brought up to date with **Portal → Listas de documentos** (EN: Document lists · ES: Listas de documentos) → **Atualizar estes processos**. Nothing already received is lost.
+- **The firm's way of working, schema 3:** "no D7 pedimos sempre o CV do cônjuge" becomes an Adjustments row (`visa_type` PT-D7, `applies_to` spouse, `doc_type` CV, `action` add). This affects **new** lists. Existing cases keep theirs until the lawyer asks to refresh one: then clear that case's `checklist_version`. Nothing already received is lost.
 - **Reminders:** the portal emails clients about missing documents every `reminder_days` days (Settings).
 
 ## Listing

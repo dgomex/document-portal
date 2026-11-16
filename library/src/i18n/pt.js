@@ -158,7 +158,7 @@ const I18N_PT = {
   'checklist.finish': 'Terminei: avisar o escritório',
   'checklist.finished': 'O escritório foi avisado dos documentos enviados.',
   'checklist.noLongerApplies': 'Deixou de se aplicar a este processo (lista atualizada).',
-  'catalog.title': 'Listas de documentos',
+  'catalog.title': 'Catálogo de referência',
   'catalog.current': 'Listas em uso: versão {version}.',
   'catalog.none': 'Não há listas novas.',
   'catalog.pending': 'Nova versão disponível: {version}.',

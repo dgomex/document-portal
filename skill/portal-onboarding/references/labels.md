@@ -17,7 +17,10 @@ They follow the firm's `default_language` in Settings (`pt`, `en` or `es`).
 | Atualizar portal | Update portal | Actualizar portal | Menu item: the update sidebar |
 | Atualizar portal (listas novas) | Update portal (new lists) | Actualizar portal (listas nuevas) | The same menu item while new document lists are waiting |
 | Verificar | Check | Comprobar | Button in the update sidebar |
-| Listas de documentos | Document lists | Listas de documentos | Update sidebar: the document lists section |
+| Listas de documentos | Document lists | Listas de documentos | Menu item: the document lists sidebar (same sidebar as the update) |
+| Verificar | Check | Verificar | Button: check the lists now (fills IDs and keys, writes the check column) |
+| Atualizar estes processos | Update these cases | Actualizar estos expedientes | Button per process type: bring its open cases up to date |
+| Catálogo de referência | Reference catalog | Catálogo de referencia | Update sidebar: the catalog (template) section |
 | Aplicar | Apply | Aplicar | Button: use the new document lists (the lawyer's decision) |
 | Ignorar esta versão | Ignore this version | Ignorar esta versión | Button: keep the current lists |
 | Verificar diariamente se há listas novas | Check daily for new lists | Comprobar a diario si hay listas nuevas | Checkbox: the daily check for new lists (catalog_check) |

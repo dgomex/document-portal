@@ -1,6 +1,6 @@
 # Portal sheet: columns, values, errors
 
-Schema versions 1 to 3 (Settings `schema_version`). Version 2 added `Clients.invited_at` and the Settings key `daily_email_limit`. Version 3 added visa checklists: `Cases.visa_type`, `Cases.facts`, `Cases.checklist_version`, and the People, Checklist and Adjustments tabs. Columns are only ever appended, never renamed. Always find a column by its header text in row 1.
+Schema versions 1 to 4 (Settings `schema_version`). Version 2 added `Clients.invited_at` and the Settings key `daily_email_limit`. Version 3 added visa checklists: `Cases.visa_type`, `Cases.facts`, `Cases.checklist_version`, and the People, Checklist and Adjustments tabs. Version 4 (portal 0.5.0) gave each firm its own process types and lists in the **Visa types** and **Document lists** tabs: read-only for this skill (`visa_type`, `name_*`, `active`, `family`, `facts_to_ask`), written by the portal-lists skill. Adjustments is then hidden and no longer applied, and `Cases.checklist_version` becomes `list hash|case hash`. Columns are only ever appended, never renamed. Always find a column by its header text in row 1.
 
 ## Settings (key | value | description)
 

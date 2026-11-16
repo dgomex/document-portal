@@ -12,7 +12,7 @@ const path = require('path');
 const vm = require('vm');
 
 const ROOT = path.join(__dirname, '..');
-const SKILLS = ['portal-clients', 'portal-onboarding', 'portal-update'];
+const SKILLS = ['portal-clients', 'portal-onboarding', 'portal-update', 'portal-lists'];
 
 function translations() {
   const ctx = vm.createContext({});
@@ -29,7 +29,10 @@ const PORTAL = [
   ['menu.update', 'Menu item: the update sidebar'],
   ['menu.updateLists', 'The same menu item while new document lists are waiting'],
   ['update.check', 'Button in the update sidebar'],
-  ['catalog.title', 'Update sidebar: the document lists section'],
+  ['menu.lists', 'Menu item: the document lists sidebar (same sidebar as the update)'],
+  ['lists.check', 'Button: check the lists now (fills IDs and keys, writes the check column)'],
+  ['lists.update', 'Button per process type: bring its open cases up to date'],
+  ['catalog.title', 'Update sidebar: the catalog (template) section'],
   ['catalog.apply', 'Button: use the new document lists (the lawyer\'s decision)'],
   ['catalog.ignore', 'Button: keep the current lists'],
   ['catalog.checkLabel', 'Checkbox: the daily check for new lists (catalog_check)'],

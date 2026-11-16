@@ -128,6 +128,13 @@ If the phone shows "Não é possível abrir o ficheiro", that phone's browser is
 
 Afterwards, untick the test client's `active` box. Don't delete rows.
 
+## 6a. The firm's process types and lists
+
+Setup seeded two tabs from the portal's catalog: **Visa types** (every Portuguese visa and residence permit) and **Document lists** (their documents). They are now the firm's own lists. Two questions, and neither blocks the hand-over:
+
+1. **Which process types does the firm handle?** Show the Visa types names (grouped: visas, then residence permits) and ask which to keep. Untick `active` on the others (never delete rows): they stop being offered for new cases. If the portal-lists skill is available it does this; otherwise write only the `active` cells.
+2. **Does the firm have its own checklists** (PDF, Word, a spreadsheet)? If yes, the **portal-lists** skill imports them, in this Claude account, with the firm's own Sheets connector: the lawyer gives it the file and confirms the table before anything is written. This can happen after this call; a list per process type takes a few minutes.
+
 ## 7. Hand over
 
 **First, the line to keep.** Every portal skill starts by finding the firm's portal sheet. Give the lawyer this line, with the real links, in their language (EN: "The firm's portal: sheet …, address …"):
@@ -141,8 +148,9 @@ Then tell the lawyer, briefly:
 - **Adding clients and cases:** ask Claude (portal-clients skill), or type rows in the sheet and use **Portal → Processar novas linhas** (EN: Process new rows · ES: Procesar filas nuevas).
 - **Inviting a client:** set `invite_status` to REQUESTED. The email goes out within 5 minutes.
 - **Visa checklists:** set a case's `visa_type` (and its family members in People, with birth dates) and the portal builds each person's document list. In the Checklist tab the lawyer sets an item to `accepted` or `rejected` (with a `reason` the client sees), sets `level` to `waived` for items they don't need, or adds a row of their own to ask for something extra. The portal-clients skill does all of this on request.
-- **The lists are guidance; the lawyer decides.** The visa lists come from a catalog the portal's makers maintain, with sources and review dates. Requirements change, and consulates differ, so the lawyer remains responsible for what their firm asks for. The **Adjustments** tab changes the lists for the whole firm (add, hide or change a document for a visa).
-- **New lists:** when a newer catalog is published, the menu shows **Atualizar portal (listas novas)**. Nothing changes until the lawyer reviews the changes there and clicks **Aplicar**. Existing cases keep their list. The daily check can be switched off in the same place.
+- **The lists are the firm's; the lawyer decides.** The seeded lists come from a catalog the portal's makers maintain, with sources and review dates; from now on they are the firm's to change, in the **Visa types** and **Document lists** tabs, by hand or with the portal-lists skill (new process types, renewals, adult/minor lists, a document added or removed, validation criteria for the review in `check_criteria`, which clients never see). Requirements change and consulates differ, so the lawyer remains responsible for what their firm asks for.
+- **After changing a list:** open cases keep their list until the lawyer updates them in **Portal → Listas de documentos** (EN: Document lists · ES: Listas de documentos) → **Atualizar estes processos**. Nothing already received is lost.
+- **Catalog updates:** when a newer catalog is published, the menu shows **Atualizar portal (listas novas)** and the sidebar lists what changed for the firm's types based on it. The firm's lists never change by themselves: to use a change, ask Claude or copy it into Document lists. The daily check can be switched off in the same place.
 - **Reminders:** clients with missing documents get a reminder email every `reminder_days` days (0 turns them off).
 - **Updates:** when a new version is announced, **Portal → Atualizar portal** (EN: Update portal · ES: Actualizar portal) walks them through it (about 3 minutes; the address stays the same).
 - **Privacy:** their privacy policy should mention the portal. There are templates in Portuguese and English. If they use Claude to manage clients, it should also say client names and emails are processed by Anthropic.

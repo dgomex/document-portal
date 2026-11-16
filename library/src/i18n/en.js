@@ -158,7 +158,7 @@ const I18N_EN = {
   'checklist.finish': 'I\'m done: notify the firm',
   'checklist.finished': 'The firm has been told about the documents you sent.',
   'checklist.noLongerApplies': 'No longer applies to this case (list updated).',
-  'catalog.title': 'Document lists',
+  'catalog.title': 'Reference catalog',
   'catalog.current': 'Lists in use: version {version}.',
   'catalog.none': 'No new lists.',
   'catalog.pending': 'New version available: {version}.',

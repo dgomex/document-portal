@@ -158,7 +158,7 @@ const I18N_ES = {
   'checklist.finish': 'He terminado: avisar al despacho',
   'checklist.finished': 'Se ha avisado al despacho de los documentos enviados.',
   'checklist.noLongerApplies': 'Ya no se aplica a este expediente (lista actualizada).',
-  'catalog.title': 'Listas de documentos',
+  'catalog.title': 'Catálogo de referencia',
   'catalog.current': 'Listas en uso: versión {version}.',
   'catalog.none': 'No hay listas nuevas.',
   'catalog.pending': 'Nueva versión disponible: {version}.',
