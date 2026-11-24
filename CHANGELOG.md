@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1 (library version 11, 2026-11-24)
+
+Fix: min_age now limits any per-person row, not only each_adult (e.g. a minor applicant's criminal record from 16); a min_age on a case row gets a check warning.
+
 ## 0.5.0 (library version 10, 2026-11-24)
 
 Firm-owned lists: each firm keeps its own process types and document lists in two tabs of its sheet (Visa types, Document lists), with no central catalog. 0.4.x sheets get the lists they were using copied in once (schema 4); new portal-lists skill imports a firm's existing lists.
