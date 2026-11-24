@@ -29,7 +29,7 @@ Schema version 4 (Settings `schema_version`, portal 0.5.0). Columns are only eve
 | `group_<lang>` | skill | Text of an either/or item ("send one of these"). Rows with the same text (in the firm's language) in one type form one group; each row is one option |
 | `group_key` | portal only | The group's identity. Renaming the group text keeps it, so received documents stay attached |
 | `only_if`, `unless` | skill | `;`-separated conditions, each one word with no spaces (accents allowed): the document is asked only if all `only_if` hold and none of `unless`. `married` and `children` follow from the case's people |
-| `min_age` | skill | A number, for `each_adult` (default 16) |
+| `min_age` | skill | A number: the row is asked only of people that age or older (from their birth date; without one, of anyone but a child). Works with every per-person `applies_to`, e.g. a minor applicant's criminal record from 16 (`main_applicant`, `min_age` 16). `each_adult` defaults to 16. Not for `case` |
 | `check_criteria` | skill | The firm's validation criteria for the lawyer's review ("≤ 90 dias antes do agendamento AIMA"). **Never shown to clients**, in no email and no page |
 | `active` | skill | TRUE / FALSE. Unticked rows are ignored; never delete rows |
 | `doc_key` | portal only | The document's identity. Ties each client's received document to this row across edits |
@@ -50,6 +50,7 @@ The portal writes them in the firm's language. **Errors** skip the row (or the t
 | `lists.check.level` | error | `level` isn't `required` or `optional` |
 | `lists.check.noTitle` | error | No title in the firm's language |
 | `lists.check.minAge` | error | `min_age` isn't a number |
+| `lists.check.minAgeCase` | warning | `min_age` on a `case` row does nothing (the document is asked once per case, always): move the age rule to a per-person row or clear it |
 | `lists.check.condition` | error (Document lists), warning (Visa types) | A condition in `only_if`/`unless` or `facts_to_ask` has a space (`meios a` → `meios_a`), so it can never match a case's facts: fix it in both places |
 | `lists.check.noTranslation` | warning | No title in another language: those clients see the firm's language |
 | `lists.check.unasked` | warning | A condition used in `only_if`/`unless` isn't in the type's `facts_to_ask`, so nobody is asked about it: add it there |

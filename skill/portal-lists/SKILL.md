@@ -68,7 +68,7 @@ The lawyer gives you a file or a link: the firm's checklist for one process type
    - `level`: `required` or `optional` ("se aplicável", "facultativo").
    - **"One of these"** (send A or B or C): one row per option, the same group text in `group_<lang>` on each (e.g. "Alojamento (um dos seguintes)").
    - **Alternative sets** (modality A: employment, B: self-employed, C: sponsor, each with several documents): a **condition** per set, the firm's own `snake_case` ID (e.g. `meios_a`, `meios_b`, `meios_c`), in `only_if` of every document of that set, and listed in the type's `facts_to_ask` so whoever opens a case asks it.
-   - **Age rules** ("registo criminal, se maior de 16 anos"): `each_adult` with `min_age` 16, or `min_age` on the row.
+   - **Age rules** ("registo criminal, se maior de 16 anos"): `each_adult` with `min_age` 16, or the row's own people (e.g. `main_applicant` for a minor applicant) with `min_age` 16. Never on a `case` row.
    - **Validation criteria** for the lawyer's review ("emitido há menos de 90 dias", "sem apostila para o Brasil, mas com o número do passaporte") go in `check_criteria`. Clients never see that column; never put them in `instructions`.
 3. **Leave out what the client doesn't upload:** documents the office prepares or fills (power of attorney drafted by the firm, the firm's own declarations, forms the firm completes). List them separately for the lawyer, so they can tell you if one should be on the client's list after all.
 4. **Never invent a document** that isn't in the source, and never "complete" the list from another firm's list or from what you know. If an item is unclear (a missing word, "outros documentos", an illegible line), don't guess: ask about it as a question after the table.

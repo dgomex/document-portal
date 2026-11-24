@@ -217,6 +217,7 @@ const I18N_EN = {
   'lists.check.appliesTo': 'Invalid applies_to: "{value}".',
   'lists.check.level': 'Invalid level: "{value}" (use required or optional).',
   'lists.check.noTitle': 'Title missing in {lang}.',
+  'lists.check.minAgeCase': 'min_age has no effect on a case document (case): it is always asked.',
   'lists.check.minAge': 'min_age must be a number: "{value}".',
   'lists.check.noTranslation': 'No text in {langs}: the client sees the firm\'s language.',
   'lists.check.unasked': 'Condition not in the process type\'s facts_to_ask: {facts}.',

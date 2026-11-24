@@ -729,3 +729,48 @@ describe('review fixes (PR #2)', () => {
     expect(allLangs(after.text)).toEqual(allLangs(before.text));
   });
 });
+
+describe('min_age on any per-person row (0.5.1)', () => {
+  const minorType = () => {
+    const f = firm();
+    f.migrate();
+    f.addType({ name_pt: 'Art. 92 – filho menor', active: true });
+    const add = (r) => f.addDoc(Object.assign({ visa_type: 'Art. 92 – filho menor', active: true }, r));
+    add({ applies_to: 'main_applicant', title_pt: 'Passaporte' });
+    add({ applies_to: 'main_applicant', title_pt: 'Registo criminal', min_age: 16 });
+    add({ applies_to: 'each_child', title_pt: 'Matrícula escolar', min_age: '6' });
+    add({ applies_to: 'case', title_pt: 'Autorização de residência do familiar', min_age: 16 });
+    return f;
+  };
+  const build = (f, people) => {
+    f.model();  // the check fills in the type's ID
+    const id =f.types().find((t) => t.name_pt === 'Art. 92 – filho menor').visa_type;
+    return lib.Checklist.build({ requirements: f.model().visas[id].requirements, people, lang: 'pt', now: NOW })
+      .map((i) => i.title + '|' + (i.person_id || 'case'));
+  };
+
+  test('a minor applicant is asked for the criminal record only from 16', () => {
+    const f = minorType();
+    const at = (birth) => build(f, [{ person_id: 'PE-M', role: 'main_applicant', birth_date: birth }]);
+    expect(at('2016-03-03')).not.toContain('Registo criminal|PE-M');  // 10
+    expect(at('2010-11-17')).not.toContain('Registo criminal|PE-M');  // 15, 16 the day after NOW
+    expect(at('2010-11-16')).toContain('Registo criminal|PE-M');      // 16 today
+    expect(at('2008-01-01')).toContain('Registo criminal|PE-M');
+    expect(at('2016-03-03')).toContain('Passaporte|PE-M');            // rows without min_age: everyone
+    expect(at('')).toContain('Registo criminal|PE-M');                // no birth date: asked, as for each_adult
+  });
+
+  test('min_age works on each_child too; on a case row it does nothing and the row warns', () => {
+    const f = minorType();
+    const items = build(f, [
+      { person_id: 'PE-A', role: 'main_applicant', birth_date: '1980-01-01' },
+      { person_id: 'PE-C1', role: 'child', birth_date: '2023-01-01' },
+      { person_id: 'PE-C2', role: 'child', birth_date: '2015-01-01' },
+    ]);
+    expect(items.filter((i) => i.startsWith('Matrícula'))).toEqual(['Matrícula escolar|PE-C2']);
+    expect(items).toContain('Autorização de residência do familiar|case');
+    const row = f.docs().find((d) => d.title_pt === 'Autorização de residência do familiar');
+    expect(row.check).toContain('min_age não se aplica');
+    expect(f.docs().find((d) => d.title_pt === 'Registo criminal').check).not.toContain('min_age');
+  });
+});

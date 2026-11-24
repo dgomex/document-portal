@@ -217,6 +217,7 @@ const I18N_ES = {
   'lists.check.appliesTo': 'applies_to no válido: "{value}".',
   'lists.check.level': 'level no válido: "{value}" (use required u optional).',
   'lists.check.noTitle': 'Falta el título en {lang}.',
+  'lists.check.minAgeCase': 'min_age no se aplica a un documento del expediente (case): se pide siempre.',
   'lists.check.minAge': 'min_age debe ser un número: "{value}".',
   'lists.check.noTranslation': 'Sin texto en {langs}: el cliente ve el idioma del despacho.',
   'lists.check.unasked': 'Condición que no está en facts_to_ask del tipo de expediente: {facts}.',

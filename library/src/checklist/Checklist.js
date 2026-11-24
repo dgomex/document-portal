@@ -31,19 +31,27 @@ const Checklist = (function () {
     return years;
   }
 
+  /** Whether a person is at least minAge; without a birth date, anyone but a child is. */
+  function oldEnough_(p, minAge, now) {
+    const years = age(p.birth_date, now);
+    return years === null ? p.role !== 'child' : years >= minAge;
+  }
+
   function targets_(r, people, now) {
+    let out;
     switch (r.applies_to) {
       case 'case': return [null];
-      case 'main_applicant': return people.filter(function (p) { return p.role === 'main_applicant'; });
-      case 'spouse': return people.filter(function (p) { return p.role === 'spouse'; });
-      case 'each_child': return people.filter(function (p) { return p.role === 'child'; });
-      case 'each_person': return people;
-      case 'each_adult': return people.filter(function (p) {
-        const years = age(p.birth_date, now);
-        return years === null ? p.role !== 'child' : years >= (r.min_age || 16);
-      });
+      case 'main_applicant': out = people.filter(function (p) { return p.role === 'main_applicant'; }); break;
+      case 'spouse': out = people.filter(function (p) { return p.role === 'spouse'; }); break;
+      case 'each_child': out = people.filter(function (p) { return p.role === 'child'; }); break;
+      case 'each_person': out = people; break;
+      case 'each_adult': return people.filter(function (p) { return oldEnough_(p, r.min_age || 16, now); });
       default: return [];
     }
+    // A min_age on any per-person row is an age rule too (e.g. a minor's criminal record from 16).
+    const min = Number(r.min_age);
+    return r.min_age === null || r.min_age === undefined || r.min_age === '' || !(min > 0) ? out
+      : out.filter(function (p) { return oldEnough_(p, min, now); });
   }
 
   /**
