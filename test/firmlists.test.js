@@ -624,6 +624,44 @@ describe('review fixes (PR #2)', () => {
     expect(f.docs('PT-D7').find((d) => d.title_pt === 'Contrato').check).toContain('Condição inválida: "meios a"');
   });
 
+  test('#7b an accented condition is fine; a fact asked with a space gets a warning on its type', () => {
+    const f = firm({ cases: [Object.assign({}, d7, { facts: 'união_estável' })], people: family.slice(0, 1) });
+    f.migrate();
+    lib.Table.open(f.ss, VT).update(f.types().find((t) => t.visa_type === 'PT-D7')._row, { facts_to_ask: 'união_estável; meios a' });
+    lib.FirmLists.reset_();
+    f.addDoc({ visa_type: 'PT-D7', title_pt: 'Declaração de união estável', only_if: 'união_estável', active: true });
+    const req = f.model().visas['PT-D7'].requirements.find((r) => r.text.title.pt === 'Declaração de união estável');
+    expect(req.only_if).toEqual(['união_estável']);
+    expect(f.docs('PT-D7').find((d) => d.title_pt === 'Declaração de união estável').check).not.toContain('Condição inválida');
+    expect(f.types().find((t) => t.visa_type === 'PT-D7').check).toContain('Condição inválida: "meios a"');
+    expect(f.model().visas['PT-D7']).toBeTruthy();  // a warning: the type still works
+    f.sync();
+    expect(f.items('CS-111111').map((i) => i.title)).toContain('Declaração de união estável');
+  });
+
+  test('A: a group copied for people that overlap (main_applicant -> each_adult) is a new group, not extra options', () => {
+    const f = firm({ cases: [d7], people: family });
+    f.migrate();
+    const add = (r) => f.addDoc(Object.assign({ visa_type: 'PT-D7', active: true, group_pt: 'Meios', group_key: 'FIRM-G-MEIOS' }, r));
+    add({ applies_to: 'main_applicant', title_pt: 'Extrato', doc_key: 'FIRM-EXTRATO' });
+    add({ applies_to: 'main_applicant', title_pt: 'IRS', doc_key: 'FIRM-IRS' });
+    add({ applies_to: 'each_adult', title_pt: 'Extrato', doc_key: 'FIRM-EXTRATO' });
+    add({ applies_to: 'each_adult', title_pt: 'IRS', doc_key: 'FIRM-IRS' });
+    const reqs = f.model().visas['PT-D7'].requirements.filter((r) => /^FIRM-G-MEIOS/.test(r.key));
+    expect(reqs.map((r) => [r.key, r.applies_to, r.any_of])).toEqual([
+      ['FIRM-G-MEIOS', 'main_applicant', ['FIRM-EXTRATO', 'FIRM-IRS']],
+      ['FIRM-G-MEIOS_2', 'each_adult', ['FIRM-EXTRATO', 'FIRM-IRS']],
+    ]);
+    expect(f.docs('PT-D7').filter((d) => d.applies_to === 'each_adult' && d.group_pt === 'Meios').map((d) => [d.group_key, /Chave copiada/.test(d.check)])).toEqual([['FIRM-G-MEIOS_2', true], ['FIRM-G-MEIOS_2', true]]);
+    // Running the check again on the fixed rows changes nothing.
+    f.model();
+    expect(f.docs('PT-D7').filter((d) => d.applies_to === 'each_adult' && d.group_pt === 'Meios').map((d) => d.group_key)).toEqual(['FIRM-G-MEIOS_2', 'FIRM-G-MEIOS_2']);
+    f.sync();
+    const items = f.items('CS-111111').filter((i) => /^FIRM-G-MEIOS/.test(i.key)).map((i) => i.key).sort();
+    // The spouse and the adult child are asked now; nobody sees an option twice.
+    expect(items).toEqual(['FIRM-G-MEIOS_2|PE-AAAAAA', 'FIRM-G-MEIOS_2|PE-BBBBBB', 'FIRM-G-MEIOS_2|PE-DDDDDD', 'FIRM-G-MEIOS|PE-AAAAAA']);
+  });
+
   test('#9 a new process type reaches the Document lists dropdown even when Cases IDs don\'t change', () => {
     const calls = [];
     const orig = lib.Schema.visaDropdown;

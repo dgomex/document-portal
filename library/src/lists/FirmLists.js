@@ -54,6 +54,11 @@ const FirmLists = (function () {
     return str_(v).split(/[;,]+/).map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean);
   }
 
+  /** A condition Checklist.facts() would split in two (it splits a case's facts on spaces). */
+  function badCondition_(c) {
+    return /\s/.test(c);
+  }
+
   function plain_(s) {
     return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
   }
@@ -145,6 +150,10 @@ const FirmLists = (function () {
         id = isId_(raw) ? raw : ownId(raw);
       }
       if (!name) note(T.types, r._row, 'error', 'lists.check.noName', { lang: lang });
+      // A fact asked with a space could never match a condition: the type still works, so a warning.
+      list_(r.facts_to_ask).filter(badCondition_).forEach(function (c) {
+        note(T.types, r._row, 'warning', 'lists.check.condition', { value: c });
+      });
       if (id && seen.has(id)) {
         note(T.types, r._row, 'error', 'lists.check.dupType', { id: id });
         return;
@@ -216,8 +225,9 @@ const FirmLists = (function () {
       // within a scope of people: the same key used for people that never
       // overlap (spouse, each_child) is a separate group, as for plain keys.
       // A row repeating an option of its group is a copy: with the group's
-      // text, an extra option (new doc_key); with other text, a copied group
-      // (new group_key). Groups claim their keys first, then plain rows.
+      // text and people, an extra option (new doc_key); with other text, or
+      // for other people that overlap (main_applicant -> each_adult), a copied
+      // group (new group_key). Groups claim their keys first, then plain rows.
       const appliesOf = function (r) { return str_(r.applies_to) || 'main_applicant'; };
       const claims = [];  // { id, applies, row, group }
       const byKey = {};   // group_key -> [group]
@@ -238,9 +248,9 @@ const FirmLists = (function () {
           same.filter(function (e) { return overlap_(e.applies, applies); })[0];
         if (!g) g = newGroup(gk, r, applies);
         const dk = str_(r.doc_key);
-        if (g.docKeys[dk] && textOf(r) !== textOf(g.first)) {
+        if (g.docKeys[dk] && (textOf(r) !== textOf(g.first) || applies !== g.applies)) {
           const from = g.docKeys[dk];
-          let copy = g.copies.filter(function (c) { return textOf(c.first) === textOf(r) && !c.docKeys[dk]; })[0];
+          let copy = g.copies.filter(function (c) { return textOf(c.first) === textOf(r) && c.applies === applies && !c.docKeys[dk]; })[0];
           if (!copy) {
             const fresh = unique_(gk, keys, '_');
             keys.add(fresh);
@@ -287,8 +297,8 @@ const FirmLists = (function () {
         if (!str_(r['title_' + lang])) { note(T.docs, r._row, 'error', 'lists.check.noTitle', { lang: lang }); bad = true; }
         const minAge = str_(r.min_age);
         if (minAge && !/^\d{1,3}$/.test(minAge)) { note(T.docs, r._row, 'error', 'lists.check.minAge', { value: minAge }); bad = true; }
-        // A case's facts are split on spaces too, so a condition must be one snake_case word.
-        list_(r.only_if).concat(list_(r.unless)).filter(function (c) { return !/^[a-z][a-z0-9_]*$/.test(c); }).forEach(function (c) {
+        // A case's facts are split on spaces too, so a condition must be one word (accents are fine).
+        list_(r.only_if).concat(list_(r.unless)).filter(badCondition_).forEach(function (c) {
           note(T.docs, r._row, 'error', 'lists.check.condition', { value: c });
           bad = true;
         });

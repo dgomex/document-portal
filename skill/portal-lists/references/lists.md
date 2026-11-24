@@ -12,7 +12,7 @@ Schema version 4 (Settings `schema_version`, portal 0.5.0). Columns are only eve
 | `name_pt`, `name_en`, `name_es` | skill | What the lawyer and the client see. The firm's language is required |
 | `active` | skill | TRUE / FALSE. Only active types are offered for new cases; inactive ones keep working in existing cases |
 | `family` | skill | TRUE when the list has spouse or child documents (portal-clients then asks about the family) |
-| `facts_to_ask` | skill | `;`-separated conditions asked when a case is opened: the firm's own `snake_case` IDs (`cplp`, `meios_a`, `self_employed`…) |
+| `facts_to_ask` | skill | `;`-separated conditions asked when a case is opened: the firm's own one-word IDs, no spaces, accents allowed (`cplp`, `meios_a`, `união_estável`…) |
 | `notes` | skill (if asked) | The lawyer's notes. Never shown to clients |
 | `check` | portal only | `ok`, or what's wrong (below) |
 
@@ -28,7 +28,7 @@ Schema version 4 (Settings `schema_version`, portal 0.5.0). Columns are only eve
 | `instructions_<lang>` | skill | What exactly to send, shown to the client |
 | `group_<lang>` | skill | Text of an either/or item ("send one of these"). Rows with the same text (in the firm's language) in one type form one group; each row is one option |
 | `group_key` | portal only | The group's identity. Renaming the group text keeps it, so received documents stay attached |
-| `only_if`, `unless` | skill | `;`-separated conditions, each one `snake_case` word: the document is asked only if all `only_if` hold and none of `unless`. `married` and `children` follow from the case's people |
+| `only_if`, `unless` | skill | `;`-separated conditions, each one word with no spaces (accents allowed): the document is asked only if all `only_if` hold and none of `unless`. `married` and `children` follow from the case's people |
 | `min_age` | skill | A number, for `each_adult` (default 16) |
 | `check_criteria` | skill | The firm's validation criteria for the lawyer's review ("≤ 90 dias antes do agendamento AIMA"). **Never shown to clients**, in no email and no page |
 | `active` | skill | TRUE / FALSE. Unticked rows are ignored; never delete rows |
@@ -50,7 +50,7 @@ The portal writes them in the firm's language. **Errors** skip the row (or the t
 | `lists.check.level` | error | `level` isn't `required` or `optional` |
 | `lists.check.noTitle` | error | No title in the firm's language |
 | `lists.check.minAge` | error | `min_age` isn't a number |
-| `lists.check.condition` | error | A condition in `only_if`/`unless` isn't one `snake_case` word (`meios a` → `meios_a`): fix it, here and in `facts_to_ask` |
+| `lists.check.condition` | error (Document lists), warning (Visa types) | A condition in `only_if`/`unless` or `facts_to_ask` has a space (`meios a` → `meios_a`), so it can never match a case's facts: fix it in both places |
 | `lists.check.noTranslation` | warning | No title in another language: those clients see the firm's language |
 | `lists.check.unasked` | warning | A condition used in `only_if`/`unless` isn't in the type's `facts_to_ask`, so nobody is asked about it: add it there |
 | `lists.check.groupOfOne` | warning | A group with only one active row: shown as a plain document |
