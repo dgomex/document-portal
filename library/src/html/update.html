@@ -131,9 +131,15 @@
             const s = res.data;
             const lines = [t('update.sheet', { version: s.sheet }), t('update.portal', { version: s.portal || t('update.unknown') })];
             if (s.migrated) lines.push(t('update.migrated'));
-            if (!s.portal) lines.push(t('update.noPortal'));
+            if (s.reach === 'gone') lines.push(t('update.gone'));
+            else if (!s.portal) lines.push(t('update.noPortal'));
             else lines.push(s.match ? t('update.ok', { version: s.sheet }) : t('update.missingDeploy'));
-            show(s.match, lines);
+            if (s.urlChanged) {
+              lines.push(s.urlChanged.oldAnswers
+                ? t('update.urlChangedOldAnswers', { to: s.urlChanged.to, version: s.urlChanged.oldVersion })
+                : t('update.urlChanged', { to: s.urlChanged.to }));
+            }
+            show(s.match && !s.urlChanged, lines);
           })
           .withFailureHandler(() => {
             $('check').disabled = false;

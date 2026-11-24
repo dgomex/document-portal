@@ -57,6 +57,19 @@ The firm's document lists are not part of an update: they are the firm's own (th
 
 Open `<portal_url>?portal=status`. It returns JSON with `libraryVersion` (e.g. `0.3.0`) and `ready`. Note the version. If `ready` is false, the portal was never fully set up: that's a job for portal-onboarding, not an update.
 
+If it returns Google's **"Page not found"** (pt: *Página não encontrada*) instead, the portal address has **already** changed before this update: its deployment was replaced or archived. Don't update yet. Tell the lawyer, then follow "If the portal address changed" below.
+
+## The portal address must not change
+
+Clients reach the portal through `portal_url`: in their invitation emails, and often on the firm's website. That address belongs to one **deployment**. Editing that deployment with a new version keeps it; **New deployment** creates a new address, and **archiving** the old deployment kills the old one for good (Google can't bring it back). Either way, every link the firm already shared stops working.
+
+So, in step 3:
+- Before clicking Deploy, write down the **Deployment ID** and the **web app URL** of the deployment you edit, and check that the URL is exactly `portal_url`.
+- After Deploy, the dialog must show the **same** Deployment ID and URL. Check it before clicking Done.
+- Never click **New deployment** (pt-PT *Nova implementação*, pt-BR *Nova implantação*, es *Nueva implementación*), and never click the **archive** icon (the box with an arrow, next to the pencil).
+
+If anything doesn't match, stop and tell the lawyer what you saw. Don't try to fix it by creating or archiving deployments.
+
 ## 2. Library version
 
 1. Open the sheet, wait for its **Portal** menu, then **Extensions → Apps Script** (pt: *Extensões → Apps Script*). Going through the sheet opens the editor with the right account. The script editor opens in a new tab.
@@ -69,9 +82,9 @@ Open `<portal_url>?portal=status`. It returns JSON with `libraryVersion` (e.g. `
 ## 3. Deployment
 
 1. Click the blue **Deploy** button (pt-PT *Implementar*, pt-BR *Implantar*), then **Manage deployments** (*Gerir implementações* / *Gerenciar implantações*). **Not** "New deployment": that would give the portal a new address and break every link the firm has shared.
-2. Select the active deployment whose **URL** matches the portal address (usually the only one, named "Portal"). Click the **pencil** (Edit).
+2. Select the active deployment whose **URL** matches the portal address (usually the only one, named "Portal"). Write down its **Deployment ID** and URL. If **no** active deployment has that URL, stop: the address already changed (see "If the portal address changed"). Click the **pencil** (Edit).
 3. In **Version**, choose **New version**. Leave the description, Execute as and Who has access as they are. Click **Deploy**.
-4. Normally the dialog then says "Deployment successfully updated", with the **same** URL. Click **Done**.
+4. Normally the dialog then says "Deployment successfully updated", with the **same** Deployment ID and URL you wrote down. **Compare them** before clicking **Done**. If either differs, stop and follow "If the portal address changed".
 
    If instead Google says the web app needs authorisation, the new version needs new permissions. **Hand over to the lawyer:**
    - click **Authorize access** and choose the firm's account;
@@ -88,6 +101,18 @@ Open `<portal_url>?portal=status` again.
 - **An error page, or `ready: false`:** ask the lawyer to open the sheet and run **Portal → Atualizar portal → Verificar (EN: Portal → Update portal → Check · ES: Portal → Actualizar portal → Comprobar)**. It shows the version the sheet and the portal each run, and points to the missing step.
 
 The sheet's own `library_version` cell catches up within 5 minutes, so don't rely on it right after updating.
+
+## If the portal address changed
+
+You'll see it as Google's "Page not found" at `portal_url`, as no active deployment with that URL, or as a different URL after Deploy. The old address can't be restored. What you can do:
+
+1. Tell the lawyer plainly: the portal now has a new address, and the links already sent to clients (invitation emails, the firm's website) may no longer work. They broke if the old deployment was archived; Verificar says which.
+2. In **Manage deployments**, copy the **web app URL** of the active deployment. Open it once in the browser. The portal then saves it in `portal_url` by itself, and every new email uses it. Don't paste it into Configurar or the Settings tab instead: the portal then can't tell the address changed, and Verificar won't warn about the old links.
+   If the old address still answers (an older deployment is still active), Verificar says so: old links then still open the portal, in the old version. Don't archive anything; tell the lawyer and leave the choice of address to us.
+3. Ask the lawyer to run **Portal → Atualizar portal → Verificar (EN: Portal → Update portal → Check · ES: Portal → Actualizar portal → Comprobar)**. It confirms the version and repeats the warning about old links.
+4. Tell them what to fix: the link on the firm's website, and a new invitation for any client who needs one (the portal-clients skill can resend it).
+
+Never create another deployment to "get the old address back": it only adds a third address.
 
 ## When a release changes the sheet's own script
 

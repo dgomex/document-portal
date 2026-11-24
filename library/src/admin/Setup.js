@@ -11,6 +11,7 @@ const Setup = (function () {
   const TRIGGERS = [{ handler: 'cronProvision', minutes: 5 }, { handler: 'cronDigest', minutes: 10 }];
   // Consumer and Workspace forms of a deployed web app address.
   const PORTAL_URL = /^https:\/\/script\.google\.com\/(macros|a\/macros\/[\w.-]+)\/s\/[\w-]+\/exec$/;
+  const URL_CHANGED_KEY = 'PORTAL_URL_CHANGED';  // { from, to, at }: read and cleared by Update.status
 
   /** Pure: returns { values, errors } where errors maps field -> i18n key. */
   function validate(form) {
@@ -187,10 +188,25 @@ const Setup = (function () {
   function recordPortalUrl(ctx, settings) {
     try {
       const url = String(ctx.script.getService().getUrl() || '');
-      if (PORTAL_URL.test(url) && url !== String(settings.portal_url || '')) Settings.set(ctx.ss, 'portal_url', url);
+      const before = String(settings.portal_url || '');
+      // Same deployment in another form (/macros/s/<id> vs /a/macros/<domain>/s/<id>): no change, keep the stored one.
+      if (!PORTAL_URL.test(url) || url === before || (PORTAL_URL.test(before) && deploymentId(url) === deploymentId(before))) return;
+      Settings.set(ctx.ss, 'portal_url', url);
+      // A new deployment instead of a new version of the old one: links the
+      // firm already shared point to the old address. Portal > Update says so.
+      if (PORTAL_URL.test(before)) {
+        ctx.props.setProperty(URL_CHANGED_KEY, JSON.stringify({ from: before, to: url, at: new Date().toISOString() }));
+        Events.log(ctx.ss, 'portal_url_changed', '', before + ' -> ' + url);
+      }
     } catch (err) {
       console.warn('recordPortalUrl: ' + err);
     }
+  }
+
+  /** The deployment ID in a portal /exec URL, or ''. */
+  function deploymentId(url) {
+    const m = /\/s\/([\w-]+)\/exec$/.exec(String(url || ''));
+    return m ? m[1] : '';
   }
 
   function opens_(url) {
@@ -201,6 +217,6 @@ const Setup = (function () {
     }
   }
 
-  return { validate: validate, checkLogo: checkLogo, state: state, save: save, recordPortalUrl: recordPortalUrl,
+  return { validate: validate, checkLogo: checkLogo, state: state, save: save, recordPortalUrl: recordPortalUrl, URL_CHANGED_KEY: URL_CHANGED_KEY, deploymentId: deploymentId,
     pendingFromSettings: pendingFromSettings, fromSettings: fromSettings, SALT_KEY: SALT_KEY };
 })();
