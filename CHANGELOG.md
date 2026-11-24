@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0 (library version 10, 2026-11-24)
+
+Firm-owned lists: each firm keeps its own process types and document lists in two tabs of its sheet (Visa types, Document lists), with no central catalog. 0.4.x sheets get the lists they were using copied in once (schema 4); new portal-lists skill imports a firm's existing lists.
+
 ## 0.4.2 (library version 9, 2026-11-01)
 
 Security fixes: an upload can no longer register or trash a file created before it started; uploads started but never finished are trashed by a daily sweep (only files the portal created, never the lawyer's own).
