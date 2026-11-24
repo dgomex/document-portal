@@ -124,7 +124,7 @@ describe('1. no central catalog: a firm\'s lists are its own', () => {
     expect(files.some((file) => /catalog/i.test(path.relative(SRC, file)))).toBe(false);
     // The stored 0.4.x lists are read only by the schema 4 migration.
     const users = files.filter((file) => !/LegacyLists\.js$/.test(file) && /LegacyLists\.\w+\(/.test(fs.readFileSync(file, 'utf8')));
-    expect(users.map((file) => path.relative(SRC, file))).toEqual(['admin/Migrations.js']);
+    expect(users.map((file) => path.relative(SRC, file).split(path.sep).join('/'))).toEqual(['admin/Migrations.js']);
   });
 
   test('a 0.4.x sheet gets the lists it stored, one row per type and per document', () => {
@@ -476,7 +476,7 @@ describe('9. cache', () => {
   test('the library never calls CacheService itself', () => {
     const files = require('./harness').libraryFiles();
     const calls = files.filter((file) => /\bCacheService\s*\./.test(fs.readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')));
-    expect(calls.map((file) => path.relative(SRC, file))).toEqual([]);
+    expect(calls.map((file) => path.relative(SRC, file).split(path.sep).join('/'))).toEqual([]);
   });
 
   test('lists over 100 KB round-trip through parts; a missing part means a rebuild', () => {

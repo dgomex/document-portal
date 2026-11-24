@@ -27,10 +27,14 @@ The script:
 3. rebuilds `template/` with the library pinned to N and pushes it;
 4. adds a CHANGELOG entry.
 
+The notes reach clasp as a plain argument, never through a shell, so backticks, `$` and `%` are safe, on Windows too.
+
 Then commit and tag:
 
 ```bash
-git commit -am "Release 0.2.0" && git tag -a v0.2.0 -m "0.2.0" && git push --follow-tags
+git commit -am "Release 0.2.0"
+git tag -a v0.2.0 -m "0.2.0"
+git push --follow-tags
 ```
 
 ## Sheet changes between versions

@@ -92,7 +92,8 @@ let stale = [];
 SKILLS.forEach((name) => {
   const file = path.join(ROOT, 'skill', name, 'references', 'labels.md');
   if (check) {
-    if (!fs.existsSync(file) || fs.readFileSync(file, 'utf8') !== content) stale.push(file);
+    // A Windows checkout may have CRLF line endings (core.autocrlf): compare the text, not the line endings.
+    if (!fs.existsSync(file) || fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n') !== content) stale.push(file);
   } else {
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, content);
