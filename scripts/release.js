@@ -53,7 +53,8 @@ fs.copyFileSync(path.join(ROOT, 'shell/Code.js'), path.join(templateDir, 'Code.j
 run('npx clasp push --force', templateDir);
 
 const changelog = path.join(ROOT, 'CHANGELOG.md');
-const old = fs.existsSync(changelog) ? fs.readFileSync(changelog, 'utf8').replace(/^# Changelog\n+/, '') : '';
+// CRLF line endings on a Windows checkout: normalise before stripping the header.
+const old = fs.existsSync(changelog) ? fs.readFileSync(changelog, 'utf8').replace(/\r\n/g, '\n').replace(/^# Changelog\n+/, '') : '';
 const day = new Date().toISOString().slice(0, 10);
 fs.writeFileSync(changelog, `# Changelog\n\n## ${semver} (library version ${version}, ${day})\n\n${notes}\n\n${old}`);
 
