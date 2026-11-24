@@ -134,6 +134,8 @@ const I18N_ES = {
   'update.unknown': 'no se pudo leer',
   'update.ok': 'Todo actualizado: la hoja y el portal están en la versión {version}.',
   'update.missingDeploy': 'La hoja ya está en la versión nueva, pero el portal todavía no. Siga los pasos 3 y 4.',
+  'update.gone': 'El portal ya no existe en esta dirección: su implementación se sustituyó o se archivó (por ejemplo, con Nueva implementación en lugar de editar la activa). En Apps Script, abra Implementar → Gestionar implementaciones, copie la URL de la aplicación web de la implementación activa, ábrala una vez en el navegador y vuelva a hacer clic en Comprobar.',
+  'update.urlChanged': 'Atención: la dirección del portal cambió a {to}. Los enlaces que ya envió a los clientes y el enlace en la web del despacho dejaron de funcionar: actualice la web y reenvíe la invitación a quien la necesite. Los correos nuevos ya usan la dirección nueva. En las próximas actualizaciones, edite la implementación activa (lápiz → Nueva versión) y nunca use Nueva implementación ni Archivar.',
   'update.noPortal': 'No se pudo contactar con el portal. Compruebe que la aplicación web está implementada con acceso Cualquier persona.',
   'update.migrated': 'La estructura de la hoja se actualizó para la versión nueva.',
   'checklist.other': 'Otros documentos',

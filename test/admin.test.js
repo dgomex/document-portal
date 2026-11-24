@@ -150,3 +150,53 @@ describe('Update (guided)', () => {
     expect(manifest.oauthScopes.filter((s) => /script\.(projects|deployments)/.test(s))).toEqual([]);
   });
 });
+
+describe('portal address changes (0.5.2)', () => {
+  const NEW = 'https://script.google.com/macros/s/AKfycbxNEWDEPLOY456/exec';
+  const res = (code, body) => ({ getResponseCode: () => code, getContentText: () => body });
+  const withFetch = (respond) => {
+    const l = load({ UrlFetchApp: { fetch: (url) => respond(url) } });
+    l.Migrations.run = () => ({ from: 4, to: 4 });
+    return l;
+  };
+  const version = (v) => res(200, JSON.stringify({ libraryVersion: v }));
+
+  test('Verificar tells a replaced deployment (404) from one that is not open to anyone', () => {
+    const at = (r) => withFetch(() => r).Update.portalCheck(URL).reach;
+    expect(at(res(404, '<html>Página não encontrada</html>'))).toBe('gone');
+    expect(at(res(200, '<html>Sign in</html>'))).toBe('private');
+    expect(at(res(403, ''))).toBe('private');
+    expect(at(res(500, ''))).toBe('error');
+    expect(at(version('0.5.2'))).toBe('ok');
+    const l = withFetch(() => res(404, ''));
+    const s = l.Update.status({ ss: firm(), props: new FakeProps() });
+    expect([s.reach, s.portal, s.match, s.urlChanged]).toEqual(['gone', '', false, null]);
+  });
+
+  test('the portal opened at a new address records it, and Verificar warns once that old links broke', () => {
+    const l = withFetch((url) => (url.startsWith(NEW) ? version(l.Config.LIBRARY_VERSION) : res(404, '')));
+    const ss = firm();
+    const ctx = { ss, props: new FakeProps(), script: { getService: () => ({ getUrl: () => NEW }) } };
+    l.Setup.recordPortalUrl(ctx, l.Settings.read(ss));
+    expect(l.Settings.get(ss, 'portal_url')).toBe(NEW);
+    expect(lib.Table.open(ss, 'Events').rows().map((e) => [e.type, e.detail])).toEqual([['portal_url_changed', URL + ' -> ' + NEW]]);
+    const s = l.Update.status(ctx);
+    expect([s.reach, s.match]).toEqual(['ok', true]);
+    expect(s.urlChanged).toEqual({ from: URL, to: NEW });
+    expect(l.Update.status(ctx).urlChanged).toBeNull();  // shown once
+  });
+
+  test('the first address, the same address, or a non-/exec URL is no change', () => {
+    const l = withFetch(() => version('0.5.2'));
+    const record = (before, now) => {
+      const ss = firm({ settings: [] });
+      l.Settings.set(ss, 'portal_url', before);
+      const ctx = { ss, props: new FakeProps(), script: { getService: () => ({ getUrl: () => now }) } };
+      l.Setup.recordPortalUrl(ctx, l.Settings.read(ss));
+      return [l.Settings.get(ss, 'portal_url'), ctx.props.getProperty(l.Setup.URL_CHANGED_KEY)];
+    };
+    expect(record('', NEW)).toEqual([NEW, null]);
+    expect(record(NEW, NEW)).toEqual([NEW, null]);
+    expect(record(NEW, 'https://script.google.com/macros/s/AKfycbxNEWDEPLOY456/dev')).toEqual([NEW, null]);
+  });
+});

@@ -134,6 +134,8 @@ const I18N_EN = {
   'update.unknown': 'could not be read',
   'update.ok': 'All up to date: the sheet and the portal are on version {version}.',
   'update.missingDeploy': 'The sheet is on the new version but the portal is not yet. Do steps 3 and 4.',
+  'update.gone': 'The portal no longer exists at this address: its deployment was replaced or archived (for example with New deployment instead of editing the active one). In Apps Script, open Deploy → Manage deployments, copy the web app URL of the active deployment, open it once in the browser and click Check again.',
+  'update.urlChanged': 'Note: the portal address changed to {to}. Links you already sent to clients and the link on the firm’s website no longer work: update the website and resend the invitation to whoever needs it. New emails already use the new address. In future updates, edit the active deployment (pencil → New version) and never use New deployment or Archive.',
   'update.noPortal': 'Could not reach the portal. Check the web app is deployed with access for Anyone.',
   'update.migrated': 'The sheet structure was updated for the new version.',
   'checklist.other': 'Other documents',
