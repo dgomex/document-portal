@@ -107,7 +107,8 @@ The sheet's own `library_version` cell catches up within 5 minutes, so don't rel
 You'll see it as Google's "Page not found" at `portal_url`, as no active deployment with that URL, or as a different URL after Deploy. The old address can't be restored. What you can do:
 
 1. Tell the lawyer plainly: the portal now has a new address, and the links already sent to clients (invitation emails, the firm's website) no longer work.
-2. In **Manage deployments**, copy the **web app URL** of the active deployment. Open it once in the browser. The portal then saves it in `portal_url` by itself, and every new email uses it.
+2. In **Manage deployments**, copy the **web app URL** of the active deployment. Open it once in the browser. The portal then saves it in `portal_url` by itself, and every new email uses it. Don't paste it into Configurar or the Settings tab instead: the portal then can't tell the address changed, and Verificar won't warn about the old links.
+   If the old address still answers (an older deployment is still active), Verificar says so: old links then still open the portal, in the old version. Don't archive anything; tell the lawyer and leave the choice of address to us.
 3. Ask the lawyer to run **Portal → Atualizar portal → Verificar (EN: Portal → Update portal → Check · ES: Portal → Actualizar portal → Comprobar)**. It confirms the version and repeats the warning about old links.
 4. Tell them what to fix: the link on the firm's website, and a new invitation for any client who needs one (the portal-clients skill can resend it).
 

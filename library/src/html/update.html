@@ -134,7 +134,11 @@
             if (s.reach === 'gone') lines.push(t('update.gone'));
             else if (!s.portal) lines.push(t('update.noPortal'));
             else lines.push(s.match ? t('update.ok', { version: s.sheet }) : t('update.missingDeploy'));
-            if (s.urlChanged) lines.push(t('update.urlChanged', { to: s.urlChanged.to }));
+            if (s.urlChanged) {
+              lines.push(s.urlChanged.oldAnswers
+                ? t('update.urlChangedOldAnswers', { to: s.urlChanged.to, version: s.urlChanged.oldVersion })
+                : t('update.urlChanged', { to: s.urlChanged.to }));
+            }
             show(s.match && !s.urlChanged, lines);
           })
           .withFailureHandler(() => {

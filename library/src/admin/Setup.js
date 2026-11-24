@@ -189,7 +189,8 @@ const Setup = (function () {
     try {
       const url = String(ctx.script.getService().getUrl() || '');
       const before = String(settings.portal_url || '');
-      if (!PORTAL_URL.test(url) || url === before) return;
+      // Same deployment in another form (/macros/s/<id> vs /a/macros/<domain>/s/<id>): no change, keep the stored one.
+      if (!PORTAL_URL.test(url) || url === before || (PORTAL_URL.test(before) && deploymentId(url) === deploymentId(before))) return;
       Settings.set(ctx.ss, 'portal_url', url);
       // A new deployment instead of a new version of the old one: links the
       // firm already shared point to the old address. Portal > Update says so.
@@ -202,6 +203,12 @@ const Setup = (function () {
     }
   }
 
+  /** The deployment ID in a portal /exec URL, or ''. */
+  function deploymentId(url) {
+    const m = /\/s\/([\w-]+)\/exec$/.exec(String(url || ''));
+    return m ? m[1] : '';
+  }
+
   function opens_(url) {
     try {
       return UrlFetchApp.fetch(url, { muteHttpExceptions: true, followRedirects: true }).getResponseCode() === 200;
@@ -210,6 +217,6 @@ const Setup = (function () {
     }
   }
 
-  return { validate: validate, checkLogo: checkLogo, state: state, save: save, recordPortalUrl: recordPortalUrl, URL_CHANGED_KEY: URL_CHANGED_KEY,
+  return { validate: validate, checkLogo: checkLogo, state: state, save: save, recordPortalUrl: recordPortalUrl, URL_CHANGED_KEY: URL_CHANGED_KEY, deploymentId: deploymentId,
     pendingFromSettings: pendingFromSettings, fromSettings: fromSettings, SALT_KEY: SALT_KEY };
 })();

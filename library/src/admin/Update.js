@@ -50,9 +50,15 @@ const Update = (function () {
     const changed = urlChange_(ctx);
     // Shown once the portal answers at its new address; after that it's no longer news.
     if (changed && check.reach === 'ok') ctx.props.deleteProperty(Setup.URL_CHANGED_KEY);
+    let urlChanged = null;
+    if (changed) {
+      // Old links break only if the old deployment is gone (archived). If it still answers, they open the old version.
+      const old = portalCheck(String(changed.from || ''));
+      urlChanged = { from: String(changed.from || ''), to: String(changed.to || ''), oldAnswers: old.reach === 'ok', oldVersion: old.version };
+    }
     return {
       sheet: Config.LIBRARY_VERSION, portal: check.version, reach: check.reach, match: check.version === Config.LIBRARY_VERSION,
-      migrated: m.to > m.from, urlChanged: changed ? { from: String(changed.from || ''), to: String(changed.to || '') } : null,
+      migrated: m.to > m.from, urlChanged: urlChanged,
     };
   }
 

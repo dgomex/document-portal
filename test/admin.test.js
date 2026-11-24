@@ -166,6 +166,7 @@ describe('portal address changes (0.5.2)', () => {
     expect(at(res(404, '<html>Página não encontrada</html>'))).toBe('gone');
     expect(at(res(200, '<html>Sign in</html>'))).toBe('private');
     expect(at(res(403, ''))).toBe('private');
+    expect(at(res(401, ''))).toBe('private');
     expect(at(res(500, ''))).toBe('error');
     expect(at(version('0.5.2'))).toBe('ok');
     const l = withFetch(() => res(404, ''));
@@ -182,8 +183,29 @@ describe('portal address changes (0.5.2)', () => {
     expect(lib.Table.open(ss, 'Events').rows().map((e) => [e.type, e.detail])).toEqual([['portal_url_changed', URL + ' -> ' + NEW]]);
     const s = l.Update.status(ctx);
     expect([s.reach, s.match]).toEqual(['ok', true]);
-    expect(s.urlChanged).toEqual({ from: URL, to: NEW });
+    expect(s.urlChanged).toEqual({ from: URL, to: NEW, oldAnswers: false, oldVersion: '' });  // old one archived: links broke
     expect(l.Update.status(ctx).urlChanged).toBeNull();  // shown once
+  });
+
+  test('the warning stays until the portal answers at its new address', () => {
+    let up = false;
+    const l = withFetch((url) => (url.startsWith(NEW) && up ? version(l.Config.LIBRARY_VERSION) : res(404, '')));
+    const ss = firm();
+    const ctx = { ss, props: new FakeProps(), script: { getService: () => ({ getUrl: () => NEW }) } };
+    l.Setup.recordPortalUrl(ctx, l.Settings.read(ss));
+    expect(l.Update.status(ctx).urlChanged).not.toBeNull();
+    expect(l.Update.status(ctx).urlChanged).not.toBeNull();
+    up = true;
+    expect(l.Update.status(ctx).urlChanged).not.toBeNull();
+    expect(l.Update.status(ctx).urlChanged).toBeNull();
+  });
+
+  test('if the old address still answers, Verificar says old links open the old version', () => {
+    const l = withFetch((url) => version(url.startsWith(NEW) ? l.Config.LIBRARY_VERSION : '0.5.0'));
+    const ss = firm();
+    const ctx = { ss, props: new FakeProps(), script: { getService: () => ({ getUrl: () => NEW }) } };
+    l.Setup.recordPortalUrl(ctx, l.Settings.read(ss));
+    expect(l.Update.status(ctx).urlChanged).toEqual({ from: URL, to: NEW, oldAnswers: true, oldVersion: '0.5.0' });
   });
 
   test('the first address, the same address, or a non-/exec URL is no change', () => {
@@ -198,5 +220,12 @@ describe('portal address changes (0.5.2)', () => {
     expect(record('', NEW)).toEqual([NEW, null]);
     expect(record(NEW, NEW)).toEqual([NEW, null]);
     expect(record(NEW, 'https://script.google.com/macros/s/AKfycbxNEWDEPLOY456/dev')).toEqual([NEW, null]);
+    // The same deployment in its Workspace form (or back): no change, the stored address stays.
+    const WS = 'https://script.google.com/a/macros/silvacosta.pt/s/AKfycbxNEWDEPLOY456/exec';
+    expect(record(NEW, WS)).toEqual([NEW, null]);
+    expect(record(WS, NEW)).toEqual([WS, null]);
+    expect(l.Setup.deploymentId(WS)).toBe('AKfycbxNEWDEPLOY456');
+    // Another deployment in the Workspace form is a change.
+    expect(record(URL, WS)[1]).not.toBeNull();
   });
 });
