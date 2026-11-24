@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.2 (library version 12, 2026-11-24)
+
+Portal address changes are caught: Verificar explains a replaced or archived deployment (404) and warns once when the portal moved to a new address; the portal-update skill checks the deployment ID before and after deploying.
+
 ## 0.5.1 (library version 11, 2026-11-24)
 
 Fix: min_age now limits any per-person row, not only each_adult (e.g. a minor applicant's criminal record from 16); a min_age on a case row gets a check warning.
