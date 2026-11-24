@@ -12,7 +12,7 @@
 const Checklist = (function () {
   /** The facts that hold for a case: ticked ones plus those the people imply. */
   function facts(ticked, people) {
-    const out = new Set(String(ticked || '').split(/[\s,;]+/).map(function (f) { return f.trim().toLowerCase(); }).filter(String));
+    const out = new Set(String(ticked || '').normalize('NFC').split(/[\s,;]+/).map(function (f) { return f.trim().toLowerCase(); }).filter(String));
     (people || []).forEach(function (p) {
       if (p.role === 'spouse') out.add('married');
       if (p.role === 'child') out.add('children');

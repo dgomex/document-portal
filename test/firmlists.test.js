@@ -662,6 +662,42 @@ describe('review fixes (PR #2)', () => {
     expect(items).toEqual(['FIRM-G-MEIOS_2|PE-AAAAAA', 'FIRM-G-MEIOS_2|PE-BBBBBB', 'FIRM-G-MEIOS_2|PE-DDDDDD', 'FIRM-G-MEIOS|PE-AAAAAA']);
   });
 
+  test('A2: a new option for the adults joins the adults\' copied group, wherever it sits in the sheet', () => {
+    for (const before of [false, true]) {
+      const f = firm({ cases: [d7], people: family });
+      f.migrate();
+      const add = (r) => f.addDoc(Object.assign({ visa_type: 'PT-D7', active: true, group_pt: 'Meios' }, r));
+      add({ applies_to: 'main_applicant', title_pt: 'Extrato', doc_key: 'FIRM-EXTRATO', group_key: 'FIRM-G-MEIOS' });
+      add({ applies_to: 'main_applicant', title_pt: 'IRS', doc_key: 'FIRM-IRS', group_key: 'FIRM-G-MEIOS' });
+      if (before) add({ applies_to: 'each_adult', title_pt: 'Pensão', doc_key: 'FIRM-PENSAO', group_key: 'FIRM-G-MEIOS' });
+      add({ applies_to: 'each_adult', title_pt: 'Extrato', doc_key: 'FIRM-EXTRATO', group_key: 'FIRM-G-MEIOS' });
+      add({ applies_to: 'each_adult', title_pt: 'IRS', doc_key: 'FIRM-IRS', group_key: 'FIRM-G-MEIOS' });
+      const expected = [
+        ['FIRM-G-MEIOS', 'main_applicant', ['FIRM-EXTRATO', 'FIRM-IRS']],
+        ['FIRM-G-MEIOS_2', 'each_adult', before ? ['FIRM-PENSAO', 'FIRM-EXTRATO', 'FIRM-IRS'] : ['FIRM-EXTRATO', 'FIRM-IRS', 'FIRM-PENSAO']],
+      ];
+      const meios = () => f.model().visas['PT-D7'].requirements.filter((r) => /^FIRM-G-MEIOS/.test(r.key)).map((r) => [r.key, r.applies_to, r.any_of]);
+      if (!before) {
+        f.model();  // the copies are re-keyed first; then the lawyer types a new option, no keys
+        add({ applies_to: 'each_adult', title_pt: 'Pensão' });
+        f.model();
+        expect(f.docs('PT-D7').find((d) => d.title_pt === 'Pensão').group_key).toBe('FIRM-G-MEIOS_2');
+        expected[1][2] = ['FIRM-EXTRATO', 'FIRM-IRS', 'FIRM-PENSAO'];
+      }
+      expect(meios()).toEqual(expected);
+      expect(meios()).toEqual(expected);  // a second check changes nothing
+    }
+  });
+
+  test('#7c a condition typed with a decomposed accent still matches the case\'s facts', () => {
+    const nfd = 'união_estável'.normalize('NFD');
+    const f = firm({ cases: [Object.assign({}, d7, { facts: 'união_estável' })], people: family.slice(0, 1) });
+    f.migrate();
+    f.addDoc({ visa_type: 'PT-D7', title_pt: 'Declaração', only_if: nfd, active: true });
+    f.sync();
+    expect(f.items('CS-111111').map((i) => i.title)).toContain('Declaração');
+  });
+
   test('#9 a new process type reaches the Document lists dropdown even when Cases IDs don\'t change', () => {
     const calls = [];
     const orig = lib.Schema.visaDropdown;

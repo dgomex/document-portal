@@ -51,7 +51,8 @@ const FirmLists = (function () {
   }
 
   function list_(v) {
-    return str_(v).split(/[;,]+/).map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean);
+    // NFC: an accent typed or pasted as two characters still matches the case's facts.
+    return str_(v).normalize('NFC').split(/[;,]+/).map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean);
   }
 
   /** A condition Checklist.facts() would split in two (it splits a case's facts on spaces). */
@@ -193,10 +194,15 @@ const FirmLists = (function () {
         if (str_(r.doc_key)) keys.add(str_(r.doc_key));
         if (str_(r.group_key)) keys.add(str_(r.group_key));
       });
+      // A group name may have one key per scope of people (a copied group keeps
+      // its name): a new row takes the key its name has for its own people first.
       const nameToKey = {};
       rows.forEach(function (r) {
         const g = str_(r['group_' + lang]).toLowerCase();
-        if (g && str_(r.group_key) && !(g in nameToKey)) nameToKey[g] = str_(r.group_key);
+        if (!g || !str_(r.group_key)) return;
+        if (!(g in nameToKey)) nameToKey[g] = str_(r.group_key);
+        const scoped = g + '|' + (str_(r.applies_to) || 'main_applicant');
+        if (!(scoped in nameToKey)) nameToKey[scoped] = str_(r.group_key);
       });
 
       // 3a. Keys for new rows and groups.
@@ -207,11 +213,12 @@ const FirmLists = (function () {
           note(T.docs, r._row, 'warning', 'lists.check.leftGroup');
         } else if (groupName && !str_(r.group_key)) {
           const lower = groupName.toLowerCase();
+          const scoped = lower + '|' + (str_(r.applies_to) || 'main_applicant');
           if (!nameToKey[lower]) {
             nameToKey[lower] = unique_(GROUP_PREFIX + (keySlug_(groupName) || 'GROUP'), keys, '_');
             keys.add(nameToKey[lower]);
           }
-          set(T.docs, r, { group_key: nameToKey[lower] });
+          set(T.docs, r, { group_key: nameToKey[scoped] || nameToKey[lower] });
         }
         if (!str_(r.doc_key)) {
           const title = str_(r['title_' + lang]) || LANGS.map(function (l) { return str_(r['title_' + l]); }).filter(String)[0] || 'DOC';
@@ -227,7 +234,10 @@ const FirmLists = (function () {
       // A row repeating an option of its group is a copy: with the group's
       // text and people, an extra option (new doc_key); with other text, or
       // for other people that overlap (main_applicant -> each_adult), a copied
-      // group (new group_key). Groups claim their keys first, then plain rows.
+      // group (new group_key). A new option for other people that overlap
+      // joins the copied group of its own people if there is one (looked up
+      // after every row, so sheet order doesn't matter), else the group.
+      // Groups claim their keys first, then plain rows.
       const appliesOf = function (r) { return str_(r.applies_to) || 'main_applicant'; };
       const claims = [];  // { id, applies, row, group }
       const byKey = {};   // group_key -> [group]
@@ -239,15 +249,27 @@ const FirmLists = (function () {
         return g;
       };
       const textOf = function (r) { return str_(r['group_' + lang]).toLowerCase(); };
-      rows.forEach(function (r) {
+      const deferred = [];
+      const place = function (r, late) {
         const gk = str_(r.group_key);
         if (!gk) return;
         const applies = appliesOf(r);
-        const same = byKey[gk] || [];
-        let g = same.filter(function (e) { return e.applies === applies; })[0] ||
-          same.filter(function (e) { return overlap_(e.applies, applies); })[0];
-        if (!g) g = newGroup(gk, r, applies);
         const dk = str_(r.doc_key);
+        const same = byKey[gk] || [];
+        let g = same.filter(function (e) { return e.applies === applies; })[0];
+        if (!g) {
+          const wide = same.filter(function (e) { return overlap_(e.applies, applies); })[0];
+          if (wide && !wide.docKeys[dk]) {
+            if (!late) { deferred.push(r); return; }
+            const own = wide.copies.filter(function (c) { return c.applies === applies && textOf(c.first) === textOf(r); })[0];
+            if (own) {
+              set(T.docs, r, { group_key: own.key });
+              g = own;
+            }
+          }
+          g = g || wide;
+        }
+        if (!g) g = newGroup(gk, r, applies);
         if (g.docKeys[dk] && (textOf(r) !== textOf(g.first) || applies !== g.applies)) {
           const from = g.docKeys[dk];
           let copy = g.copies.filter(function (c) { return textOf(c.first) === textOf(r) && c.applies === applies && !c.docKeys[dk]; })[0];
@@ -270,7 +292,9 @@ const FirmLists = (function () {
         }
         g.docKeys[str_(r.doc_key)] = r._row;
         r._grp = g.id;
-      });
+      };
+      rows.forEach(function (r) { place(r, false); });
+      deferred.forEach(function (r) { place(r, true); });
       rows.forEach(function (r) {
         if (str_(r.group_key)) return;
         const dk = str_(r.doc_key);
