@@ -137,7 +137,7 @@ test('the skills share one way to find the portal sheet', () => {
   const read = (s) => fs.readFileSync(path.join(__dirname, '..', 'skill', s, 'SKILL.md'), 'utf8');
   const block = (text) => {
     const m = /<!-- shared:find-sheet[^>]*-->[\s\S]*?<!-- \/shared:find-sheet -->/.exec(text);
-    return m && m[0];
+    return m && m[0].replace(/\r\n/g, '\n');  // a Windows checkout may have CRLF
   };
   const clients = block(read('portal-clients'));
   expect(clients).toContain('## Find the portal sheet');
@@ -154,7 +154,7 @@ describe('portal-lists skill', () => {
   const { I18N_PT } = load();
 
   test('finds the sheet the same way as the other skills', () => {
-    const block = (text) => (/<!-- shared:find-sheet[^>]*-->[\s\S]*?<!-- \/shared:find-sheet -->/.exec(text) || [])[0];
+    const block = (text) => ((/<!-- shared:find-sheet[^>]*-->[\s\S]*?<!-- \/shared:find-sheet -->/.exec(text) || [])[0] || '').replace(/\r\n/g, '\n');
     expect(block(lists)).toBe(block(skill));
   });
 

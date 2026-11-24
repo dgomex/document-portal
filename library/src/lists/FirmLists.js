@@ -321,6 +321,7 @@ const FirmLists = (function () {
         if (!str_(r['title_' + lang])) { note(T.docs, r._row, 'error', 'lists.check.noTitle', { lang: lang }); bad = true; }
         const minAge = str_(r.min_age);
         if (minAge && !/^\d{1,3}$/.test(minAge)) { note(T.docs, r._row, 'error', 'lists.check.minAge', { value: minAge }); bad = true; }
+        else if (minAge && applies === 'case') note(T.docs, r._row, 'warning', 'lists.check.minAgeCase');
         // A case's facts are split on spaces too, so a condition must be one word (accents are fine).
         list_(r.only_if).concat(list_(r.unless)).filter(badCondition_).forEach(function (c) {
           note(T.docs, r._row, 'error', 'lists.check.condition', { value: c });

@@ -47,7 +47,7 @@ catalog (ours)  →  firm adjustments (the firm's sheet)  →  case checklist (a
 
 ## Requirement shape
 
-- `applies_to`: `main_applicant`, `spouse`, `each_child`, `each_adult`, `each_person`, `case`. `each_adult` uses `min_age` (default 16) and the person's birth date.
+- `applies_to`: `main_applicant`, `spouse`, `each_child`, `each_adult`, `each_person`, `case`. `min_age` limits any per-person row to people that age or older, by birth date (without one: anyone but a child); `each_adult` defaults to 16. It does nothing on `case` rows (a check warning says so).
 - `level`: `required`, `optional`. At case level the lawyer can also add `requested` (ad-hoc) items, or set any item to `waived`.
 - `only_if` / `unless`: fact IDs.
 - **Either/or groups:** `any_of: [doc ids]`. The group is complete when any option is accepted.
