@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: imports-art-91-with-modalities
+expected_outcome: |
+  The lawyer pre-approved, so the list is written. One new Visa types row at row 4 (after the two existing ones) with a name for art. 91 in name_pt, visa_type left blank (or an F- ID), active TRUE, based_on empty, and facts_to_ask containing three firm conditions for the modalities (e.g. meios_a;meios_b;meios_c). Fifteen new Document lists rows starting at row 7: the 4 personal documents, 8 subsistence documents (3 with only_if = the modality A condition, 2 with B, 3 with C) and 3 housing options sharing one group text in group_pt. The criminal record's validation rules (90 days before the AIMA appointment, apostille, Brazil without apostille but with the passport number) are in check_criteria, not in instructions. The power of attorney and the AIMA application are not written and are listed separately for the lawyer. No document that isn't in the source is added, existing PT-D7 and PT-AR-91 rows are untouched, and doc_key, group_key and check are never written.
+context:
+  scaffold_script: place-files.sh
+---
+tags: [skill-creator]
+max_turns: 30
+timeout_seconds: 600
+allowed_tools: [Read, Glob, Grep, Skill, Write, Edit, Bash]

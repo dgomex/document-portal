@@ -1,4 +1,5 @@
 const { load, FakeSpreadsheet } = require('./harness');
+const fixtures = require('./fixtures/lists');
 
 const lib = load();
 const { Config } = lib;
@@ -7,13 +8,15 @@ const lock = () => ({ tryLock: () => true, releaseLock() {} });
 
 function firm() {
   const ss = new FakeSpreadsheet({
-    Settings: [['key', 'value', 'description'], ['default_language', 'pt', ''], ['countries', 'PT', '']],
+    Settings: [['key', 'value', 'description'], ['default_language', 'pt', ''], ['schema_version', '4', '']],
     Clients: [Config.SCHEMA.Clients, row(Config.SCHEMA.Clients, { client_id: 'CL-AAAAAA', name: 'Ana Ferreira', email: 'ana@x.pt', active: true, provision_status: 'ACTIVE' })],
     Cases: [Config.SCHEMA.Cases, row(Config.SCHEMA.Cases, { case_id: 'CS-111111', client_id: 'CL-AAAAAA', case_name: 'Residência', status: 'open', provision_status: 'ACTIVE', folder_id: 'F', visa_type: 'PT-D7' })],
     People: [Config.SCHEMA.People],
     Checklist: [Config.SCHEMA.Checklist],
-    Adjustments: [Config.SCHEMA.Adjustments],
+    'Visa types': [Config.SCHEMA['Visa types']],
+    'Document lists': [Config.SCHEMA['Document lists']],
   });
+  fixtures.install(lib, ss);
   const ctx = { ss, lock: lock() };
   const sync = () => lib.CaseChecklist.sync(ctx, { now: Date.UTC(2026, 9, 31) });
   const items = () => lib.CaseChecklist.items(ss);
@@ -29,8 +32,8 @@ test('setting a visa adds the main applicant and builds the list once', () => {
   expect(f.people()).toEqual([expect.objectContaining({ name: 'Ana Ferreira', role: 'main_applicant', created_by: 'portal' })]);
   expect(f.items().length).toBe(9);
   expect(f.items().every((i) => /^IT-/.test(i.item_id) && i.status === 'missing')).toBe(true);
-  expect(f.caseRow().checklist_version.split('|')[0]).toBe(lib.CATALOG_DATA.version);
-  expect(f.sync()).toEqual({ people: 0, requests: 0, built: 0, rebuilt: 0, stale: 0 });
+  expect(f.caseRow().checklist_version.split('|')[0]).toBe(lib.FirmLists.check(f.ss).model.visas['PT-D7'].listHash);
+  expect(f.sync()).toEqual({ people: 0, requests: 0, built: 0, rebuilt: 0, stale: 0, unknown: 0 });
 });
 
 test('adding a spouse rebuilds and keeps what was already received', () => {
@@ -46,10 +49,11 @@ test('adding a spouse rebuilds and keeps what was already received', () => {
   expect(all.some((i) => i.key === 'RELATIONSHIP_PROOF|case')).toBe(true);
 });
 
-test('a change to the firm\'s list leaves existing cases alone until the lawyer clears checklist_version', () => {
+test('a change to the firm\'s list leaves existing cases alone until they are refreshed', () => {
   const f = firm();
   f.sync();
-  lib.Table.open(f.ss, 'Adjustments').append({ visa_type: 'PT-D7', doc_type: 'CV', action: 'add' });
+  lib.Table.open(f.ss, 'Document lists').append({ visa_type: 'PT-D7', title_pt: 'Curriculum vitae', doc_key: 'CV', active: true });
+  lib.FirmLists.reset_();
   expect(f.sync()).toMatchObject({ stale: 1, rebuilt: 0 });
   expect(f.items().some((i) => i.doc_type === 'CV')).toBe(false);
   lib.Cases.table(f.ss).update(f.caseRow()._row, { checklist_version: '' });
@@ -80,6 +84,13 @@ test('the client view groups items by person, then the case, without waived item
   expect(view[1].items.some((i) => i.title === 'Passport photos (2)')).toBe(false);
   expect(view[0].items.find((i) => i.title === 'Criminal record certificate').instructions).toContain('Issued within the last 90 days.');
   expect(view[2].items.map((i) => i.title)).toEqual(expect.arrayContaining(['Accommodation in Portugal (1 year)', 'Marriage or civil partnership certificate']));
+});
+
+test('before the firm has its own lists (schema 3), no list is built', () => {
+  const f = firm();
+  lib.Settings.set(f.ss, 'schema_version', 3);
+  expect(f.sync()).toMatchObject({ people: 1, built: 0 });
+  expect(f.items()).toEqual([]);
 });
 
 test('cases without a visa, or not provisioned yet, are skipped', () => {

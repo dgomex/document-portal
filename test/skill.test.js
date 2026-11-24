@@ -13,7 +13,7 @@ const skill = fs.readFileSync(path.join(DIR, 'SKILL.md'), 'utf8');
 const schema = fs.readFileSync(path.join(DIR, 'references', 'schema.md'), 'utf8');
 
 test('the schema reference documents every column of the tabs the skill writes', () => {
-  ['Clients', 'Cases', 'People', 'Checklist', 'Adjustments'].forEach((tab) => {
+  ['Clients', 'Cases', 'People', 'Checklist'].forEach((tab) => {
     const missing = Config.SCHEMA[tab].filter((col) => !schema.includes('`' + col + '`'));
     expect([tab, missing]).toEqual([tab, []]);
   });
@@ -83,7 +83,7 @@ describe('portal-update skill', () => {
 describe('labels in both languages', () => {
   const { execFileSync } = require('child_process');
   const { I18N_PT, I18N_EN, I18N_ES } = load();
-  const SKILLS = ['portal-clients', 'portal-onboarding', 'portal-update'];
+  const SKILLS = ['portal-clients', 'portal-onboarding', 'portal-update', 'portal-lists'];
   const texts = SKILLS.flatMap((s) => {
     const dir = path.join(__dirname, '..', 'skill', s);
     return [path.join(dir, 'SKILL.md'), ...fs.readdirSync(path.join(dir, 'references')).filter((f) => f !== 'labels.md')
@@ -115,11 +115,19 @@ describe('labels in both languages', () => {
   });
 });
 
-test('the skill asks about the columns the generated catalog actually has', () => {
-  const catalog = fs.readFileSync(path.join(DIR, 'references', 'catalog.md'), 'utf8');
-  ['Family documents', 'Facts to ask'].forEach((col) => {
-    expect(catalog).toContain('| ' + col + ' |');
-    expect(skill).toContain('**' + col + '**');
+test('the skill reads the firm\'s process types from the Visa types columns the portal has', () => {
+  ['family', 'facts_to_ask', 'active', 'check'].forEach((col) => {
+    expect(Config.SCHEMA[Config.TABS.VISA_TYPES]).toContain(col);
+    expect(skill).toContain('`' + col + '`');
+  });
+  ['Family documents', 'Facts to ask'].forEach((col) => expect(skill).toContain('**' + col + '**'));
+});
+
+test('no skill points to a central catalog any more', () => {
+  ['portal-clients', 'portal-onboarding', 'portal-update', 'portal-lists'].forEach((s) => {
+    const dir = path.join(__dirname, '..', 'skill', s);
+    const files = [path.join(dir, 'SKILL.md'), ...fs.readdirSync(path.join(dir, 'references')).map((f) => path.join(dir, 'references', f))];
+    files.forEach((f) => expect([f, /catalog\.md|catalog_version|catalog_pending|listas novas/i.test(fs.readFileSync(f, 'utf8'))]).toEqual([f, false]));
   });
 });
 
@@ -137,4 +145,56 @@ test('the skills share one way to find the portal sheet', () => {
   const line = 'O portal do escritório:';
   expect(clients).toContain(line);
   expect(read('portal-onboarding')).toContain('> ' + line);
+});
+
+describe('portal-lists skill', () => {
+  const LDIR = path.join(__dirname, '..', 'skill', 'portal-lists');
+  const lists = fs.readFileSync(path.join(LDIR, 'SKILL.md'), 'utf8');
+  const ref = fs.readFileSync(path.join(LDIR, 'references', 'lists.md'), 'utf8');
+  const { I18N_PT } = load();
+
+  test('finds the sheet the same way as the other skills', () => {
+    const block = (text) => (/<!-- shared:find-sheet[^>]*-->[\s\S]*?<!-- \/shared:find-sheet -->/.exec(text) || [])[0];
+    expect(block(lists)).toBe(block(skill));
+  });
+
+  test('requires the schema that has the firm\'s lists', () => {
+    expect(Config.SCHEMA_VERSION).toBe(4);
+    expect(lists).toContain('`schema_version` must be **4**');
+  });
+
+  test('documents every column of both tabs and every check message', () => {
+    [Config.TABS.VISA_TYPES, Config.TABS.DOC_LISTS].forEach((tab) => {
+      const missing = Config.SCHEMA[tab].filter((col) => !ref.includes('`' + col + '`') &&
+        !ref.includes('`' + col.replace(/_(pt|en|es)$/, '_<lang>') + '`') && !ref.includes('`' + col.replace(/_(pt|en|es)$/, '_pt') + '`'));
+      expect([tab, missing]).toEqual([tab, []]);
+    });
+    const keys = Object.keys(I18N_PT).filter((k) => k.startsWith('lists.check.'));
+    expect(keys.length).toBeGreaterThan(10);
+    expect(keys.filter((k) => !ref.includes('`' + k + '`'))).toEqual([]);
+  });
+
+  test('never writes the columns the portal owns', () => {
+    const table = lists.slice(lists.indexOf('| Tab | You write | Never write |'), lists.indexOf('The portal owns'));
+    const writes = table.split('\n').slice(2).map((line) => line.split('|')[2] || '').join(' ');
+    [Config.TABS.VISA_TYPES, Config.TABS.DOC_LISTS].forEach((tab) => {
+      Config.SCRIPT_OWNED[tab].forEach((col) => expect([tab, col, writes.includes('`' + col + '`')]).toEqual([tab, col, false]));
+    });
+    expect(writes.includes('`based_on`')).toBe(false);
+  });
+
+  test('keeps validation criteria away from clients and never invents documents', () => {
+    expect(lists).toContain('`check_criteria`');
+    expect(lists).toMatch(/Clients never see that column/);
+    expect(lists).toMatch(/\*\*Never invent a document\*\*/);
+  });
+
+  test('each eval places its files and has graders', () => {
+    const evals = fs.readdirSync(path.join(LDIR, 'evals'));
+    expect(evals.length).toBeGreaterThanOrEqual(2);
+    evals.forEach((e) => {
+      ['case.yaml', 'prompt.md', 'place-files.sh'].forEach((f) => expect(fs.existsSync(path.join(LDIR, 'evals', e, f))).toBe(true));
+      expect(fs.readdirSync(path.join(LDIR, 'evals', e, 'graders')).length).toBeGreaterThan(0);
+    });
+  });
 });

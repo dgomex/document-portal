@@ -1,0 +1,3 @@
+visa_type,name_pt,name_en,name_es,active,family,facts_to_ask,based_on,notes,check
+PT-D7,D7 – Reformados e rendimentos próprios,D7 – Retirees and passive income,D7 – Jubilados y rentas propias,TRUE,TRUE,cplp;other_residence;sole_custody,PT-D7,,ok
+PT-AR-91,AR art. 91 – Atividade profissional subordinada,RP art. 91 – Employed work,AR art. 91 – Actividad laboral por cuenta ajena,TRUE,FALSE,,PT-AR-91,,ok

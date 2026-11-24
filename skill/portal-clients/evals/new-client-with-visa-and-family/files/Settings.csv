@@ -2,5 +2,5 @@ key,value,description
 firm_name,Silva & Costa Advogados,
 default_language,pt,
 portal_url,https://script.google.com/macros/s/AKfycbxEXAMPLE/exec,
-schema_version,3,
+schema_version,4,
 reminder_days,7,
