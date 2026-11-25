@@ -42,7 +42,7 @@ const Migrations = (function () {
           const out = sections.map(function (s, i) {
             const person = String(people[i][0] || '').trim();
             if (person && !String(s[0] || '').trim() && !formulas[i][0]) { changed = true; return [Sanitize.cell(person)]; }
-            return [formulas[i][0] || s[0]];
+            return [formulas[i][0] || Sanitize.cell(s[0])];  // a typed '=X stays text
           });
           if (changed) range.setValues(out);
         }
