@@ -227,6 +227,37 @@ describe('digest', () => {
     expect(s.sent.map((m) => m.to)).toEqual(['joana@firma.pt']);
   });
 
+  test('a batch covering two cases with the same recipient sends one email per case', () => {
+    const s = setup();
+    lib.Table.open(s.ss, 'Cases').update(3, { responsible_email: '' });  // Herança falls back to the firm address too
+    finishAll(s, [{ name: 'a.pdf' }, { caseId: 'CS-222222', name: 'b.pdf' }]);
+    s.tick(Config.UPLOAD.DIGEST_IDLE_MINUTES);
+    expect(lib.Upload.flush(s.ctx, s.opts())).toEqual({ batches: 1, emails: 2 });
+    expect(s.sent.map((m) => [m.to, m.subject])).toEqual([
+      ['geral@firma.pt', 'Novos documentos: Ana – Divórcio (1)'], ['geral@firma.pt', 'Novos documentos: Ana – Herança (1)']]);
+    expect(s.sent[1].text).toContain('b.pdf');
+    expect(s.sent[1].text).not.toContain('a.pdf');
+    expect(s.sent[1].text).toContain('drive.google.com/drive/folders/F-HER');
+  });
+
+  test('another client cannot add files to Ana\'s batch', () => {
+    const s = setup();
+    finishAll(s, [{ name: 'a.pdf' }]);
+    const bruno = lib.Clients.byId(s.ss, 'CL-BBBBBB');
+    const b = lib.Upload.start(s.ctx, bruno, { caseId: 'CS-555555', itemId: 'IT-FFFFFF', name: 'x.pdf', mimeType: 'application/pdf',
+      size: 1000, origin: ORIGIN, batchId: 'batch0001' }, s.opts());
+    const f = s.started.at(-1);
+    s.files.fileBxxxxxxxx = { meta: { id: 'fileBxxxxxxxx', name: f.name, size: '1000', mimeType: 'application/pdf', parents: ['F-ARR'],
+      createdTime: new Date(Date.UTC(2026, 9, 30, 14, 5)).toISOString() }, head: PDF };
+    expect(() => lib.Upload.finish(s.ctx, bruno, { uploadId: b.uploadId, fileId: 'fileBxxxxxxxx' }, s.opts()))
+      .toThrow(expect.objectContaining({ code: 'invalid' }));
+    s.tick(Config.UPLOAD.DIGEST_IDLE_MINUTES);
+    lib.Upload.flush(s.ctx, s.opts());
+    expect(s.sent).toHaveLength(1);
+    expect(s.sent[0].text).toContain('a.pdf');
+    expect(s.sent[0].text).not.toContain('x.pdf');
+  });
+
   test('the trigger mails batches idle for 10 minutes, not fresh ones', () => {
     const s = setup();
     finishAll(s, [{}]);
@@ -270,7 +301,6 @@ describe('FileType', () => {
 });
 
 describe('requested documents', () => {
-  const { FakeSheet } = require('./harness');
   function withChecklist() {
     const s = setup();
     s.ss.getSheetByName('Checklist').data.push(

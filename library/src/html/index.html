@@ -143,12 +143,15 @@
         return (me && me.cases.find((c) => c.id === id)) || null;
       }
 
+      let picks = 0;  // each choice of files gets a number: a document shows the problems of its latest one
+
       /** target: the requested document the files are for. */
       function addFiles(list, target) {
+        const pick = ++picks;
         Array.from(list).forEach((file) => {
           const mime = mimeOf(file);
           const item = {
-            key: Math.random().toString(36).slice(2), file, mime, status: 'waiting', pct: 0, error: '',
+            key: Math.random().toString(36).slice(2), file, mime, status: 'waiting', pct: 0, error: '', pick,
             itemId: target.id, label: target.title + (target.sectionName ? ' (' + target.sectionName + ')' : ''),
           };
           if (!mime) Object.assign(item, { status: 'invalid', error: t('upload.badType') });
@@ -253,18 +256,21 @@
               ul.append(li);
               return;
             }
-            if (last && (last.status === 'failed' || last.status === 'invalid')) {
-              line(last.file.name + ' · ' + (last.status === 'invalid' ? last.error
-                : t('upload.failed') + (last.error ? ': ' + last.error : '')), 'reason');
-              if (last.status === 'failed' && last.retryable && !sending) {
+            // Every file of the latest pick that failed or was refused, each with its own retry:
+            // one pick may hold several files, and some may go through while others don't.
+            mine.filter((q) => last && q.pick === last.pick && (q.status === 'failed' || q.status === 'invalid')).forEach((q) => {
+              line(q.file.name + ' · ' + (q.status === 'invalid' ? q.error
+                : t('upload.failed') + (q.error ? ': ' + q.error : '')), 'reason');
+              if (q.status === 'failed' && q.retryable && !sending) {
                 const retry = document.createElement('button');
                 retry.type = 'button';
                 retry.className = 'link';
                 retry.textContent = t('upload.retry');
-                retry.onclick = () => { last.status = 'waiting'; last.error = ''; last.pct = 0; sendAll(); };
+                retry.setAttribute('aria-label', t('upload.retry') + ': ' + q.file.name);
+                retry.onclick = () => { q.status = 'waiting'; q.error = ''; q.pct = 0; sendAll(); };
                 li.append(retry, document.createTextNode(' '));
               }
-            }
+            });
             const send = document.createElement('button');
             send.type = 'button';
             send.className = i.status === 'missing' || i.status === 'rejected' ? 'secondary-btn' : 'link';

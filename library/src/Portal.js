@@ -98,7 +98,7 @@ function cronProvision(ctx) {
   if (Invite.hasWork(ctx.ss) && Settings.get(ctx.ss, 'portal_url')) safe_(function () { Invite.run(ctx); });
 }
 
-/** Time-driven, every 10 minutes: mails batches the client never finished. */
+/** Time-driven, every 10 minutes: mails batches idle for DIGEST_IDLE_MINUTES. */
 function cronDigest(ctx) {
   Context.check(ctx);
   if (!cronSlot_(ctx, 'digest')) return;

@@ -126,7 +126,7 @@ Then ask the lawyer to open the portal URL **on their phone** and log in with th
 - the files are in Drive under "Portal - <firm>" → the client → Teste, the item's file named after the document;
 - that item's row in Checklist now says `received`;
 - there's a row in Uploads;
-- one "Novos documentos" email arrived, about 10 minutes after the last file (the portal waits until the client stops sending).
+- one "Novos documentos" email arrived, within about 20 minutes of the last file (the portal waits until the client has stopped sending for 10 minutes, and checks every 10).
 
 If the phone shows "Não é possível abrir o ficheiro", that phone's browser is signed into several Google accounts. A private tab works. For clients, the lasting fix is linking the portal from the firm's website.
 

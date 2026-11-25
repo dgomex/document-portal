@@ -221,7 +221,7 @@ const Upload = (function () {
     withQueue_(ctx, function (q) { q['retry' + Crypto.randomToken(8)] = batch; });
   }
 
-  /** Trigger: mail batches idle for DIGEST_IDLE_MINUTES (the client closed the page). */
+  /** Trigger: mail batches idle for DIGEST_IDLE_MINUTES (the client has stopped sending). */
   function flush(ctx, opts) {
     opts = opts || {};
     const cutoff = (opts.now || Date.now()) - Config.UPLOAD.DIGEST_IDLE_MINUTES * 60000;
@@ -244,7 +244,7 @@ const Upload = (function () {
     return { batches: due.length, emails: sent };
   }
 
-  /** One email per recipient (case responsible, else the firm address). Returns emails sent. */
+  /** One email per recipient (case responsible, else the firm address) and case. Returns emails sent. */
   function send_(ctx, batch, opts) {
     const settings = Settings.read(ctx.ss);
     const ids = new Set(batch.ids);
@@ -260,21 +260,25 @@ const Upload = (function () {
       });
     }
     const fallback = Validate.normalizeEmail(settings.notification_email);
-    const groups = {};
+    // One email per recipient and case: a batch lasts the client's whole visit, which may cover
+    // several cases, and each email names one case and links its folder.
+    const groups = Object.create(null);
     rows.forEach(function (r) {
       const c = Cases.byId(ctx.ss, String(r.case_id)) || {};
       const to = Validate.isEmail(c.responsible_email) ? Validate.normalizeEmail(c.responsible_email) : fallback;
       if (!Validate.isEmail(to)) return;
-      (groups[to] = groups[to] || { to: to, folderId: c.folder_id, rows: [] }).rows.push(r);
+      const key = to + '\n' + String(r.case_id);
+      (groups[key] = groups[key] || { to: to, folderId: c.folder_id, rows: [] }).rows.push(r);
     });
     const lang = I18n.lang(String(settings.default_language || ''));
     let sent = 0;
-    Object.keys(groups).forEach(function (to) {
+    Object.keys(groups).forEach(function (key) {
+      const to = groups[key].to;
       if (!MailBudget.take(ctx, 'digest', opts.now)) {
         Events.log(ctx.ss, 'digest_daily_cap', '', batch.c);
         return;
       }
-      const msg = digestMessage(lang, groups[to]);
+      const msg = digestMessage(lang, groups[key]);
       (opts.mail || GmailRest).send(opts.token || ctx.script.getOAuthToken(), {
         to: to, from: Validate.normalizeEmail(settings.send_as_alias) || '', fromName: String(settings.firm_name || ''),
         subject: msg.subject, text: msg.text, html: msg.html,

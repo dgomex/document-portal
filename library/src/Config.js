@@ -16,7 +16,7 @@ const Config = Object.freeze({
     PENDING_TTL_SECONDS: 6 * 3600,  // a started upload must finish within this
     PER_CLIENT_PER_HOUR: 200,       // files started
     NOTE_MAX: 500,
-    DIGEST_IDLE_MINUTES: 10,        // a batch nobody finished is mailed after this
+    DIGEST_IDLE_MINUTES: 10,        // a batch is mailed once idle this long
   },
   MAIL: {
     DEFAULT_LIMIT: 95,              // free Gmail: 100 recipients a day, minus a margin
