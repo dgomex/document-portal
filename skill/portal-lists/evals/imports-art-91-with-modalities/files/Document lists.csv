@@ -1,6 +1,0 @@
-visa_type,order,applies_to,level,title_pt,title_en,title_es,instructions_pt,instructions_en,instructions_es,group_pt,group_en,group_es,group_key,only_if,unless,min_age,check_criteria,active,doc_key,check
-PT-D7,1,each_person,required,Passaporte válido,Valid passport,Pasaporte válido,,,,,,,,,,,,TRUE,PASSPORT,ok
-PT-D7,2,each_person,required,Fotografias tipo passe (2),Passport photos (2),Fotografías de pasaporte (2),,,,,,,,,,,,TRUE,PHOTOS,ok
-PT-D7,3,main_applicant,required,Comprovativo de rendimentos,Proof of income,Justificante de ingresos,,,,,,,,,,,,TRUE,INCOME_PROOF,ok
-PT-AR-91,1,main_applicant,required,Passaporte válido,Valid passport,Pasaporte válido,,,,,,,,,,,,TRUE,PASSPORT,ok
-PT-AR-91,2,main_applicant,required,Contrato de trabalho,Employment contract,Contrato de trabajo,,,,,,,,,,,,TRUE,EMPLOYMENT_CONTRACT,ok

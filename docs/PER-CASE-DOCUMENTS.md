@@ -1,6 +1,6 @@
 # Per-case document lists (0.6.0, schema 5): refactor plan
 
-Status: **plan approved (review round 2)** (2026-11-25). Replaces the model in [VISA-CHECKLISTS.md](VISA-CHECKLISTS.md).
+Status: **implemented on `claude/per-case-document-lists`** (plan approved in review round 2) (2026-11-25). Replaces the model in [VISA-CHECKLISTS.md](VISA-CHECKLISTS.md).
 
 ## Why
 

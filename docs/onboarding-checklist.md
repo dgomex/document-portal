@@ -33,7 +33,7 @@ Copy link for new firms (always the latest release): `https://docs.google.com/sp
    - Click **Implementar**, authorise if asked, then **open the URL once**. That records the portal address in Settings automatically.
 5. **Check the version.** Run **Portal → Atualizar portal → Verificar**: the sheet and the portal should show the same version.
 6. **Add the lawyer as a test client.**
-   - With the skill: have them connect their Sheets connector, add `portal-clients.skill` (and `portal-lists.skill`) in Claude's settings, paste the sheet URL and say "adiciona-me como cliente de teste com o processo Teste".
+   - With the skill: have them connect their Sheets connector, add `portal-clients.skill` in Claude's settings, paste the sheet URL and say "adiciona-me como cliente de teste com o processo Teste, com o passaporte e um comprovativo de morada".
    - Or by hand: type a name and email in Clients, then run **Portal → Processar novas linhas**.
 7. **On their phone:** open the portal, log in with the emailed code and upload a PDF and a photo. Then check:
    - the files are in the case folder;
@@ -41,9 +41,7 @@ Copy link for new firms (always the latest release): `https://docs.google.com/sp
    - one digest email arrived.
 
    **If the phone shows "Não é possível abrir o ficheiro":** that phone's browser is signed into several Google accounts. Open the link in a private tab or another browser. For clients, the fix is to link the portal from the firm's website.
-8. **Process types and lists.** The portal has no lists of its own: **Visa types** and **Document lists** start empty, and a case only gets a checklist when its process type has a list.
-   - If the firm has its own checklists, the import is a job for **their** Claude with the `portal-lists` skill: the lawyer gives Claude a file and confirms the table. Do the type they use most during the call, then set the test case's `visa_type` to it and look at the checklist on the phone; the rest after. You never import into a firm's sheet yourself.
-   - No checklists yet: create a `Teste` type with two documents for the test, and agree when they'll send their lists.
+8. **Requested documents.** The portal has no lists of its own and knows nothing about the kind of case: each case gets the documents the firm asks for when it opens it (one row per document in the Checklist tab). Show the lawyer the test case's two documents on the phone, and that adding one more for that case is one sentence to Claude or one row in Checklist.
 9. **Try an invite.** Set the test client's `invite_status` to `REQUESTED`, then run **Portal → Enviar convites pendentes**. Read the email together.
 10. **Clean up.** Untick the test client's `active` box. Don't delete rows.
 11. **Hand over:**

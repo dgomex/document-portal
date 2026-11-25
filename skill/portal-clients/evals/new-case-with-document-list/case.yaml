@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: new-case-with-document-list
+expected_outcome: |
+  One new Cases row for Bruno Mendes (CL-M2WT8B) at sheet row 5 of Cases, case_name "Compra de casa – Rua Augusta", a fresh CS- ID, status open, provision_status PENDING, created_by claude-skill, no visa or other legacy columns. Six new Checklist rows at rows 4 to 9 (after the two existing rows), all with that new case_id: section "Bruno" for Cartão de cidadão, Declaração de IRS 2025 (optional, instructions "se tiver") and Recibos de vencimento (instructions "os últimos 3 meses"); section "Banco" for Simulação do crédito and Carta de aprovação; and Certidão permanente do imóvel with an empty section. Titles carry no bullets or numbers, and no value starts with =, +, - or @ unless prefixed with '. item_id, upload_ids and updated_at are left empty. The reply shows the table of what was written and says the documents appear for the client within about 5 minutes.
+context:
+  scaffold_script: place-files.sh

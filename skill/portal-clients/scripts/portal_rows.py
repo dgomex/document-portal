@@ -6,8 +6,10 @@ Usage:
   python portal_rows.py check-client '{"name": "...", "email": "...", "language": "pt"}' [--clients clients.json]
   python portal_rows.py check-case '{"client_id": "CL-...", "case_name": "..."}' --clients clients.json
   python portal_rows.py cell '=SUM(A1)'
+  python portal_rows.py check-items '[{"case_id": "CS-...", "title": "- Passaporte"}]' --cases CS-AAAAAA,CS-BBBBBB
 
 clients.json: a list of {"client_id", "email", "additional_emails", "active"} read from the sheet.
+check-items prints the rows ready to write (bullets stripped, formulas neutralised) and the problems found.
 Prints JSON. Exit code 1 when a check finds problems.
 """
 import json
@@ -18,6 +20,10 @@ import sys
 CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
 ID = re.compile(r"^(CL|CS|UP)-[0-9A-HJKMNP-TV-Z]{6}$")
 EMAIL = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]{2,}$")
+# The Checklist levels the portal accepts ("requested" only on rows from before 0.6.0).
+LEVELS = ("required", "optional", "waived", "requested")
+BULLET = re.compile(r"^\s*(?:[-*•–—+]+|\(?\d{1,3}[.)]|\(?[a-z][.)])\s+", re.IGNORECASE)
+DAY = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 def new_id(prefix, existing=()):
@@ -96,6 +102,31 @@ def check_case(row, clients=()):
     return problems
 
 
+def clean_title(value):
+    """A document title as a lawyer may paste it: without the list bullet or number."""
+    return BULLET.sub("", str(value or "")).strip()
+
+
+def check_items(rows, case_ids=()):
+    """Checklist rows to write: cleaned, with formulas neutralised. Returns (rows, problems)."""
+    known = set(case_ids)
+    out, problems = [], []
+    for n, row in enumerate(rows, 1):
+        r = {k: row.get(k, "") for k in ("case_id", "section", "title", "instructions", "level", "due_date")}
+        r["title"] = clean_title(r["title"])
+        r["level"] = str(r["level"] or "required").strip().lower()
+        if not r["title"]:
+            problems.append("row %d: title is empty" % n)
+        if known and r["case_id"] not in known:
+            problems.append("row %d: unknown case_id: %s" % (n, r["case_id"]))
+        if r["level"] not in LEVELS[:3]:
+            problems.append("row %d: level must be required, optional or waived" % n)
+        if r["due_date"] and not DAY.match(str(r["due_date"])):
+            problems.append("row %d: due_date must be YYYY-MM-DD" % n)
+        out.append({k: cell(str(v).strip()) if isinstance(v, str) else v for k, v in r.items()})
+    return out, problems
+
+
 def _arg(flag):
     if flag in sys.argv:
         i = sys.argv.index(flag)
@@ -117,6 +148,11 @@ def main():
     if cmd == "cell":
         print(json.dumps({"value": cell(value)}))
         return 0
+    if cmd == "check-items":
+        cases = [x for x in (_arg("--cases") or "").split(",") if x]
+        rows, problems = check_items(json.loads(value), cases)
+        print(json.dumps({"ok": not problems, "rows": rows, "problems": problems}, ensure_ascii=False))
+        return 1 if problems else 0
     if cmd in ("check-client", "check-case"):
         row = json.loads(value)
         problems = (check_client if cmd == "check-client" else check_case)(row, clients)

@@ -60,7 +60,7 @@ The copy has a single empty tab. Rename it to `Settings` and write, from A1:
 | daily_email_limit | 95 for free Gmail; 1000 for Workspace | |
 | reminder_days | 7, or what the lawyer chose (0 = no reminders) | |
 
-The header row is exactly `key`, `value`, `description`. Leave the descriptions empty: the portal fills them in. Don't create other tabs or columns: the portal builds Clients, Cases, People, Checklist, Uploads and the rest itself.
+The header row is exactly `key`, `value`, `description`. Leave the descriptions empty: the portal fills them in. Don't create other tabs or columns: the portal builds Clients, Cases, Checklist, Uploads and the rest itself.
 
 Values starting with `=`, `+`, `-` or `@` get a leading `'`.
 
@@ -107,26 +107,23 @@ Open `<portal URL>?portal=status` in the browser (or fetch it). The first visit 
 
 Then read the Settings tab back: `root_folder_id`, `portal_url` and `schema_version` should now be filled in.
 
-## 6. The firm's process types and lists
+## 6. How documents are requested
 
-The portal has no lists of its own: every document list a client sees is the firm's, kept in two tabs of the sheet, **Visa types** (the process types: visas, residence permits, renewals, adult or minor…) and **Document lists** (each type's documents). They start empty.
+The portal has no lists of its own and knows nothing about the kind of case: for each case, the firm says which documents it needs, and those become the case's own list (the **Checklist** tab, one row per document). Changing what the firm asks for in a new case never touches an older one.
 
-Ask: **"Tem as checklists do escritório por tipo de processo (PDF, Word, folha de cálculo)?"**
-- **Yes:** the **portal-lists** skill imports them, in this Claude account, with the firm's own Sheets connector: the lawyer gives it a file and confirms the table before anything is written. Do one now, the process type they use most, so the test below shows a real list; the rest can follow after this call (a few minutes per list).
-- **Not yet:** for the test, create one process type called `Teste` with two documents (e.g. "Passaporte" and "Comprovativo de morada"), with portal-lists or by typing the rows (Visa types: `name_<language>` and `active` TRUE, leaving `visa_type` empty; Document lists: `visa_type` = the type's name, `title_<language>`, `active` TRUE). Tell the lawyer clients only get a document list for process types that have one, so their own lists are the next step.
-
-Within 5 minutes the portal gives each type its ID and checks every row: read the `check` column, which says `ok` or what to fix.
+Tell the lawyer: when they open a case, they give Claude the documents for it (typed, pasted, or a checklist file they already use), and the portal-clients skill writes them. They can also type rows into the Checklist tab themselves.
 
 ## 7. First test client
 
-If the portal-clients skill is available, use it to add the lawyer's test email as a client with a case called `Teste` and the process type from step 6. Otherwise write the rows as that skill describes:
+If the portal-clients skill is available, use it to add the lawyer's test email as a client with a case called `Teste` and two documents, e.g. "Passaporte" and "Comprovativo de morada". Otherwise write the rows as that skill describes:
 - **Clients:** a new row with `client_id` CL- plus 6 characters from `0123456789ABCDEFGHJKMNPQRSTVWXYZ`, `name`, `email`, `language`, `active` TRUE, `provision_status` PENDING, `created_by` claude-skill.
-- **Cases:** a matching row with `status` open and `visa_type` = the ID the portal gave that process type (read it from Visa types).
+- **Cases:** a matching row with a `case_id` (CS- plus 6 characters), `case_name` Teste, `status` open, `provision_status` PENDING, `created_by` claude-skill.
+- **Checklist:** one row per document, with that `case_id` and a `title`.
 
-The folders and the case's document checklist appear within 5 minutes: the lawyer is added to People as the main applicant, and the Checklist tab gets one row per document.
+The folders appear within 5 minutes, and each Checklist row gets its `item_id`.
 
 Then ask the lawyer to open the portal URL **on their phone** and log in with the code that arrives by email. They see the checklist. Ask them to send a PDF into one item (its **Enviar** button · EN: Send) and a photo under **Outros documentos** (EN: Other documents). Check together:
-- the files are in Drive under "Portal - <firm>" → the client → Teste (the item's file in the person's own folder);
+- the files are in Drive under "Portal - <firm>" → the client → Teste, the item's file named after the document;
 - that item's row in Checklist now says `received`;
 - there's a row in Uploads;
 - one "Novos documentos" email arrived.
@@ -147,9 +144,7 @@ Then tell the lawyer, briefly:
 - **Portal address:** the `/exec` URL. Put it on the website and in the email signature.
 - **Adding clients and cases:** ask Claude (portal-clients skill), or type rows in the sheet and use **Portal → Processar novas linhas** (EN: Process new rows · ES: Procesar filas nuevas).
 - **Inviting a client:** set `invite_status` to REQUESTED. The email goes out within 5 minutes.
-- **Visa checklists:** set a case's `visa_type` (and its family members in People, with birth dates) and the portal builds each person's document list. In the Checklist tab the lawyer sets an item to `accepted` or `rejected` (with a `reason` the client sees), sets `level` to `waived` for items they don't need, or adds a row of their own to ask for something extra. The portal-clients skill does all of this on request.
-- **The lists are the firm's.** Every list lives in the **Visa types** and **Document lists** tabs and is the firm's to change, by hand or with the portal-lists skill (new process types, renewals, adult/minor lists, a document added or removed, validation criteria for the review in `check_criteria`, which clients never see). The portal never changes them by itself.
-- **After changing a list:** open cases keep their list until the lawyer updates them in **Portal → Listas de documentos** (EN: Document lists · ES: Listas de documentos) → **Atualizar estes processos**. Nothing already received is lost.
+- **Requesting documents:** each case has its own list, written when the case is opened (ask Claude with the documents, or type rows into the Checklist tab, optionally grouped with `section`). In the Checklist tab the lawyer sets a document to `accepted` or `rejected` (with a `reason` the client sees), sets `level` to `waived` for one they no longer need, or adds a row to ask for something extra. The portal-clients skill does all of this on request.
 - **Reminders:** clients with missing documents get a reminder email every `reminder_days` days (0 turns them off).
 - **Updates:** when a new version is announced, **Portal → Atualizar portal** (EN: Update portal · ES: Actualizar portal) walks them through it (about 3 minutes; the address stays the same).
 - **Privacy:** their privacy policy should mention the portal. There are templates in Portuguese and English. If they use Claude to manage clients, it should also say client names and emails are processed by Anthropic.
