@@ -1,6 +1,6 @@
 # Portal sheet: columns, values, errors
 
-Schema versions 1 to 4 (Settings `schema_version`). Version 2 added `Clients.invited_at` and the Settings key `daily_email_limit`. Version 3 added visa checklists: `Cases.visa_type`, `Cases.facts`, `Cases.checklist_version`, and the People and Checklist tabs. Version 4 (portal 0.5.0) gave each firm its own process types and lists in the **Visa types** and **Document lists** tabs: read-only for this skill (`visa_type`, `name_*`, `active`, `family`, `facts_to_ask`), written by the portal-lists skill. The portal has no lists of its own. Sheets from before 0.5.0 keep hidden Adjustments and CatalogData tabs that are no longer used: never read or write them. Columns are only ever appended, never renamed. Always find a column by its header text in row 1.
+Schema versions 1 to 5 (Settings `schema_version`). Version 2 added `Clients.invited_at` and the Settings key `daily_email_limit`. Version 5 (portal 0.6.0) made each case's document list its own: the **Checklist** tab, one row per document the firm requests in a case, with a free-text `section`. The portal has no process types, people or shared lists. Sheets from before 0.6.0 may keep hidden tabs (People, Visa types, Document lists, Adjustments, CatalogData), Cases columns `visa_type`, `facts`, `checklist_version` and extra Checklist columns (`person_id`, `person_name`, `doc_type`, `key`, `source`, `text_json`): all no longer used. Never read or write them. Columns are only ever appended, never renamed. Always find a column by its header text in row 1.
 
 ## Settings (key | value | description)
 
@@ -35,44 +35,28 @@ Read-only for this skill. Useful keys:
 |---|---|---|
 | `case_id` | skill (new rows) | `CS-` + 6 Crockford base32 characters |
 | `client_id` | skill | an existing, active client's ID |
-| `case_name` | skill | 1–120 characters, what the client sees ("Visto D7 – família") |
+| `case_name` | skill | 1–120 characters, what the client sees ("Compra de casa – Rua Augusta") |
 | `firm_reference` | skill (if given) | the firm's own file number, shown next to the name |
 | `status` | skill | `open` / `closed`. Only open cases appear in the portal |
 | `responsible_email` | skill (if given) | the lawyer who gets this case's upload emails; empty = the firm address |
 | `provision_status` | skill (PENDING only), portal | `PENDING`, `ACTIVE`, `ERROR` |
 | `provision_error`, `folder_id` | portal only | |
 | `created_at`, `created_by` | skill (new rows) | as for Clients |
-| `visa_type` | skill | a process type ID from the Visa types tab (schema 4). Setting it builds the case's document checklist |
-| `facts` | skill | yes/no facts that change the list, `;`-separated, from the type's `facts_to_ask` in Visa types (`married` and `children` come from People). Ask only the ones in the visa's "Facts to ask" column |
-| `checklist_version` | portal only | which version of the firm's list the checklist was built from (a hash of the list and one of the case). Never write it: after a list changes, the lawyer updates open cases from **Portal → Listas de documentos** |
 
-## People (schema 3)
+## Checklist (schema 5): the documents requested in each case
 
 | Column | Who writes | Values |
 |---|---|---|
-| `person_id` | portal only | `PE-` + 6 characters |
-| `case_id` | skill | the case this person belongs to |
-| `name` | skill | the person's name |
-| `role` | skill | `main_applicant` (added automatically from the client), `spouse`, `child`, `dependant` |
-| `birth_date` | skill | YYYY-MM-DD. Decides age-based documents (criminal record from 16) |
-| `notes` | skill | free text for the lawyer |
-| `folder_id` | portal only | the person's Drive folder, created on their first upload |
-| `created_at`, `created_by` | skill (new rows) | as for Clients |
-
-## Checklist (schema 3)
-
-| Column | Who writes | Values |
-|---|---|---|
-| `item_id` | portal only | `IT-` + 6 characters |
-| `case_id` | skill (ad-hoc rows only) | the case |
-| `person_id` | portal only | which person the document is for (empty = the case) |
-| `person_name` | skill (ad-hoc rows only) | the person's name as in People; empty for the case |
-| `title`, `instructions` | skill | what the client sees. Written by the portal for list items; the skill writes them for ad-hoc requests |
-| `level` | skill | `required`, `optional`, `requested` (ad-hoc), `waived` (not needed for this case) |
-| `status` | skill, portal | `missing`, `received` (the portal sets this on upload), `accepted`, `rejected` |
+| `item_id` | portal only | `IT-` + 6 characters, given within 5 minutes once `case_id` is a case in Cases |
+| `case_id` | skill | the case the document is for |
+| `section` | skill | optional free text grouping documents on the client's page ("Ana", "Empresa", "Habitação"); empty = the general list, shown last |
+| `title` | skill | what the client sees, short |
+| `instructions` | skill | optional, shown under the title |
+| `level` | skill | `required` (empty = required), `optional`, `waived` (not needed any more; hidden from the client). Older rows may say `requested`: treat it as required |
+| `status` | skill, portal | `missing` (empty = missing), `received` (the portal sets this on upload), `accepted`, `rejected` |
 | `reason` | skill | why a document was rejected; the client sees it |
 | `due_date` | skill | YYYY-MM-DD, optional |
-| `upload_ids`, `doc_type`, `key`, `source`, `updated_at`, `text_json` | portal only | |
+| `upload_ids`, `updated_at` | portal only | |
 
 ## Tabs the skill never opens
 

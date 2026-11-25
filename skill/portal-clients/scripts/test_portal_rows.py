@@ -1,6 +1,6 @@
 import unittest
 
-from portal_rows import cell, check_case, check_client, is_id, new_id
+from portal_rows import cell, check_case, check_client, check_items, clean_title, is_id, new_id
 
 CLIENTS = [
     {"client_id": "CL-AAAAAA", "email": "ana@x.pt", "additional_emails": "marido@x.pt", "active": True},
@@ -38,6 +38,32 @@ class PortalRows(unittest.TestCase):
         self.assertEqual(check_case({"client_id": "CL-DDDDDD", "case_name": "X"}, CLIENTS), ["client CL-DDDDDD is inactive"])
         self.assertEqual(check_case({"client_id": "CL-AAAAAA", "case_name": "X", "status": "pending"}, CLIENTS),
                          ["status must be open or closed"])
+
+    def test_pasted_list_titles_lose_their_bullets(self):
+        for raw in ("- Passaporte", "* Passaporte", "• Passaporte", "1. Passaporte", "2) Passaporte", "a) Passaporte", "+ Passaporte"):
+            self.assertEqual(clean_title(raw), "Passaporte")
+        self.assertEqual(clean_title("IRS 2025"), "IRS 2025")
+        self.assertEqual(clean_title("-1 Certidão"), "-1 Certidão")
+
+    def test_items_are_cleaned_and_checked(self):
+        rows, problems = check_items([
+            {"case_id": "CS-AAAAAA", "title": "- Passaporte", "section": "Ana"},
+            {"case_id": "CS-AAAAAA", "title": "IRS", "level": "Optional", "instructions": "=se tiver"},
+        ], ["CS-AAAAAA"])
+        self.assertEqual(problems, [])
+        self.assertEqual(rows[0], {"case_id": "CS-AAAAAA", "section": "Ana", "title": "Passaporte", "instructions": "",
+                                   "level": "required", "due_date": ""})
+        self.assertEqual(rows[1]["level"], "optional")
+        self.assertEqual(rows[1]["instructions"], "'=se tiver")
+
+    def test_items_problems(self):
+        _, problems = check_items([
+            {"case_id": "CS-ZZZZZZ", "title": " - "},
+            {"case_id": "CS-AAAAAA", "title": "X", "level": "requested", "due_date": "1/12/2026"},
+        ], ["CS-AAAAAA"])
+        self.assertEqual(problems, ["row 1: title is empty", "row 1: unknown case_id: CS-ZZZZZZ",
+                                    "row 2: level must be required, optional or waived", "row 2: due_date must be YYYY-MM-DD"])
+        self.assertEqual(check_items([{"title": "X"}])[1], ["row 1: case_id is empty"])
 
     def test_formula_injection(self):
         self.assertEqual(cell('=HYPERLINK("x")'), '\'=HYPERLINK("x")')

@@ -1,6 +1,6 @@
 ---
 name: portal-clients
-description: Manage the clients and cases of a law firm's document upload portal (a Google Sheet with Settings, Clients and Cases tabs, made from the "Portal" template). Use it whenever the lawyer wants to add a client, open or close a case, deactivate or reactivate a client, change a client's email, send a portal invitation, list who is registered, or check why a client or case shows ERROR or has no folder yet, or set a case's visa, family members and documents, even if they just say "adiciona a Ana Ferreira, ana@x.pt, visto D7 com o marido", "fecha o processo de reagrupamento do Diogo", "convida o Bruno para o portal" or "o portal está a recusar a Carla". Portuguese, English and Spanish requests all apply. Do not use it for reading uploaded documents or Drive files.
+description: Manage the clients, cases and requested documents of a law firm's document upload portal (a Google Sheet with Settings, Clients, Cases and Checklist tabs, made from the "Portal" template). Use it whenever the lawyer wants to add a client, open or close a case, say which documents a case needs (typed, pasted or from a checklist file), add, drop or edit a requested document, accept or reject what a client sent, deactivate or reactivate a client, change a client's email, send a portal invitation, list who is registered or what is missing, or check why a client or case shows ERROR or has no folder yet, even if they just say "adiciona a Ana Ferreira, ana@x.pt, processo de compra de casa, preciso do CC, IRS e da caderneta", "fecha o processo de partilhas do Diogo", "convida o Bruno para o portal" or "o portal está a recusar a Carla". Portuguese, English and Spanish requests all apply. Do not use it for reading uploaded documents or Drive files.
 ---
 
 # Portal clients
@@ -39,10 +39,10 @@ This skill reads and writes the sheet through the **Google Sheets connector**. I
 ## 1. Preflight: every time, before reading or writing anything else
 
 1. Read the **Settings** tab (key/value). Check `schema_version`:
-   - **1 to 4:** supported. Visas, people and document checklists need **4** (the firm's own process types and lists, in the Visa types and Document lists tabs). With 1 to 3, manage clients and cases only; for visas, the portal needs updating first (portal-update skill).
+   - **1 to 5:** supported. Requested documents (the Checklist tab with a `section` column) need **5**. With 1 to 4, manage clients and cases only, and tell the lawyer the portal needs updating first for document lists (portal-update skill).
    - **Empty:** the portal isn't set up yet. Tell them to run Portal → Configurar (EN: Set up · ES: Configurar) in the sheet first, and stop.
    - **Anything higher:** stop. The portal is newer than this skill, so writing could break it. Tell them to get an updated skill.
-2. Read the **header row** (row 1) of Clients and Cases, and build a map from column name to column letter. **Always address columns by header name.** Lawyers add their own columns and reorder things, so position means nothing. If a column you need is missing, stop and say which one. Never create columns: the portal's setup does that.
+2. Read the **header row** (row 1) of Clients, Cases and Checklist, and build a map from column name to column letter. **Always address columns by header name.** Lawyers add their own columns and reorder things, so position means nothing. If a column you need is missing, stop and say which one. Never create columns: the portal's setup does that.
 3. Read the data rows you need: all of Clients (and Cases when the task involves cases). A row counts only if it has something in `client_id`, `name` or `email` (or `case_id`, `client_id`, `case_name` for Cases). The checkbox column holds FALSE in every row down to 1000, and `provision_status` may hold leftover text, so neither makes a row real.
 
 Column details, allowed values and what each `provision_error` means: `references/schema.md`. Read it the first time you write in a session.
@@ -54,47 +54,44 @@ Write only these, never anything else:
 | Action | Writes |
 |---|---|
 | New client | A new Clients row: `client_id`, `name`, `email`, `additional_emails` (if given), `language`, `active`=TRUE, `invite_status` (REQUESTED only if asked), `provision_status`=PENDING, `created_at`, `created_by`=claude-skill, `notes` (if given) |
-| New case | A new Cases row: `case_id`, `client_id`, `case_name`, `firm_reference` (if given), `status`=open, `responsible_email` (if given), `visa_type` and `facts` (schema 3, see "New cases: visa and family"), `provision_status`=PENDING, `created_at`, `created_by`=claude-skill; plus a People row per family member |
+| New case | A new Cases row: `case_id`, `client_id`, `case_name`, `firm_reference` (if given), `status`=open, `responsible_email` (if given), `provision_status`=PENDING, `created_at`, `created_by`=claude-skill; plus its documents (below) |
 | Close or reopen a case | That row's `status` (closed / open) |
 | Deactivate or reactivate a client | That row's `active` (FALSE / TRUE) |
 | Change emails | That row's `email` and/or `additional_emails` |
 | Invite | That row's `invite_status` = REQUESTED |
 | Retry a row in error | That row's `provision_status` = PENDING, after the cause is fixed |
-| Set or change a case's visa | That Cases row's `visa_type`: an ID from the **Visa types** tab (an active row), e.g. `F-AR-92-MENOR` |
-| Set the case's facts | That Cases row's `facts`: `;`-separated IDs from the type's `facts_to_ask` (`married` and `children` are automatic) |
-| Add a person to a case | A new People row: `case_id`, `name`, `role` (spouse, child or dependant), `birth_date` (YYYY-MM-DD), `notes`, `created_by`=claude-skill |
+| Request documents for a case | A new Checklist row per document: `case_id`, `section` (optional), `title`, `instructions` (optional), `level` (required or optional), `due_date` (if given) |
+| Change a requested document | That Checklist row's `title`, `instructions`, `section`, `level` or `due_date` |
+| Drop a document for this case | That Checklist row's `level` = waived (and `reason` for the record). Never delete the row |
 | Accept or reject a document | That Checklist row's `status` (accepted / rejected) and, when rejecting, `reason` in words the client understands |
-| Waive a document for this case | That Checklist row's `level` = waived (and `reason` for the record) |
-| Ask for something not on the list | A new Checklist row: `case_id`, `person_name` (empty = the case), `title`, `instructions`, `level` = requested, `due_date` if given |
-| Change a process type's document list | Nothing here: the firm's lists (Visa types and Document lists tabs) are the **portal-lists** skill's |
 
 The portal's script owns `folder_id`, `provision_error` and `invited_at`, and the Uploads and Events tabs. Never write them, and never read Uploads or Events: they hold the clients' documents and a security log, which you don't need for any of these tasks. Never delete rows. To remove someone, deactivate them, which keeps the history the firm may be legally required to keep.
 
-The People tab's `person_id` and the Checklist tab's `item_id`, `person_id`, `upload_ids`, `doc_type`, `key`, `source`, `updated_at` and `text_json` are the portal's too: it fills them in within 5 minutes (or with Processar novas linhas). The main applicant is added to People automatically when the case gets a visa. Don't add them yourself.
+The Checklist tab's `item_id`, `upload_ids` and `updated_at` are the portal's too: it fills them in within 5 minutes (or with Processar novas linhas). Sheets from before portal 0.6.0 have more Checklist columns (`person_id`, `person_name`, `doc_type`, `key`, `source`, `text_json`) and may have hidden tabs (People, Visa types, Document lists): never write or read them.
 
 **Always set `active` and `created_by` explicitly on new client rows.** The portal treats a row with an empty `created_by` as typed by hand and ticks `active` itself. Writing both means the lawyer gets exactly what they asked for, including a deliberately inactive client.
 
-## New cases: visa and family (schema 4)
+## New cases: the documents to request (schema 5)
 
-Every case at an immigration firm is a visa or residence permit application, and the visa is what gives the client a document list. With `schema_version` 4, don't open a case without asking about it.
+The portal knows nothing about the kind of case: each case's list of documents is the one the lawyer gives for that case, and it never changes another case's list. With `schema_version` 5, when you open a case, ask for its documents unless the lawyer already gave them:
 
-**Where the process types are:** the firm's own **Visa types** tab (read it, address columns by header). Offer only rows with `active` TRUE and a `check` that is not an error; match on `name_<lang>` and `visa_type`. Its `family` column is the **Family documents** column below, and its `facts_to_ask` the **Facts to ask** column. If the tab is empty, the firm has no lists yet: open the case without a visa and offer to import the firm's checklists (portal-lists skill).
+> "Que documentos precisa que o cliente envie para este processo?"
 
-Before the confirmation table, make sure you have:
+The lawyer may type or paste a list, or give a file (a PDF, Word or spreadsheet checklist they already use). Turn it into one Checklist row per document:
 
-1. **The visa.** Ask "Qual é o tipo de visto ou autorização de residência deste processo?" unless the lawyer already named it.
-   - Match what they say ("D7", "nómada digital", "reagrupamento familiar", "renovação art. 92 menor") to a `visa_type` in the Visa types tab, and show its full name in the table so the lawyer can see you picked the right one. Several matches (for example "autorização de residência para trabalhar" fits 88-1, 88-7, 89-1 and others): list them with one line each and ask which.
-   - If the lawyer describes the client's situation instead of naming a visa, lay out the candidates and why each fits. **The lawyer chooses**; never write a visa they haven't confirmed.
-   - "Ainda não sei" is a fine answer: open the case without a visa, and tell them the client won't see a document list until one is set.
-   - Write the ID in `visa_type`. The case name is the lawyer's label: use theirs, or the visa's Portuguese name if they gave none.
-2. **The family**, when the visa's **Family documents** column says yes. Ask "Há familiares neste processo? Para cada um: nome, relação (cônjuge, filho ou dependente) e data de nascimento." Each becomes a People row (`case_id`, `name`, `role` spouse / child / dependant, `birth_date` YYYY-MM-DD, `created_by`=claude-skill). The birth date matters: some documents depend on age (criminal records from 16). Never add the main applicant: the portal does that.
-3. **The facts** in the visa's **Facts to ask** column, and only those. Ask each as a plain yes/no question in the lawyer's words (`cplp`: "O cliente é nacional de um país da CPLP?"; `no_visa`: "O pedido é feito sem visto de residência?"). Write the yes answers to `facts`, `;`-separated. A "–" means there's nothing to ask.
+- **`title`:** what the client sees, short ("Cartão de cidadão", "Declaração de IRS 2025"). Keep the lawyer's wording; don't translate it, and strip list bullets and numbering ("- ", "1.", "•").
+- **`instructions`:** the lawyer's extra words for the client ("todas as páginas", "emitido há menos de 3 meses"), if any.
+- **`section`:** optional free text that groups documents on the client's page, when the lawyer's list has groups: a person ("Ana", "Pedro (cônjuge)"), a party ("Empresa") or a topic ("Habitação"). Leave it empty for a single list.
+- **`level`:** `required`, unless the lawyer says a document is optional ("se tiver", "opcional"): then `optional`.
+- **`due_date`:** only if the lawyer gives one, as YYYY-MM-DD.
 
-Ask these together, in one message, alongside anything else that's missing (name, email). The lawyer can answer some and skip others.
+**Never invent a document** and never add one the lawyer didn't list, even if it's usual for that kind of case. If something in their list is a note for the firm rather than a document for the client ("o escritório pede a certidão"), leave it out and say so.
 
-If the lawyer has already said to go ahead without asking and gave the visa, write straight away with what they gave (no family, no facts unless mentioned), then ask about family and facts afterwards. If they gave no visa, open the case without one and ask for it in the same reply. A missing visa never blocks the client and the case.
+"Ainda não sei" is a fine answer: open the case without documents. The client sees only the "other documents" upload until the list is written; offer to add it later.
 
-With `schema_version` 1 to 3: open cases as before and don't ask about visas; tell the lawyer document lists need the portal updated.
+If the lawyer has already said to go ahead without asking, write straight away with what they gave, and ask for the documents afterwards if they gave none.
+
+With `schema_version` 1 to 4: open cases without documents and tell the lawyer document lists need the portal updated.
 
 ## 3. Validate, then confirm
 
@@ -103,6 +100,7 @@ Before showing anything, check:
 - **Duplicates:** search the new email against **every** client's `email` and `additional_emails`, inactive ones included. If it's taken, don't create a duplicate: say who has it and offer the sensible alternative. An inactive match usually means "reactivate"; an active one, "add the case to that client".
 - **Names:** 1–120 characters. `language` is `pt`, `en` or `es`; default to the firm's `default_language` from Settings and mention it.
 - **New cases:** the `client_id` must exist and be active. If the client was added a moment ago in this conversation, use its new ID.
+- **Documents:** each row needs a `case_id` that is in Cases (a case written a moment ago counts) and a `title`; `level` is `required`, `optional` or `waived`. A row for a case that isn't in Cases yet is ignored by the portal until it is. If you can run Python, `scripts/portal_rows.py check-items` strips bullets, neutralises formulas and checks these the same way.
 - **Formula injection:** any value starting with `=`, `+`, `-` or `@` gets a leading `'`. Sheets would otherwise run it as a formula.
 - **New IDs:** `CL-` or `CS-` plus 6 characters from `0123456789ABCDEFGHJKMNPQRSTVWXYZ` (no I, L, O, U). Make sure the ID isn't already used in that tab. If you can run Python, `scripts/portal_rows.py` does IDs and checks the same way the portal does.
 
@@ -129,17 +127,16 @@ If the lawyer has already said to go ahead without asking ("podes escrever", "co
 
 If the lawyer asks later ("já está?", "did it work?"), read the rows back: `provision_status`, `provision_error`, `invite_status`. Explain any error in plain words using the table in `references/schema.md`. Fix the cause with the lawyer (for example, correct the email), then set `provision_status` back to PENDING so the portal retries.
 
-## Visas and document checklists
+## Each case's documents
 
-Each case is a visa application. When a case gets a `visa_type`, the portal builds its **checklist**: one row per document per person, from the firm's own list for that process type, filtered by the case's facts and people. The client sees it on the portal, and sends each document into its own slot.
+Each case has its own list in the Checklist tab: one row per document, shown to the client on the portal, where they send each document into its own slot. Changing one case's list never touches another case.
 
-- **Choosing the visa is the lawyer's decision.** If they ask what fits, you may lay out the candidates from the Visa types tab with the reasons, but say clearly that the choice is theirs, and write `visa_type` only once they confirm.
-- **The lists are the firm's.** Each process type's list is the firm's own (Visa types and Document lists tabs), and the lawyer is responsible for it. Say so when it matters, for example when a lawyer asks "is this everything?".
-- **Family:** add each family member to People with their role and date of birth. Criminal records are asked from 16, so birth dates matter. Adding or removing a person, or changing the facts, rebuilds the list within 5 minutes. Documents already received stay received.
-- **"What's missing for Ana?":** read the case's Checklist rows (not Uploads). Group them by `person_name`, and show the ones with `status` missing or rejected and `level` required or requested. Mention optional ones separately.
+- **The list is the lawyer's.** It is exactly what they asked for this case, and they are responsible for it. Say so when it matters, for example when a lawyer asks "is this everything?".
+- **Adding or changing later:** "pede também o contrato de trabalho à Ana" is a new row for that case; "afinal o IRS é opcional" changes that row's `level`; "já não preciso da caderneta" sets `level` waived. Documents already received stay received.
+- **"What's missing for Ana?":** read the case's Checklist rows (not Uploads). Group them by `section`, and show the ones with `status` missing, rejected or empty and `level` required, requested (older rows) or empty. Leave out `waived`, and mention optional ones separately.
 - **Reviewing:** "aceita o passaporte da Ana" sets `status` accepted. "rejeita o registo criminal do Pedro, tem mais de 90 dias" sets `status` rejected and `reason`. The client sees the reason at once, and gets reminded about it.
-- **The firm's way of working:** the firm's lists are its own (Visa types and Document lists tabs). "No D7 pedimos sempre o CV do cônjuge" is a change to that list: use the **portal-lists** skill, which also imports a firm's existing checklists. After a list changes, open cases are brought up to date with **Portal → Listas de documentos** (EN: Document lists · ES: Listas de documentos) → **Atualizar estes processos**. Nothing already received is lost.
-- **Reminders:** the portal emails clients about missing documents every `reminder_days` days (Settings).
+- **Typing rows by hand:** a lawyer typing documents into the Checklist tab needs the case's `case_id`. For a case they typed by hand too, it appears after **Portal → Processar novas linhas** (EN: Process new rows · ES: Procesar filas nuevas); then use it in `case_id`.
+- **Reminders:** the portal emails clients about missing required documents every `reminder_days` days (Settings).
 
 ## Listing
 

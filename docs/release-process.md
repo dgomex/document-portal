@@ -58,6 +58,6 @@ When you release, tell each firm (email them). The easiest path is the **portal-
 
 **Shell changes** (`shell/Code.js` or manifest scopes) don't reach existing firms through the update: it only changes the library version. Keep the shell frozen; a shell change means a guided step with each firm.
 
-## Document lists
+## Requested documents
 
-There is no central catalog: each firm keeps its own lists in its sheet (Visa types and Document lists), and a release never changes them. A release that changes how lists are read (columns, keys, the list hash) needs a migration step that leaves every existing case's checklist as it is; see `test/firmlists.test.js`.
+There are no shared lists: each case's documents are rows in its firm's Checklist tab, written by the firm, and a release never changes them. A release that changes how those rows are read must keep every existing row showing as it did (rows from before 0.6.0 carry `person_name` and `text_json`); see `test/casechecklist.test.js`.

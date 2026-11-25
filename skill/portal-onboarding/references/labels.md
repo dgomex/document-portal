@@ -16,9 +16,6 @@ They follow the firm's `default_language` in Settings (`pt`, `en` or `es`).
 | Enviar convites pendentes | Send pending invitations | Enviar invitaciones pendientes | Menu item: send REQUESTED invitations now |
 | Atualizar portal | Update portal | Actualizar portal | Menu item: the update sidebar |
 | Verificar | Check | Comprobar | Button in the update sidebar |
-| Listas de documentos | Document lists | Listas de documentos | Menu item: the document lists sidebar (shared with the update sidebar) |
-| Verificar | Check | Verificar | Button: check the lists now (fills IDs and keys, writes the check column) |
-| Atualizar estes processos | Update these cases | Actualizar estos expedientes | Button per process type: bring its open cases up to date |
 | Guardar | Save | Guardar | Button in the setup sidebar |
 
 ## Google's screens

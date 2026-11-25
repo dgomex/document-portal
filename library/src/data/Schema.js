@@ -21,7 +21,7 @@ const Schema = (function () {
 
     Object.keys(Config.SCHEMA).forEach(function (name) {
       const sheet = ensureTab_(ss, name, Config.SCHEMA[name], report);
-      applyValidations_(sheet, name, ss);
+      applyValidations_(sheet, name);
       protectScriptOwned_(sheet, name);
     });
 
@@ -63,7 +63,7 @@ const Schema = (function () {
     });
   }
 
-  function applyValidations_(sheet, name, ss) {
+  function applyValidations_(sheet, name) {
     const rules = Config.VALIDATIONS[name];
     if (!rules) return;
     const t = Table.wrap(sheet);
@@ -72,17 +72,6 @@ const Schema = (function () {
       const col = t.column(column);
       if (!col) return;
       const builder = SpreadsheetApp.newDataValidation();
-      if (rules[column] === 'visa_types' || rules[column] === 'firm_visa_types') {
-        const firm = FirmLists.enabled(ss) ? FirmLists.get(ss) : null;
-        let ids;
-        if (rules[column] === 'firm_visa_types') ids = firm ? firm.order : [];
-        else ids = firm ? FirmLists.dropdownIds(firm, Cases.list(ss).map(function (c) { return c.visa_type; })) : [];
-        if (!ids.length) return;
-        // Document lists may name a type instead of its ID (replaced on sync): a warning, not a block.
-        sheet.getRange(2, col, rows, 1).setDataValidation(builder.requireValueInList(ids, true)
-          .setAllowInvalid(rules[column] === 'firm_visa_types').build());
-        return;
-      }
       const rule = rules[column] === 'checkbox'
         ? builder.requireCheckbox().build()
         : builder.requireValueInList(rules[column], true).setAllowInvalid(false).build();
@@ -105,23 +94,6 @@ const Schema = (function () {
     });
   }
 
-  /**
-   * The visa_type dropdowns once the firm has its own lists: Cases offers
-   * caseIds (active types plus those cases already use), Document lists
-   * every type. Called by the sync when the set changes.
-   */
-  function visaDropdown(ss, caseIds, allIds) {
-    if (typeof SpreadsheetApp === 'undefined') return;
-    [[Config.TABS.CASES, caseIds, false], [Config.TABS.DOC_LISTS, allIds, true]].forEach(function (spec) {
-      const sheet = ss.getSheetByName(spec[0]);
-      if (!sheet || !spec[1].length) return;
-      const col = Table.wrap(sheet).column('visa_type');
-      if (!col) return;
-      const rule = SpreadsheetApp.newDataValidation().requireValueInList(spec[1], true).setAllowInvalid(spec[2]).build();
-      sheet.getRange(2, col, Math.max(sheet.getMaxRows() - 1, 1), 1).setDataValidation(rule);
-    });
-  }
-
   /** Delete the untouched default tab ("Sheet1", "Página1", ...) once ours exist. */
   function removeEmptyDefaultTabs_(ss) {
     const ours = new Set([Config.TABS.SETTINGS].concat(Object.keys(Config.SCHEMA)));
@@ -137,5 +109,5 @@ const Schema = (function () {
     return ss.getSheetByName(Config.TABS.SETTINGS) ? Settings.language(ss) : Config.DEFAULT_LANGUAGE;
   }
 
-  return { ensure: ensure, missingColumns: missingColumns, visaDropdown: visaDropdown };
+  return { ensure: ensure, missingColumns: missingColumns };
 })();

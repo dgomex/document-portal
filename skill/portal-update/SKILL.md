@@ -10,7 +10,7 @@ You update the firm's portal **in the firm's own Google account**, acting for th
 1. **the library version:** what the sheet's menus and background jobs run;
 2. **the web app deployment:** what the portal serves to clients. You edit the existing deployment, never create a new one, so the portal address stays the same.
 
-The sheet upgrades its own structure afterwards (within 5 minutes), so you don't touch any tab. For example, going from 0.4.x to 0.5.0 adds the Visa types and Document lists tabs, copies into them the lists the firm was using, and hides the old Adjustments and CatalogData tabs, all by itself.
+The sheet upgrades its own structure afterwards (within 5 minutes), so you don't touch any tab. For example, going to 0.6.0 adds a `section` column to Checklist and retires the old People, Visa types and Document lists tabs (hidden, or removed when empty), all by itself; every case keeps the documents it had.
 
 It usually needs no clicks from the lawyer. The exception: if the new version needs new Google permissions, Google asks them to **Allow** (see step 3).
 
@@ -51,7 +51,7 @@ Tell them where it goes: in the instructions of the Claude project they use for 
 
 A portal update is a new portal version (the release announcement, or the lawyer asks for it): steps 1–4 below. Read the **Settings** tab (Sheets connector) first.
 
-The firm's document lists are not part of an update: they are the firm's own (the Visa types and Document lists tabs), and an update never changes them. Changing a list is the portal-lists skill.
+The documents requested in each case are not part of an update: they are the firm's own (the Checklist tab), and an update never changes them. Changing them is the portal-clients skill. From 0.6.0 on, the firm also needs the new portal-clients skill: the old one stops on a schema it doesn't know, and portal-lists is retired.
 
 ## 1. Note where it stands
 

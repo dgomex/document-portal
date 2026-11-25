@@ -12,7 +12,7 @@ const path = require('path');
 const vm = require('vm');
 
 const ROOT = path.join(__dirname, '..');
-const SKILLS = ['portal-clients', 'portal-onboarding', 'portal-update', 'portal-lists'];
+const SKILLS = ['portal-clients', 'portal-onboarding', 'portal-update'];
 
 function translations() {
   const ctx = vm.createContext({});
@@ -28,9 +28,6 @@ const PORTAL = [
   ['menu.invite', 'Menu item: send REQUESTED invitations now'],
   ['menu.update', 'Menu item: the update sidebar'],
   ['update.check', 'Button in the update sidebar'],
-  ['menu.lists', 'Menu item: the document lists sidebar (shared with the update sidebar)'],
-  ['lists.check', 'Button: check the lists now (fills IDs and keys, writes the check column)'],
-  ['lists.update', 'Button per process type: bring its open cases up to date'],
   ['setup.save', 'Button in the setup sidebar'],
 ];
 

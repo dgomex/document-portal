@@ -19,8 +19,6 @@ function onOpen(e) {
     .addItem(t('menu.provision'), 'menuProvision')
     .addItem(t('menu.invite'), 'menuInvite')
     .addSeparator()
-    // The shell is frozen (no new entry points for existing firms): the lists sidebar is part of menuUpdate's.
-    .addItem(t('menu.lists'), 'menuUpdate')
     .addItem(t('menu.update'), 'menuUpdate');
   if (ss && safe_(function () { return Seed.enabled(ss); })) {
     menu.addSeparator().addItem(t('menu.devSeed'), 'menuDevSeed');
@@ -50,7 +48,7 @@ function menuProvision(ctx) {
       clients: r.clients.active, clientErrors: r.clients.error,
       cases: r.cases.active, caseErrors: r.cases.error, waiting: r.cases.waiting,
     }) + (r.timedOut ? '\n' + I18n.t(lang, 'provision.more') : '') +
-      (c && (c.built || c.rebuilt || c.requests || c.stale) ? '\n' + I18n.t(lang, 'provision.checklists', c) : ''));
+      (c && c.requests ? '\n' + I18n.t(lang, 'provision.checklists', c) : ''));
   });
 }
 
@@ -66,8 +64,7 @@ function menuInvite(ctx) {
 function menuUpdate(ctx) {
   sheetAction_(ctx, function (lang) {
     const template = HtmlService.createTemplateFromFile('html/update');
-    template.boot = bootJson_({ sheetVersion: Config.LIBRARY_VERSION,
-      lists: safe_(function () { return CaseChecklist.status(ctx); }), strings: I18n.bundle()[lang] });
+    template.boot = bootJson_({ sheetVersion: Config.LIBRARY_VERSION, strings: I18n.bundle()[lang] });
     SpreadsheetApp.getUi().showSidebar(template.evaluate().setTitle(I18n.t(lang, 'update.title')));
   });
 }
@@ -80,6 +77,7 @@ function menuDevSeed(ctx) {
     if (answer.getSelectedButton() !== ui.Button.OK) return;
     const added = Seed.run(ctx.ss, answer.getResponseText().trim());
     const r = Provision.run(ctx, {});
+    CaseChecklist.sync(ctx);
     ui.alert(I18n.t(lang, 'seed.done', { added: added, clients: r.clients.active, cases: r.cases.active }));
   });
 }
@@ -253,19 +251,15 @@ const API_ = {
 /** What the page may know about the logged-in client: never IDs of other clients or folder IDs. */
 function me_(ctx, client, lang) {
   const language = Config.LANGUAGES.indexOf(lang) !== -1 ? lang : I18n.lang(String(client.language || ''));
-  const withChecklists = !!ctx.ss.getSheetByName(Config.TABS.CHECKLIST);
-  const firm = FirmLists.enabled(ctx.ss) ? FirmLists.get(ctx.ss, ctx.cache) : null;
-  const visaOf = function (id) { return firm ? FirmLists.visa(firm, id) : null; };
+  const rows = ctx.ss.getSheetByName(Config.TABS.CHECKLIST) ? CaseChecklist.items(ctx.ss) : null;
   return {
     name: String(client.name || ''),
     language: I18n.lang(String(client.language || '')),
     cases: Cases.uploadableForClient(ctx.ss, client.client_id).map(function (c) {
-      const visa = String(c.visa_type || '').trim() ? visaOf(String(c.visa_type).trim()) : null;
       return {
         id: c.case_id, name: String(c.case_name || ''), reference: String(c.firm_reference || ''),
-        visa: visa ? Text.pick(visa.name, language) : '',
-        // The case's own rows are its list (a snapshot): shown even if its process type was renamed or broken.
-        checklist: withChecklists ? CaseChecklist.view(ctx.ss, c.case_id, language) : [],
+        // The documents the firm requested for this case, by section.
+        checklist: rows ? CaseChecklist.view(ctx.ss, c.case_id, language, rows) : [],
       };
     }),
   };
@@ -274,12 +268,6 @@ function me_(ctx, client, lang) {
 const ADMIN_ = {
   saveSetup: function (data, ctx) { return Setup.save(ctx, data); },
   updateStatus: function (data, ctx) { return Update.status(ctx); },
-  // "Document lists": Verificar (fills IDs and keys, writes the check column) and "Update these cases".
-  listsStatus: function (data, ctx) { return CaseChecklist.status(ctx, { write: true }); },
-  listsRefresh: function (data, ctx) {
-    const r = CaseChecklist.refresh(ctx, String(data.visaId || ''));
-    return { result: r, status: CaseChecklist.status(ctx) };
-  },
 };
 
 /** detailed: owner-only callers also get the internal message, to report problems. */

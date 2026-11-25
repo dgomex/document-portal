@@ -1,0 +1,3 @@
+item_id,case_id,section,title,instructions,level,status,reason,due_date,upload_ids,updated_at
+IT-0A1B2C,CS-1A2B3C,,Passaporte,,required,received,,,UP-9Z8Y7X,2026-10-20 11:00
+IT-3D4E5F,CS-1A2B3C,,Comprovativo de morada,,required,missing,,,,2026-10-20 11:00

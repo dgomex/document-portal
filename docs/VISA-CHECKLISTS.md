@@ -1,5 +1,7 @@
 # Visa checklists: design
 
+> **Superseded in 0.6.0** by [PER-CASE-DOCUMENTS.md](PER-CASE-DOCUMENTS.md): the portal no longer knows visa types, people or list rules; each case has its own list of documents. Kept for the record.
+
 The portal is for **immigration lawyers**. Each case is a visa application, and each visa needs a specific set of documents, per person. This document records the decisions (2026-10-31) and the model built on the `feature/visa-checklists` branch.
 
 ## Decisions
