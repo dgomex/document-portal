@@ -45,7 +45,7 @@ Every 5 minutes / Process new rows: a Checklist row with `case_id` + `title` and
 - `me_()` returns per case `checklist: [{ name, items: [...] }]` (`name` = the section text: the same key the page already reads, so a page left open across the upgrade still renders). The `visa` field goes away; the `#visaName` line and the immigration comment are removed.
 - Section heading: the section text, or `checklist.section.general` ("Documents") for the empty section. The `checklist.role.*` keys and their dynamic lookup go in the same commit. The sub-line shows only the section's progress.
 - The "Requested by the firm" tag and `checklist.requested` go away (every document is requested by the firm now).
-- Everything else as today: per-item Send / Send again, statuses, reason, instructions, due date, progress bar, the "Other documents" free upload, "I'm done: notify the firm". `checklist.oneOf` stays for legacy grouped rows (`text_json.options`).
+- Everything else as today: per-item Send / Send again, statuses, reason, instructions, due date, progress bar. (0.6.1 removed the "Other documents" free upload and the "I'm done: notify the firm" button: every file is for a requested document, and the firm's email goes out once the client stops sending.) `checklist.oneOf` stays for legacy grouped rows (`text_json.options`).
 
 ### Drive
 

@@ -122,11 +122,11 @@ If the portal-clients skill is available, use it to add the lawyer's test email 
 
 The folders appear within 5 minutes, and each Checklist row gets its `item_id`.
 
-Then ask the lawyer to open the portal URL **on their phone** and log in with the code that arrives by email. They see the checklist. Ask them to send a PDF into one item (its **Enviar** button · EN: Send) and a photo under **Outros documentos** (EN: Other documents). Check together:
+Then ask the lawyer to open the portal URL **on their phone** and log in with the code that arrives by email. They see the checklist. Ask them to send a PDF into one item and a photo into another (each item's **Enviar** button · EN: Send). Check together:
 - the files are in Drive under "Portal - <firm>" → the client → Teste, the item's file named after the document;
 - that item's row in Checklist now says `received`;
 - there's a row in Uploads;
-- one "Novos documentos" email arrived.
+- one "Novos documentos" email arrived, within about 20 minutes of the last file (the portal waits until the client has stopped sending for 10 minutes, and checks every 10).
 
 If the phone shows "Não é possível abrir o ficheiro", that phone's browser is signed into several Google accounts. A private tab works. For clients, the lasting fix is linking the portal from the firm's website.
 

@@ -1,13 +1,15 @@
 /**
  * The upload flow. The browser never holds a Drive token:
- *   start()  checks the case belongs to the client and is open, checks type
- *            and size, and opens a one-file resumable Drive session in the
- *            case folder. Only the session URI goes to the browser.
+ *   start()  checks the case belongs to the client and is open, that the file
+ *            is for a document requested in it, checks type and size, and
+ *            opens a one-file resumable Drive session in the case folder.
+ *            Only the session URI goes to the browser.
  *   (browser PUTs the file in chunks straight to Drive)
  *   finish() re-reads the file from Drive: right folder, size, type, and
  *            first bytes. Anything wrong is trashed and logged; a good file
  *            gets an Uploads row and joins the batch's digest.
- *   finishBatch() / flush() send the lawyer one email per batch.
+ *   flush()  sends the lawyer one email per batch, once the client has
+ *            stopped sending for a while.
  */
 const Upload = (function () {
   const BATCH = /^[A-Za-z0-9]{8,40}$/;
@@ -26,7 +28,7 @@ const Upload = (function () {
     return c;
   }
 
-  /** input: { caseId, name, mimeType, size, origin, batchId }. Returns { uploadId, uri, chunkBytes }. */
+  /** input: { caseId, itemId, name, mimeType, size, origin, batchId }. Returns { uploadId, uri, chunkBytes }. */
   function start(ctx, client, input, opts) {
     opts = opts || {};
     const now = opts.now || Date.now();
@@ -45,11 +47,11 @@ const Upload = (function () {
       throw Errors.make('tooMany', 'Upload rate limit');
     }
 
-    // A requested document: the file goes to the case folder, named after the document.
+    // Every file is for a document the firm requested: it goes to the case folder, named after it.
+    const item = itemFor_(ctx.ss, c.case_id, String(input.itemId || ''));
     const token = opts.token || ctx.script.getOAuthToken();
-    const item = input.itemId ? itemFor_(ctx.ss, c.case_id, String(input.itemId)) : null;
     const parentId = c.folder_id;
-    const label = item ? String(item.title || '').trim() : '';
+    const label = String(item.title || '').trim();
     const stored = Sanitize.storedName(new Date(now), label ? label + ' - ' + name : name);
     const uri = drive.startResumable(token, {
       name: stored, mimeType: mime, size: size, parentId: parentId, origin: origin,
@@ -57,7 +59,7 @@ const Upload = (function () {
     const uploadId = Ids.generate(Config.ID_PREFIX.UPLOAD, []);
     ctx.cache.put('up:' + uploadId, JSON.stringify({
       c: client.client_id, k: c.case_id, f: parentId, n: name, s: stored, m: mime, z: size, b: input.batchId,
-      i: item ? item.item_id : '', t: now,
+      i: item.item_id, t: now,
     }), Config.UPLOAD.PENDING_TTL_SECONDS);
     return { uploadId: uploadId, uri: uri, chunkBytes: Config.CHUNK_BYTES };
   }
@@ -213,33 +215,13 @@ const Upload = (function () {
     });
   }
 
-  /** The client pressed "done": mail this batch now. */
-  function finishBatch(ctx, client, batchId, opts) {
-    if (!BATCH.test(String(batchId || ''))) throw Errors.make('invalid', 'Bad batch id');
-    const batch = withQueue_(ctx, function (q) {
-      const b = q[batchId];
-      if (!b || b.c !== client.client_id) return null;
-      delete q[batchId];
-      return b;
-    });
-    if (!batch) return { notified: 0 };
-    try {
-      return { notified: send_(ctx, batch, opts || {}) };
-    } catch (err) {
-      // The files are safe in Drive; the trigger retries the email.
-      console.error('digest: ' + err);
-      requeue_(ctx, batch);
-      return { notified: 0 };
-    }
-  }
-
   function requeue_(ctx, batch) {
     batch.tries = (batch.tries || 0) + 1;
     if (batch.tries > 5) return Events.log(ctx.ss, 'digest_failed', '', batch.c + ' | ' + batch.ids.join(','));
     withQueue_(ctx, function (q) { q['retry' + Crypto.randomToken(8)] = batch; });
   }
 
-  /** Trigger: mail batches idle for DIGEST_IDLE_MINUTES (the client closed the page). */
+  /** Trigger: mail batches idle for DIGEST_IDLE_MINUTES (the client has stopped sending). */
   function flush(ctx, opts) {
     opts = opts || {};
     const cutoff = (opts.now || Date.now()) - Config.UPLOAD.DIGEST_IDLE_MINUTES * 60000;
@@ -262,7 +244,7 @@ const Upload = (function () {
     return { batches: due.length, emails: sent };
   }
 
-  /** One email per recipient (case responsible, else the firm address). Returns emails sent. */
+  /** One email per recipient (case responsible, else the firm address) and case. Returns emails sent. */
   function send_(ctx, batch, opts) {
     const settings = Settings.read(ctx.ss);
     const ids = new Set(batch.ids);
@@ -278,21 +260,25 @@ const Upload = (function () {
       });
     }
     const fallback = Validate.normalizeEmail(settings.notification_email);
-    const groups = {};
+    // One email per recipient and case: a batch lasts the client's whole visit, which may cover
+    // several cases, and each email names one case and links its folder.
+    const groups = Object.create(null);
     rows.forEach(function (r) {
       const c = Cases.byId(ctx.ss, String(r.case_id)) || {};
       const to = Validate.isEmail(c.responsible_email) ? Validate.normalizeEmail(c.responsible_email) : fallback;
       if (!Validate.isEmail(to)) return;
-      (groups[to] = groups[to] || { to: to, folderId: c.folder_id, rows: [] }).rows.push(r);
+      const key = to + '\n' + String(r.case_id);
+      (groups[key] = groups[key] || { to: to, folderId: c.folder_id, rows: [] }).rows.push(r);
     });
     const lang = I18n.lang(String(settings.default_language || ''));
     let sent = 0;
-    Object.keys(groups).forEach(function (to) {
+    Object.keys(groups).forEach(function (key) {
+      const to = groups[key].to;
       if (!MailBudget.take(ctx, 'digest', opts.now)) {
         Events.log(ctx.ss, 'digest_daily_cap', '', batch.c);
         return;
       }
-      const msg = digestMessage(lang, groups[to]);
+      const msg = digestMessage(lang, groups[key]);
       (opts.mail || GmailRest).send(opts.token || ctx.script.getOAuthToken(), {
         to: to, from: Validate.normalizeEmail(settings.send_as_alias) || '', fromName: String(settings.firm_name || ''),
         subject: msg.subject, text: msg.text, html: msg.html,
@@ -332,5 +318,5 @@ const Upload = (function () {
     return { subject: I18n.t(lang, 'mail.digest.subject', p), text: text, html: html };
   }
 
-  return { start: start, finish: finish, finishBatch: finishBatch, flush: flush, sweep: sweep, digestMessage: digestMessage };
+  return { start: start, finish: finish, flush: flush, sweep: sweep, digestMessage: digestMessage };
 })();

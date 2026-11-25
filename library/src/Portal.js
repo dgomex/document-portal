@@ -98,7 +98,7 @@ function cronProvision(ctx) {
   if (Invite.hasWork(ctx.ss) && Settings.get(ctx.ss, 'portal_url')) safe_(function () { Invite.run(ctx); });
 }
 
-/** Time-driven, every 10 minutes: mails batches the client never finished. */
+/** Time-driven, every 10 minutes: mails batches idle for DIGEST_IDLE_MINUTES. */
 function cronDigest(ctx) {
   Context.check(ctx);
   if (!cronSlot_(ctx, 'digest')) return;
@@ -239,7 +239,6 @@ const API_ = {
   logout: function (data, ctx) { Sessions.end(ctx, data.token); return {}; },
   startUpload: function (data, ctx) { return Upload.start(ctx, Sessions.resolve(ctx, data.token), data); },
   finishUpload: function (data, ctx) { return Upload.finish(ctx, Sessions.resolve(ctx, data.token), data); },
-  finishBatch: function (data, ctx) { return Upload.finishBatch(ctx, Sessions.resolve(ctx, data.token), data.batchId); },
   ping: function (data, ctx) {
     return {
       libraryVersion: Config.LIBRARY_VERSION,

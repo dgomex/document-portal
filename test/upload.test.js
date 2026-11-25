@@ -39,6 +39,12 @@ function setup({ settings = {} } = {}) {
       row(Config.SCHEMA.Cases, { case_id: 'CS-444444', client_id: 'CL-AAAAAA', case_name: 'Novo', status: 'open' }),  // no folder yet
       row(Config.SCHEMA.Cases, { case_id: 'CS-555555', client_id: 'CL-BBBBBB', case_name: 'Arrendamento', status: 'open', folder_id: 'F-ARR' }),
     ],
+    // Every upload is for a requested document: one per open case with a folder.
+    Checklist: [Config.SCHEMA.Checklist,
+      row(Config.SCHEMA.Checklist, { item_id: 'IT-DDDDDD', case_id: 'CS-111111', title: 'Contrato', level: 'required', status: 'missing' }),
+      row(Config.SCHEMA.Checklist, { item_id: 'IT-EEEEEE', case_id: 'CS-222222', title: 'Escritura', level: 'required', status: 'missing' }),
+      row(Config.SCHEMA.Checklist, { item_id: 'IT-FFFFFF', case_id: 'CS-555555', title: 'Recibo', level: 'required', status: 'missing' }),
+    ],
     Uploads: [Config.SCHEMA.Uploads],
     Events: [Config.SCHEMA.Events],
   });
@@ -60,9 +66,11 @@ function setup({ settings = {} } = {}) {
   const ana = () => ({ ...lib.Clients.byId(ss, 'CL-AAAAAA'), sessionEmail: 'ana@x.pt' });
   const opts = (extra) => ({ now, drive, mail, token: 'T', ...extra });
 
-  /** Starts an upload, then pretends the browser put this file into Drive. */
+  /** Starts an upload (for the case's document unless itemId says otherwise), then pretends the browser put this file into Drive. */
   function upload(input, fileOverride = {}, head = PDF) {
-    const s = lib.Upload.start(ctx, ana(), { caseId: 'CS-111111', name: 'contrato.pdf', mimeType: 'application/pdf', size: 1000,
+    const caseId = input.caseId || 'CS-111111';
+    const itemId = { 'CS-111111': 'IT-DDDDDD', 'CS-222222': 'IT-EEEEEE' }[caseId];
+    const s = lib.Upload.start(ctx, ana(), { caseId, itemId, name: 'contrato.pdf', mimeType: 'application/pdf', size: 1000,
       origin: ORIGIN, batchId: 'batch0001', ...input }, opts());
     const f = started.at(-1);
     const id = 'file' + started.length + 'xxxxxxxx';
@@ -83,7 +91,7 @@ describe('Upload.start', () => {
     expect(start).toMatchObject({ uri: 'https://upload.example/session/1', chunkBytes: Config.CHUNK_BYTES });
     expect(start.uploadId).toMatch(/^UP-/);
     expect(s.started[0]).toMatchObject({ parentId: 'F-DIV', mimeType: 'application/pdf', size: 1000, origin: ORIGIN,
-      name: '2026-10-30_1405__fatura_março.pdf' });
+      name: '2026-10-30_1405_Contrato - _fatura_março.pdf' });
   });
 
   test.each([
@@ -96,6 +104,8 @@ describe('Upload.start', () => {
     ['a file over 100 MB', { size: 100 * 1048576 + 1 }, 'fileSize'],
     ['a foreign origin', { origin: 'https://evil.example' }, 'invalid'],
     ['a bad batch id', { batchId: 'x' }, 'invalid'],
+    ['a file for no requested document', { itemId: undefined }, 'invalid'],
+    ['a document of another of the client\'s cases', { itemId: 'IT-EEEEEE' }, 'invalid'],
   ])('refuses %s', (_, input, code) => {
     const s = setup();
     expect(() => s.upload(input)).toThrow(expect.objectContaining({ code }));
@@ -119,7 +129,7 @@ describe('Upload.finish', () => {
     const s = setup();
     const { start, fileId } = s.upload({}, {});
     const out = lib.Upload.finish(s.ctx, s.ana(), { uploadId: start.uploadId, fileId, note: ' fatura  de março ' }, s.opts());
-    expect(out).toEqual({ uploadId: start.uploadId, name: 'contrato.pdf', itemId: '' });
+    expect(out).toEqual({ uploadId: start.uploadId, name: 'contrato.pdf', itemId: 'IT-DDDDDD' });
     expect(s.uploads()).toHaveLength(1);
     expect(s.uploads()[0]).toMatchObject({ upload_id: start.uploadId, client_id: 'CL-AAAAAA', client_name: 'Ana', case_id: 'CS-111111',
       case_name: 'Divórcio', original_name: 'contrato.pdf', mime_type: 'application/pdf', size_bytes: 1000, md5: 'md5',
@@ -201,25 +211,51 @@ describe('digest', () => {
     const s = setup();
     finishAll(s, [{ name: 'a.pdf', note: 'Faturas' }, { name: 'b.pdf' }, { name: 'c.pdf' }]);
     expect(s.sent).toEqual([]);
-    expect(lib.Upload.finishBatch(s.ctx, s.ana(), 'batch0001', s.opts())).toEqual({ notified: 1 });
+    s.tick(Config.UPLOAD.DIGEST_IDLE_MINUTES);
+    expect(lib.Upload.flush(s.ctx, s.opts())).toEqual({ batches: 1, emails: 1 });
     expect(s.sent).toHaveLength(1);
     expect(s.sent[0]).toMatchObject({ to: 'geral@firma.pt', fromName: 'Silva & Costa', subject: 'Novos documentos: Ana – Divórcio (3)' });
     ['a.pdf', 'b.pdf', 'c.pdf', 'Faturas', 'drive.google.com/drive/folders/F-DIV'].forEach((x) => expect(s.sent[0].text).toContain(x));
-    expect(lib.Upload.finishBatch(s.ctx, s.ana(), 'batch0001', s.opts())).toEqual({ notified: 0 });
+    expect(lib.Upload.flush(s.ctx, s.opts())).toEqual({ batches: 0, emails: 0 });
   });
 
   test('the case\'s responsible lawyer gets it instead of the firm address', () => {
     const s = setup();
     finishAll(s, [{ caseId: 'CS-222222' }]);
-    lib.Upload.finishBatch(s.ctx, s.ana(), 'batch0001', s.opts());
+    s.tick(Config.UPLOAD.DIGEST_IDLE_MINUTES);
+    lib.Upload.flush(s.ctx, s.opts());
     expect(s.sent.map((m) => m.to)).toEqual(['joana@firma.pt']);
   });
 
-  test('another client cannot flush Ana\'s batch', () => {
+  test('a batch covering two cases with the same recipient sends one email per case', () => {
     const s = setup();
-    finishAll(s, [{}]);
-    expect(lib.Upload.finishBatch(s.ctx, lib.Clients.byId(s.ss, 'CL-BBBBBB'), 'batch0001', s.opts())).toEqual({ notified: 0 });
-    expect(s.sent).toEqual([]);
+    lib.Table.open(s.ss, 'Cases').update(3, { responsible_email: '' });  // Herança falls back to the firm address too
+    finishAll(s, [{ name: 'a.pdf' }, { caseId: 'CS-222222', name: 'b.pdf' }]);
+    s.tick(Config.UPLOAD.DIGEST_IDLE_MINUTES);
+    expect(lib.Upload.flush(s.ctx, s.opts())).toEqual({ batches: 1, emails: 2 });
+    expect(s.sent.map((m) => [m.to, m.subject])).toEqual([
+      ['geral@firma.pt', 'Novos documentos: Ana – Divórcio (1)'], ['geral@firma.pt', 'Novos documentos: Ana – Herança (1)']]);
+    expect(s.sent[1].text).toContain('b.pdf');
+    expect(s.sent[1].text).not.toContain('a.pdf');
+    expect(s.sent[1].text).toContain('drive.google.com/drive/folders/F-HER');
+  });
+
+  test('another client cannot add files to Ana\'s batch', () => {
+    const s = setup();
+    finishAll(s, [{ name: 'a.pdf' }]);
+    const bruno = lib.Clients.byId(s.ss, 'CL-BBBBBB');
+    const b = lib.Upload.start(s.ctx, bruno, { caseId: 'CS-555555', itemId: 'IT-FFFFFF', name: 'x.pdf', mimeType: 'application/pdf',
+      size: 1000, origin: ORIGIN, batchId: 'batch0001' }, s.opts());
+    const f = s.started.at(-1);
+    s.files.fileBxxxxxxxx = { meta: { id: 'fileBxxxxxxxx', name: f.name, size: '1000', mimeType: 'application/pdf', parents: ['F-ARR'],
+      createdTime: new Date(Date.UTC(2026, 9, 30, 14, 5)).toISOString() }, head: PDF };
+    expect(() => lib.Upload.finish(s.ctx, bruno, { uploadId: b.uploadId, fileId: 'fileBxxxxxxxx' }, s.opts()))
+      .toThrow(expect.objectContaining({ code: 'invalid' }));
+    s.tick(Config.UPLOAD.DIGEST_IDLE_MINUTES);
+    lib.Upload.flush(s.ctx, s.opts());
+    expect(s.sent).toHaveLength(1);
+    expect(s.sent[0].text).toContain('a.pdf');
+    expect(s.sent[0].text).not.toContain('x.pdf');
   });
 
   test('the trigger mails batches idle for 10 minutes, not fresh ones', () => {
@@ -234,9 +270,9 @@ describe('digest', () => {
   test('a failed digest email does not fail the client; it is retried', () => {
     const s = setup();
     finishAll(s, [{}]);
-    const broken = s.opts({ mail: { send: () => { throw new Error('quota'); } } });
-    expect(lib.Upload.finishBatch(s.ctx, s.ana(), 'batch0001', broken)).toEqual({ notified: 0 });
     s.tick(Config.UPLOAD.DIGEST_IDLE_MINUTES);
+    const broken = s.opts({ mail: { send: () => { throw new Error('quota'); } } });
+    expect(lib.Upload.flush(s.ctx, broken)).toEqual({ batches: 1, emails: 0 });
     expect(lib.Upload.flush(s.ctx, s.opts()).emails).toBe(1);
   });
 
@@ -265,14 +301,12 @@ describe('FileType', () => {
 });
 
 describe('requested documents', () => {
-  const { FakeSheet } = require('./harness');
   function withChecklist() {
     const s = setup();
-    s.ss.sheets.push(new FakeSheet('Checklist', [Config.SCHEMA.Checklist,
+    s.ss.getSheetByName('Checklist').data.push(
       row(Config.SCHEMA.Checklist, { item_id: 'IT-AAAAAA', case_id: 'CS-111111', section: 'Ana', title: 'Passaporte', level: 'required', status: 'rejected', reason: 'Ilegível' }),
       row(Config.SCHEMA.Checklist, { item_id: 'IT-BBBBBB', case_id: 'CS-555555', title: 'Do Bruno', level: 'required', status: 'missing' }),
-      row(Config.SCHEMA.Checklist, { item_id: 'IT-CCCCCC', case_id: 'CS-111111', title: 'Dispensado', level: 'waived', status: 'missing' }),
-    ]));
+      row(Config.SCHEMA.Checklist, { item_id: 'IT-CCCCCC', case_id: 'CS-111111', title: 'Dispensado', level: 'waived', status: 'missing' }));
     return { s };
   }
 
@@ -298,7 +332,8 @@ describe('requested documents', () => {
     const { s } = withChecklist();
     const a = s.upload({ itemId: 'IT-AAAAAA', name: 'scan.pdf' });
     lib.Upload.finish(s.ctx, s.ana(), { uploadId: a.start.uploadId, fileId: a.fileId }, s.opts());
-    lib.Upload.finishBatch(s.ctx, s.ana(), 'batch0001', s.opts());
+    s.tick(Config.UPLOAD.DIGEST_IDLE_MINUTES);
+    lib.Upload.flush(s.ctx, s.opts());
     expect(s.sent[0].text).toContain('- Passaporte (Ana): scan.pdf');
   });
 

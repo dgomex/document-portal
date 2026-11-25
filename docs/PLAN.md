@@ -152,7 +152,7 @@ The spike settled these decisions; full results are in [spike/README.md](../spik
   5. A good file gets an Uploads row with the email the client logged in with.
 - **Digest:**
   - One email per batch, per recipient: the case's `responsible_email`, else `notification_email`, in the firm's language.
-  - It's sent when the client finishes the batch; the 10-minute `cronDigest` sends abandoned batches.
+  - It's sent when the client finishes the batch; the 10-minute `cronDigest` sends abandoned batches. (Since 0.6.1 there is no Finish button: `cronDigest` sends every batch once idle for 10 minutes, one email per recipient and case.)
   - At most 15 a day, and failures are retried up to 5 times.
 - **Deviation from the plan:** cases without a folder yet aren't offered for upload; they appear once provisioning runs (within 5 minutes). There's no lazy folder creation.
 - **Tests:** 171.
@@ -182,7 +182,7 @@ The spike settled these decisions; full results are in [spike/README.md](../spik
 | C | **"Folder creation triggered on new rows"** | `onEdit`/`onChange` triggers **do not fire on Sheets API writes**, and the Claude skill writes through the API. | Write rows as `provision_status = PENDING`. A **time-driven trigger every 5 min** plus a menu item "Process new rows" provisions them. Folders are also created **lazily** at first upload if still missing. |
 | D | **`google.script.run` cannot call library functions** | It only reaches top-level functions of the deployed (shell) project. Menu items and triggers also need shell globals. | The shell exposes a fixed set of tiny wrappers (`doGet`, `api(action,payload)`, `onOpen`, menu handlers, `cronProvision`). All of them delegate to the library. |
 | E | **Library resource scoping** | Cache/Properties/Lock calls made inside library code can resolve to the *library's* store. That could mix tenants' OTPs and sessions into storage you own, which breaks "never hold client data". | The **library never calls `CacheService`/`PropertiesService`/`LockService` itself.** The shell injects its own instances via a `ctx` object on every call. Pin this with a unit test or lint rule. |
-| F | **Gmail quota exhausted by notifications** | One email per upload: a client sending 20 photos uses 20 sends, and that pool is shared with OTP emails. | Send **one digest per upload session** (on "Finish", or a trigger flushes after 10 min idle). Track a daily email budget in Properties. When near the limit, OTP emails get priority over notifications. |
+| F | **Gmail quota exhausted by notifications** | One email per upload: a client sending 20 photos uses 20 sends, and that pool is shared with OTP emails. | Send **one digest per upload session** (on "Finish", or a trigger flushes after 10 min idle; since 0.6.1 only the trigger). Track a daily email budget in Properties. When near the limit, OTP emails get priority over notifications. |
 
 ### 1.2 Security
 - **Scope minimisation**, because a bug in an "execute as lawyer, anyone can access" web app runs with the lawyer's authority. Declare `oauthScopes` explicitly in the shell manifest:
