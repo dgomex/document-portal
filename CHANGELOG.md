@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1 (library version 14, 2026-11-25)
+
+Clients send files only into the documents the firm requested: the 'Other documents' upload, the note box and the 'I'm done: notify the firm' button are removed. The firm's email goes out once the client has stopped sending (within about 20 minutes), one per case. Clients who had the portal page open before the update should reload it.
+
 ## 0.6.0 (library version 13, 2026-11-25)
 
 Each case has its own list of documents, written by the firm (Checklist tab, optional section): no visa types, people or list rules; old tabs retired, existing cases unchanged; portal-lists skill retired (schema 5)
