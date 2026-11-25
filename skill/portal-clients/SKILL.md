@@ -87,7 +87,7 @@ The lawyer may type or paste a list, or give a file (a PDF, Word or spreadsheet 
 
 **Never invent a document** and never add one the lawyer didn't list, even if it's usual for that kind of case. If something in their list is a note for the firm rather than a document for the client ("o escritório pede a certidão"), leave it out and say so.
 
-"Ainda não sei" is a fine answer: open the case without documents. The client sees only the "other documents" upload until the list is written; offer to add it later.
+"Ainda não sei" is a fine answer: open the case without documents. Until the list is written, the client's page says the firm hasn't asked for documents yet ("O escritório ainda não pediu documentos para este processo.") and they can't upload anything; offer to add the list later.
 
 If the lawyer has already said to go ahead without asking, write straight away with what they gave, and ask for the documents afterwards if they gave none.
 
