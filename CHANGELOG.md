@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0 (library version 13, 2026-11-25)
+
+Each case has its own list of documents, written by the firm (Checklist tab, optional section): no visa types, people or list rules; old tabs retired, existing cases unchanged; portal-lists skill retired (schema 5)
+
 ## 0.5.2 (library version 12, 2026-11-24)
 
 Portal address changes are caught: Verificar explains a replaced or archived deployment (404) and warns once when the portal moved to a new address; the portal-update skill checks the deployment ID before and after deploying.
