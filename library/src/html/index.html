@@ -41,42 +41,21 @@
         <p class="row"><span id="hello"></span> <button id="logout" type="button" class="link" data-t="home.logout"></button></p>
         <p id="noCases" data-t="home.noCases" hidden></p>
 
-        <form id="uploadForm" novalidate hidden>
+        <div id="uploadForm" hidden>
           <label for="caseSelect" data-t="upload.case"></label>
           <p id="caseOnly" class="case-only" hidden></p>
           <select id="caseSelect" hidden></select>
 
-          <!-- The documents the firm requested for this case, by section -->
+          <p id="noItems" class="muted" data-t="checklist.none" hidden></p>
+          <!-- The documents the firm requested for this case, by section: each is sent on its own -->
           <div id="checklist" class="checklist" hidden>
             <p class="progress-line" id="progressText"></p>
             <progress id="progressBar" max="100" value="0"></progress>
+            <p class="muted small" id="typesHint"></p>
             <div id="groups"></div>
             <input id="itemFile" type="file" multiple class="visually-hidden" tabindex="-1" aria-hidden="true"
                    accept="application/pdf,image/jpeg,image/png,image/heic,image/heif,.pdf,.jpg,.jpeg,.png,.heic,.heif">
-            <div id="finishBox" class="finish" hidden>
-              <button id="finishNow" type="button" data-t="checklist.finish"></button>
-            </div>
           </div>
-
-          <span class="label" id="filesLabel" data-t="upload.files"></span>
-          <div id="drop" class="drop">
-            <input id="files" type="file" multiple class="visually-hidden"
-                   accept="application/pdf,image/jpeg,image/png,image/heic,image/heif,.pdf,.jpg,.jpeg,.png,.heic,.heif">
-            <label for="files" class="button secondary" data-t="upload.pick"></label>
-            <span class="muted drop-hint" data-t="upload.drop"></span>
-            <p class="muted small" id="typesHint"></p>
-          </div>
-          <ul id="queue" class="queue"></ul>
-
-          <label for="note"><span data-t="upload.note"></span> <span class="muted small" data-t="app.optional"></span></label>
-          <textarea id="note" rows="2" maxlength="500"></textarea>
-
-          <button id="sendFiles" type="submit" disabled></button>
-        </form>
-
-        <div id="doneBox" hidden>
-          <p id="doneText" class="ok"></p>
-          <button id="more" type="button" data-t="upload.more"></button>
         </div>
       </section>
 
@@ -139,7 +118,7 @@
       // ---------- upload ----------
       const MAX_BYTES = BOOT.maxFileMb * 1048576;
       const EXT = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', heic: 'image/heic', heif: 'image/heif' };
-      let queue = [];      // { key, file, mime, status, pct, error }
+      let queue = [];      // { key, file, mime, status, pct, error, itemId, label }
       let batchId = newBatchId();
       let sending = false;
 
@@ -155,10 +134,6 @@
         return m ? EXT[m[1].toLowerCase()] || '' : '';
       }
 
-      function sizeText(n) {
-        return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
-      }
-
       function selectedCase() {
         return me.cases.length === 1 ? me.cases[0].id : $('caseSelect').value;
       }
@@ -168,66 +143,24 @@
         return (me && me.cases.find((c) => c.id === id)) || null;
       }
 
-      /** target: a checklist item the files are for, or none for "other documents". */
+      /** target: the requested document the files are for. */
       function addFiles(list, target) {
         Array.from(list).forEach((file) => {
           const mime = mimeOf(file);
           const item = {
             key: Math.random().toString(36).slice(2), file, mime, status: 'waiting', pct: 0, error: '',
-            itemId: target ? target.id : '', label: target ? target.title + (target.sectionName ? ' (' + target.sectionName + ')' : '') : '',
+            itemId: target.id, label: target.title + (target.sectionName ? ' (' + target.sectionName + ')' : ''),
           };
           if (!mime) Object.assign(item, { status: 'invalid', error: t('upload.badType') });
           else if (!file.size) Object.assign(item, { status: 'invalid', error: t('upload.empty') });
           else if (file.size > MAX_BYTES) Object.assign(item, { status: 'invalid', error: t('upload.tooBig', { mb: BOOT.maxFileMb }) });
           queue.push(item);
         });
-        $('files').value = '';
         renderQueue();
       }
 
+      /** Redraws what changes while files are sent: the case picker and each document's state. */
       function renderQueue() {
-        const ul = $('queue');
-        ul.textContent = '';
-        queue.forEach((item) => {
-          const li = document.createElement('li');
-          li.className = 'item ' + item.status;
-          const name = document.createElement('span');
-          name.className = 'name';
-          name.textContent = (item.label ? item.label + ' · ' : '') + item.file.name;
-          const meta = document.createElement('span');
-          meta.className = 'meta';
-          meta.textContent = sizeText(item.file.size) + ' · ' + ({
-            waiting: t('upload.waiting'), uploading: t('upload.progress', { pct: item.pct }), checking: t('upload.checking'),
-            done: t('upload.done'), failed: t('upload.failed') + (item.error ? ': ' + item.error : ''), invalid: item.error,
-          })[item.status];
-          const bar = document.createElement('progress');
-          bar.max = 100;
-          bar.value = item.status === 'done' ? 100 : item.pct;
-          bar.hidden = !['uploading', 'checking', 'done'].includes(item.status);
-          bar.setAttribute('aria-label', item.file.name);
-          li.append(name, meta, bar);
-          if (!sending && ['waiting', 'invalid', 'failed'].includes(item.status)) {
-            if (item.status === 'failed' && item.retryable) {
-              const retry = document.createElement('button');
-              retry.type = 'button';
-              retry.className = 'link';
-              retry.textContent = t('upload.retry');
-              retry.onclick = () => { item.status = 'waiting'; item.error = ''; item.pct = 0; sendAll(); };
-              li.append(retry, document.createTextNode(' '));
-            }
-            const rm = document.createElement('button');
-            rm.type = 'button';
-            rm.className = 'link';
-            rm.textContent = t('upload.remove');
-            rm.onclick = () => { queue = queue.filter((q) => q !== item); renderQueue(); $('files').focus(); };
-            li.append(rm);
-          }
-          ul.appendChild(li);
-        });
-        const n = queue.filter((q) => q.status === 'waiting').length;
-        $('sendFiles').textContent = !n ? t('upload.sendNone') : n === 1 ? t('upload.sendOne') : t('upload.send', { count: n });
-        $('sendFiles').disabled = sending || !n || !selectedCase();
-        $('files').disabled = sending;
         $('caseSelect').disabled = sending;
         renderChecklist();
       }
@@ -244,8 +177,7 @@
         const c = currentCase();
         const has = !!(c && c.checklist && c.checklist.length);
         $('checklist').hidden = !has;
-        $('filesLabel').dataset.t = has ? 'checklist.other' : 'upload.files';
-        $('filesLabel').textContent = t($('filesLabel').dataset.t);
+        $('noItems').hidden = has || !c;  // a case the firm hasn't asked anything for yet
         if (!has) return;
         const all = [].concat(...c.checklist.map((g) => g.items));
         const p = progressOf(all);
@@ -321,9 +253,10 @@
               ul.append(li);
               return;
             }
-            if (last && last.status === 'failed') {
-              line(last.file.name + ' · ' + t('upload.failed') + (last.error ? ': ' + last.error : ''), 'reason');
-              if (last.retryable && !sending) {
+            if (last && (last.status === 'failed' || last.status === 'invalid')) {
+              line(last.file.name + ' · ' + (last.status === 'invalid' ? last.error
+                : t('upload.failed') + (last.error ? ': ' + last.error : '')), 'reason');
+              if (last.status === 'failed' && last.retryable && !sending) {
                 const retry = document.createElement('button');
                 retry.type = 'button';
                 retry.className = 'link';
@@ -345,14 +278,13 @@
           section.append(h, sub, ul);
           box.append(section);
         });
-        $('finishBox').hidden = !queue.some((q) => q.status === 'done' && !q.notified);
       }
 
       function renderHome() {
         $('hello').textContent = t('home.hello', { name: me.name });
         const has = me.cases.length > 0;
         $('noCases').hidden = has;
-        $('uploadForm').hidden = !has || !$('doneBox').hidden;
+        $('uploadForm').hidden = !has;
         if (!has) return;
         $('typesHint').textContent = t('upload.hint', { mb: BOOT.maxFileMb });
         const label = (c) => c.name + (c.reference ? ' (' + c.reference + ')' : '');
@@ -415,7 +347,7 @@
         }
       }
 
-      async function uploadOne(item, caseId, note) {
+      async function uploadOne(item, caseId) {
         item.status = 'uploading';
         item.pct = 0;
         renderQueue();
@@ -432,7 +364,7 @@
         }
         item.status = 'checking';
         renderQueue();
-        return call('finishUpload', { token, uploadId: s.data.uploadId, fileId, note });
+        return call('finishUpload', { token, uploadId: s.data.uploadId, fileId });
       }
 
       async function sendAll() {
@@ -440,9 +372,9 @@
         if (!caseId || sending) return;
         sending = true;
         status('');
-        const note = $('note').value;
-        for (const item of queue.filter((q) => q.status === 'waiting')) {
-          const res = await uploadOne(item, caseId, note);
+        const tried = queue.filter((q) => q.status === 'waiting');
+        for (const item of tried) {
+          const res = await uploadOne(item, caseId);
           if (res.ok) {
             item.status = 'done';
           } else if (res.error === 'session') {
@@ -456,36 +388,17 @@
           renderQueue();
         }
         sending = false;
-        // With a checklist the client sends item by item: mark them received here,
-        // and tell the firm once, when they press "finish" (or the 10-minute job does).
+        // Mark what arrived as received here. The firm gets one email for the batch
+        // once the client has stopped sending for a while (Upload.flush, every 10 minutes).
         const c = currentCase();
-        if (c && c.checklist && c.checklist.length) {
-          queue.filter((q) => q.status === 'done' && q.itemId).forEach((q) => {
+        if (c && c.checklist) {
+          tried.filter((q) => q.status === 'done').forEach((q) => {
             c.checklist.forEach((g) => g.items.forEach((i) => { if (i.id === q.itemId) { i.status = 'received'; i.reason = ''; } }));
           });
-          renderQueue();
-          if (queue.some((q) => q.status === 'failed')) return status(t('upload.someFailed'), true);
-          return status(t('checklist.uploaded'));
-        }
-        const done = queue.filter((q) => q.status === 'done' && !q.notified);
-        if (done.length) {
-          const fin = await call('finishBatch', { token, batchId });
-          if (!fin.ok && fin.error === 'session') return expired();
-          done.forEach((q) => { q.notified = true; });
         }
         renderQueue();
-        if (queue.some((q) => q.status === 'failed')) return status(t('upload.someFailed'), true);
-        if (done.length) {
-          const c = me.cases.find((k) => k.id === caseId);
-          const n = queue.filter((q) => q.status === 'done').length;
-          $('doneText').textContent = n === 1
-            ? t('upload.allDoneOne', { caseName: c ? c.name : '' })
-            : t('upload.allDone', { count: n, caseName: c ? c.name : '' });
-          $('uploadForm').hidden = true;
-          $('doneBox').hidden = false;
-          $('doneText').setAttribute('tabindex', '-1');
-          $('doneText').focus();
-        }
+        if (tried.some((q) => q.status === 'failed')) return status(t('upload.someFailed'), true);
+        if (tried.length) status(t('checklist.uploaded'));
       }
 
       /** Nothing from one client may survive into the next login on the same page. */
@@ -497,10 +410,8 @@
         $('caseOnly').textContent = '';
         $('groups').textContent = '';
         $('checklist').hidden = true;
+        $('noItems').hidden = true;
         $('hello').textContent = '';
-        $('note').value = '';
-        $('queue').textContent = '';
-        $('doneBox').hidden = true;
       }
 
       function expired() {
@@ -509,7 +420,6 @@
         status(t('home.expired'), true);
       }
 
-      $('files').onchange = () => addFiles($('files').files);
       $('caseSelect').onchange = renderQueue;
       $('itemFile').onchange = () => {
         if (!pendingTarget || sending) return;
@@ -518,34 +428,6 @@
         pendingTarget = null;
         sendAll();
       };
-      $('finishNow').onclick = async () => {
-        $('finishNow').disabled = true;
-        const fin = await call('finishBatch', { token, batchId });
-        $('finishNow').disabled = false;
-        if (!fin.ok && fin.error === 'session') return expired();
-        queue.forEach((q) => { if (q.status === 'done') q.notified = true; });
-        batchId = newBatchId();
-        renderChecklist();
-        status(t('checklist.finished'));
-      };
-      $('uploadForm').onsubmit = (ev) => { ev.preventDefault(); sendAll(); };
-      $('more').onclick = () => {
-        queue = [];
-        batchId = newBatchId();
-        $('note').value = '';
-        $('doneBox').hidden = true;
-        $('uploadForm').hidden = false;
-        renderQueue();
-      };
-      ['dragenter', 'dragover'].forEach((type) => $('drop').addEventListener(type, (e) => {
-        e.preventDefault();
-        $('drop').classList.add('over');
-      }));
-      ['dragleave', 'drop'].forEach((type) => $('drop').addEventListener(type, () => $('drop').classList.remove('over')));
-      $('drop').addEventListener('drop', (e) => {
-        e.preventDefault();
-        if (!sending && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
-      });
       window.addEventListener('beforeunload', (e) => {
         if (sending) { e.preventDefault(); e.returnValue = t('upload.leave'); }
       });
@@ -637,7 +519,6 @@
         if (!langChosen && LANGS.includes(me.language) && me.language !== lang) { lang = me.language; render(); }
         queue = [];
         batchId = newBatchId();
-        $('doneBox').hidden = true;
         renderHome();
         show('homeStep');
       };

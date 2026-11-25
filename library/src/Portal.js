@@ -239,7 +239,6 @@ const API_ = {
   logout: function (data, ctx) { Sessions.end(ctx, data.token); return {}; },
   startUpload: function (data, ctx) { return Upload.start(ctx, Sessions.resolve(ctx, data.token), data); },
   finishUpload: function (data, ctx) { return Upload.finish(ctx, Sessions.resolve(ctx, data.token), data); },
-  finishBatch: function (data, ctx) { return Upload.finishBatch(ctx, Sessions.resolve(ctx, data.token), data.batchId); },
   ping: function (data, ctx) {
     return {
       libraryVersion: Config.LIBRARY_VERSION,

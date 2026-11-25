@@ -37,7 +37,7 @@ Question: can anyone using the portal get documents out of the firm's Drive? Sco
 
 ## Holds
 
-- **No read path.** Without login the page reaches `requestCode`, `verifyCode` and `ping`; with a session, `me`, `startUpload`, `finishUpload`, `finishBatch` and `logout`. None returns file contents, Drive links, file IDs or file names. A client gets only their own case names and checklist text.
+- **No read path.** Without login the page reaches `requestCode`, `verifyCode` and `ping`; with a session, `me`, `startUpload`, `finishUpload` and `logout` (`finishBatch` was removed in 0.6.1). None returns file contents, Drive links, file IDs or file names. A client gets only their own case names and checklist text.
 - **Owner-only functions refuse anonymous visitors:** all 6 `admin` actions and all 5 menus (checked with an anonymous session). Action names like `__proto__` or `constructor` give `unknownAction`.
 - **Uploads:** the browser gets a single-use Drive address for one file of a fixed size in one folder, never a token. The server checks folder, size, type, name, first bytes and (new) creation time.
 - **Drive:** `drive.file` only; nothing creates sharing permissions; the firm's folders stay private to its account.
