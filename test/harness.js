@@ -80,6 +80,12 @@ class FakeSheet {
         }));
         return this;
       },
+      getFormulas() {
+        return Array.from({ length: numRows }, (_, r) => Array.from({ length: numCols }, (_, c) => {
+          const v = (sheet.data[row - 1 + r] || [])[col - 1 + c];
+          return typeof v === 'string' && v.startsWith('=') ? v : '';
+        }));
+      },
       setNote(text) { sheet.note = text; return this; },
       clearDataValidations() { sheet.validationsCleared = (sheet.validationsCleared || 0) + 1; return this; },
       setValue(v) {

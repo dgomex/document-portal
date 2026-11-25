@@ -63,6 +63,7 @@ class PortalRows(unittest.TestCase):
         ], ["CS-AAAAAA"])
         self.assertEqual(problems, ["row 1: title is empty", "row 1: unknown case_id: CS-ZZZZZZ",
                                     "row 2: level must be required, optional or waived", "row 2: due_date must be YYYY-MM-DD"])
+        self.assertEqual(check_items([{"title": "X"}])[1], ["row 1: case_id is empty"])
 
     def test_formula_injection(self):
         self.assertEqual(cell('=HYPERLINK("x")'), '\'=HYPERLINK("x")')

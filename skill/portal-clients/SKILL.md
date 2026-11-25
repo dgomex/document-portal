@@ -133,7 +133,7 @@ Each case has its own list in the Checklist tab: one row per document, shown to 
 
 - **The list is the lawyer's.** It is exactly what they asked for this case, and they are responsible for it. Say so when it matters, for example when a lawyer asks "is this everything?".
 - **Adding or changing later:** "pede também o contrato de trabalho à Ana" is a new row for that case; "afinal o IRS é opcional" changes that row's `level`; "já não preciso da caderneta" sets `level` waived. Documents already received stay received.
-- **"What's missing for Ana?":** read the case's Checklist rows (not Uploads). Group them by `section`, and show the ones with `status` missing or rejected and `level` required. Mention optional ones separately.
+- **"What's missing for Ana?":** read the case's Checklist rows (not Uploads). Group them by `section`, and show the ones with `status` missing, rejected or empty and `level` required, requested (older rows) or empty. Leave out `waived`, and mention optional ones separately.
 - **Reviewing:** "aceita o passaporte da Ana" sets `status` accepted. "rejeita o registo criminal do Pedro, tem mais de 90 dias" sets `status` rejected and `reason`. The client sees the reason at once, and gets reminded about it.
 - **Typing rows by hand:** a lawyer typing documents into the Checklist tab needs the case's `case_id`. For a case they typed by hand too, it appears after **Portal → Processar novas linhas** (EN: Process new rows · ES: Procesar filas nuevas); then use it in `case_id`.
 - **Reminders:** the portal emails clients about missing required documents every `reminder_days` days (Settings).

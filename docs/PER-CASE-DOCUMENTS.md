@@ -73,7 +73,7 @@ Every open, provisioned case **with at least one non-waived item** (instead of "
 
 `Migrations.STEPS[5]`, safe to repeat:
 1. Checklist: rows with an empty `section` and a non-empty `person_name` get `section = person_name` (rows that already have a `section` are skipped).
-2. Retired tabs, named inline (their constants are gone): `Visa types`, `Document lists`, `People`, `Adjustments`, `CatalogData`. A tab with no data rows (`Table.wrap(sheet).rows().length === 0`, not `getLastRow()`, because checkbox columns hold FALSE down the sheet; e.g. a new firm's copy of the template) is **deleted**; a tab with data is **hidden** with a note in A1 (`update.retiredTab`: "no longer used since 0.6.0, kept for reference"). Nothing with data is lost.
+2. Retired tabs, named inline (their constants are gone): `Visa types`, `Document lists`, `People`, `Adjustments`, `CatalogData`. A tab with no data rows (`Table.wrap(sheet).rows().length === 0`, not `getLastRow()`, because checkbox columns hold FALSE down the sheet; e.g. a new firm's copy of the template) is **deleted**; a tab with data is **hidden** with a note in A1 (`update.retiredTab`: "no longer used since 0.6.0, kept for reference"). `CatalogData` has no header row (0.4.x stored its catalog as JSON from A1), so it counts as empty only when the tab has no rows at all. Nothing with data is lost.
 3. Delete the `LISTS_DROPDOWN` script property.
 4. Clear the data validation (the visa dropdown) on `Cases.visa_type`, if the column exists. The Checklist `level` validation is re-applied by `Schema.ensure` as `required, optional, waived, requested`.
 

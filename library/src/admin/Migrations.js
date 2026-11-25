@@ -8,6 +8,8 @@
 const Migrations = (function () {
   // Tabs of the visa-checklist model (0.4 and 0.5), retired in 0.6.0.
   const RETIRED_TABS = ['Visa types', 'Document lists', 'People', 'Adjustments', 'CatalogData'];
+  // 0.4.x kept its catalog as JSON chunks from A1, with no header row.
+  const NO_HEADER = { CatalogData: true };
 
   const STEPS = {
     // 2: one shared daily email budget replaced the separate counters.
@@ -35,12 +37,14 @@ const Migrations = (function () {
           const people = checklist.getRange(2, t.column('person_name'), n, 1).getValues();
           const range = checklist.getRange(2, t.column('section'), n, 1);
           const sections = range.getValues();
+          const formulas = range.getFormulas();  // written back as formulas, not as their values
           let changed = false;
-          sections.forEach(function (s, i) {
+          const out = sections.map(function (s, i) {
             const person = String(people[i][0] || '').trim();
-            if (person && !String(s[0] || '').trim()) { s[0] = Sanitize.cell(person); changed = true; }
+            if (person && !String(s[0] || '').trim() && !formulas[i][0]) { changed = true; return [Sanitize.cell(person)]; }
+            return [formulas[i][0] || s[0]];
           });
-          if (changed) range.setValues(sections);
+          if (changed) range.setValues(out);
         }
       }
       // 2. Retired tabs: deleted when they hold no rows (e.g. a new copy of an
@@ -48,7 +52,8 @@ const Migrations = (function () {
       RETIRED_TABS.forEach(function (name) {
         const sheet = ss.getSheetByName(name);
         if (!sheet) return;
-        if (!Table.wrap(sheet).rows().length && ss.getSheets().length > 1) {
+        const empty = NO_HEADER[name] ? sheet.getLastRow() === 0 : !Table.wrap(sheet).rows().length;
+        if (empty && ss.getSheets().length > 1) {
           ss.deleteSheet(sheet);
           return;
         }

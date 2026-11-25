@@ -41,14 +41,14 @@ const CaseChecklist = (function () {
       const stamp = new Date(opts.now || Date.now());
       const caseIds = new Set(Cases.list(ss).map(function (c) { return c.case_id; }).filter(String));
       const checklist = Table.open(ss, Config.TABS.CHECKLIST);
-      const rows = items(ss);
-      const itemIds = new Set(rows.map(function (r) { return r.item_id; }).filter(String));
+      const rows = checklist.rows();  // the cells as they are: items() fills in defaults
+      const itemIds = new Set(rows.map(function (r) { return str_(r.item_id); }).filter(String));
       rows.forEach(function (r) {
-        if (r.item_id || !caseIds.has(r.case_id) || !str_(r.title)) return;
+        if (str_(r.item_id) || !caseIds.has(str_(r.case_id)) || !str_(r.title)) return;
         const id = Ids.generate(Config.ID_PREFIX.ITEM, itemIds);
         itemIds.add(id);
         const partial = { item_id: id, updated_at: stamp };
-        if (!r.level) partial.level = Config.ITEM_LEVEL.REQUIRED;
+        if (!str_(r.level)) partial.level = Config.ITEM_LEVEL.REQUIRED;
         if (!str_(r.status)) partial.status = Config.ITEM_STATUS.MISSING;
         checklist.update(r._row, partial);
         report.requests++;
@@ -79,7 +79,7 @@ const CaseChecklist = (function () {
    */
   function view(ss, caseId, lang, rows) {
     const groups = [];
-    const byName = {};
+    const byName = Object.create(null);  // a section may be called anything, "constructor" included
     (rows || items(ss)).forEach(function (r) {
       if (r.case_id !== caseId || !r.item_id || r.level === Config.ITEM_LEVEL.WAIVED) return;
       const t = texts_(r, lang);

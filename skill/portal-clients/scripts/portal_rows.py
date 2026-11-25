@@ -117,7 +117,9 @@ def check_items(rows, case_ids=()):
         r["level"] = str(r["level"] or "required").strip().lower()
         if not r["title"]:
             problems.append("row %d: title is empty" % n)
-        if known and r["case_id"] not in known:
+        if not str(r["case_id"] or "").strip():
+            problems.append("row %d: case_id is empty" % n)
+        elif known and r["case_id"] not in known:
             problems.append("row %d: unknown case_id: %s" % (n, r["case_id"]))
         if r["level"] not in LEVELS[:3]:
             problems.append("row %d: level must be required, optional or waived" % n)

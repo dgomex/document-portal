@@ -30,6 +30,8 @@ describe('sync', () => {
     f.add({ case_id: 'CS-111111', title: 'Passaporte' });
     f.add({ case_id: 'CS-111111', section: 'Banco', title: 'Extrato', level: 'optional', status: 'accepted' });
     expect(f.sync()).toEqual({ requests: 2 });
+    // The cells themselves, not items(), which fills in the same defaults when reading.
+    expect(lib.Table.open(f.ss, 'Checklist').rows()[0]).toMatchObject({ status: 'missing', level: 'required' });
     const [a, b] = f.items();
     expect(a).toMatchObject({ status: 'missing', level: 'required' });
     expect(a.item_id).toMatch(/^IT-[0-9A-HJKMNP-TV-Z]{6}$/);
@@ -72,6 +74,14 @@ describe('sync', () => {
 });
 
 describe('view', () => {
+  test('a section may be called anything, even a name objects have', () => {
+    const f = firm();
+    f.add({ case_id: 'CS-111111', section: 'constructor', title: 'A' });
+    f.add({ case_id: 'CS-111111', section: 'toString', title: 'B' });
+    f.sync();
+    expect(lib.CaseChecklist.view(f.ss, 'CS-111111', 'pt').map((g) => g.name)).toEqual(['constructor', 'toString']);
+  });
+
   test('sections in order of their first row, the general section last, waived left out', () => {
     const f = firm();
     f.add({ case_id: 'CS-111111', title: 'Contrato-promessa' });
@@ -145,14 +155,26 @@ describe('schema 5 migration', () => {
   // Schema.ensure needs SpreadsheetApp; the step itself is what's under test.
   const step = (ctx) => lib.Migrations.STEPS[5](ctx);
 
-  test('fills section from person_name, once, and keeps a section already there', () => {
+  test('fills section from person_name, once, and keeps a section or formula already there', () => {
     const { ss, ctx } = legacySheet();
     ss.getSheetByName('Checklist').data[0].push('section');
-    lib.Table.open(ss, 'Checklist').update(3, { section: 'Casa' });
+    const t = lib.Table.open(ss, 'Checklist');
+    t.append({ item_id: 'IT-CCCCCC', case_id: 'CS-111111', person_name: 'Pedro', section: 'Casa', title: 'NIF' });
+    ss.getSheetByName('Checklist').data.push(row(LEGACY_CHECKLIST, { item_id: 'IT-DDDDDD', case_id: 'CS-111111', person_name: 'Rui', section: '=B5', title: 'X' }));
     step(ctx);
     step(ctx);
-    expect(lib.CaseChecklist.items(ss).map((i) => i.section)).toEqual(['Ana', 'Casa']);
-    expect(lib.Table.open(ss, 'Checklist').rows()[0].person_name).toBe('Ana');
+    // The cells themselves: items() would fall back to person_name anyway.
+    expect(lib.Table.open(ss, 'Checklist').rows().map((r) => [r.person_name, r.section])).toEqual(
+      [['Ana', 'Ana'], ['', ''], ['Pedro', 'Casa'], ['Rui', '=B5']]);
+  });
+
+  test('a 0.4.x CatalogData tab (JSON from A1, no header) is hidden, never deleted', () => {
+    const { ss, ctx } = legacySheet();
+    ss.sheets.push(new (require('./harness').FakeSheet)('CatalogData', [['{"visas":{}}']]));
+    ss.sheets.push(new (require('./harness').FakeSheet)('Adjustments', [['visa_type', 'applies_to', 'doc_type', 'action']]));
+    step(ctx);
+    expect(ss.getSheetByName('CatalogData').isSheetHidden()).toBe(true);
+    expect(ss.getSheetByName('Adjustments')).toBeNull();
   });
 
   test('retired tabs: deleted when empty, hidden with a note when they hold data', () => {
