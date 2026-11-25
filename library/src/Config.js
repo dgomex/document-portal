@@ -3,8 +3,8 @@
  * with the sheet and with the Claude skill: add columns, never rename them.
  */
 const Config = Object.freeze({
-  LIBRARY_VERSION: '0.5.2',
-  SCHEMA_VERSION: 4,  // bump with a step in admin/Migrations.js
+  LIBRARY_VERSION: '0.6.0',
+  SCHEMA_VERSION: 5,  // bump with a step in admin/Migrations.js
 
   LANGUAGES: ['pt', 'en', 'es'],
   DEFAULT_LANGUAGE: 'pt',
@@ -38,18 +38,15 @@ const Config = Object.freeze({
   SESSION_MAX_SECONDS: 8 * 3600,
   EVENTS_RETENTION_DAYS: 90,
 
-  ID_PREFIX: { CLIENT: 'CL', CASE: 'CS', UPLOAD: 'UP', PERSON: 'PE', ITEM: 'IT' },
+  ID_PREFIX: { CLIENT: 'CL', CASE: 'CS', UPLOAD: 'UP', ITEM: 'IT' },
   PROVISION: { PENDING: 'PENDING', ACTIVE: 'ACTIVE', ERROR: 'ERROR' },
   CASE_STATUS: { OPEN: 'open', CLOSED: 'closed' },
   INVITE: { NONE: '', REQUESTED: 'REQUESTED', SENT: 'SENT', ERROR: 'ERROR' },
 
-  TABS: { SETTINGS: 'Settings', CLIENTS: 'Clients', CASES: 'Cases', PEOPLE: 'People', CHECKLIST: 'Checklist',
-    ADJUSTMENTS: 'Adjustments' /* 0.4.x only: read once by the schema 4 migration */, UPLOADS: 'Uploads', EVENTS: 'Events',
-    VISA_TYPES: 'Visa types', DOC_LISTS: 'Document lists' },  // schema 4: the firm's own lists
+  TABS: { SETTINGS: 'Settings', CLIENTS: 'Clients', CASES: 'Cases', CHECKLIST: 'Checklist', UPLOADS: 'Uploads', EVENTS: 'Events' },
 
-  // People in a case, and what each checklist item is (docs/VISA-CHECKLISTS.md).
-  ROLES: ['main_applicant', 'spouse', 'child', 'dependant'],
-  APPLIES_TO: ['main_applicant', 'spouse', 'each_child', 'each_adult', 'each_person', 'case'],
+  // Each case's own list of requested documents (docs/PER-CASE-DOCUMENTS.md).
+  // requested: a document the firm added by hand before 0.6.0; read as required.
   ITEM_LEVEL: { REQUIRED: 'required', OPTIONAL: 'optional', REQUESTED: 'requested', WAIVED: 'waived' },
   ITEM_STATUS: { MISSING: 'missing', RECEIVED: 'received', ACCEPTED: 'accepted', REJECTED: 'rejected' },
 
@@ -76,37 +73,29 @@ const Config = Object.freeze({
     Clients: ['client_id', 'name', 'email', 'additional_emails', 'language', 'active', 'invite_status',
       'provision_status', 'provision_error', 'folder_id', 'created_at', 'created_by', 'notes',
       'invited_at'],  // added in schema 2: columns are only ever appended
+    // Sheets made before 0.6.0 also have visa_type, facts and checklist_version: no longer read.
     Cases: ['case_id', 'client_id', 'case_name', 'firm_reference', 'status', 'responsible_email',
-      'provision_status', 'provision_error', 'folder_id', 'created_at', 'created_by',
-      'visa_type', 'facts', 'checklist_version'],  // schema 3
-    // schema 3: the people in each case (the main applicant is added automatically)
-    People: ['person_id', 'case_id', 'name', 'role', 'birth_date', 'notes', 'folder_id', 'created_at', 'created_by'],
-    // schema 3: one row per document per person, frozen when the case's list is built
-    Checklist: ['item_id', 'case_id', 'person_id', 'person_name', 'title', 'instructions', 'level', 'status', 'reason',
-      'due_date', 'upload_ids', 'doc_type', 'key', 'source', 'updated_at', 'text_json'],
+      'provision_status', 'provision_error', 'folder_id', 'created_at', 'created_by'],
+    // One row per document the firm requests in a case (schema 5). Sheets made before 0.6.0
+    // also have person_id, person_name, doc_type, key, source and text_json: read for old
+    // rows only (person_name as the section, text_json for the texts), never written.
+    Checklist: ['item_id', 'case_id', 'section', 'title', 'instructions', 'level', 'status', 'reason',
+      'due_date', 'upload_ids', 'updated_at'],
     Uploads: ['upload_id', 'timestamp', 'client_id', 'client_name', 'case_id', 'case_name', 'stored_name',
       'original_name', 'mime_type', 'size_bytes', 'md5', 'drive_link', 'uploader_email', 'note', 'status',
-      'item_id', 'person_id'],  // schema 3
+      'item_id', 'person_id'],  // person_id: uploads started before 0.6.0 only
     Events: ['timestamp', 'type', 'email_hash', 'detail'],
-    // schema 4: the firm's own process types and document lists (lists/FirmLists.js)
-    'Visa types': ['visa_type', 'name_pt', 'name_en', 'name_es', 'active', 'family', 'facts_to_ask', 'notes', 'check'],
-    'Document lists': ['visa_type', 'order', 'applies_to', 'level', 'title_pt', 'title_en', 'title_es',
-      'instructions_pt', 'instructions_en', 'instructions_es', 'group_pt', 'group_en', 'group_es', 'group_key',
-      'only_if', 'unless', 'min_age', 'check_criteria', 'active', 'doc_key', 'check'],
   },
 
   // Columns only the script writes. Protected warning-only: the lawyer owns
   // the sheet, so hard protection would not bind them anyway.
   SCRIPT_OWNED: {
     Clients: ['provision_error', 'folder_id', 'invited_at'],
-    Cases: ['provision_error', 'folder_id', 'checklist_version'],
-    People: ['person_id', 'folder_id'],
-    // The lawyer edits level, status, reason, due date and wording; adds rows for ad-hoc requests.
-    Checklist: ['item_id', 'person_id', 'upload_ids', 'doc_type', 'key', 'source', 'updated_at', 'text_json'],
+    Cases: ['provision_error', 'folder_id'],
+    // The firm writes the rest: one row per document it wants for the case.
+    Checklist: ['item_id', 'upload_ids', 'updated_at'],
     Uploads: '*',
     Events: '*',
-    'Visa types': ['check'],
-    'Document lists': ['group_key', 'doc_key', 'check'],
   },
 
   VALIDATIONS: {
@@ -119,24 +108,10 @@ const Config = Object.freeze({
     Cases: {
       status: ['open', 'closed'],
       provision_status: ['PENDING', 'ACTIVE', 'ERROR'],
-      visa_type: 'visa_types',  // the firm's process types (Visa types tab)
-    },
-    People: {
-      role: ['main_applicant', 'spouse', 'child', 'dependant'],
     },
     Checklist: {
-      level: ['required', 'optional', 'requested', 'waived'],
+      level: ['required', 'optional', 'waived', 'requested'],  // requested: rows from before 0.6.0
       status: ['missing', 'received', 'accepted', 'rejected'],
-    },
-    'Visa types': {
-      active: 'checkbox',
-      family: 'checkbox',
-    },
-    'Document lists': {
-      visa_type: 'firm_visa_types',  // IDs; a typed name is allowed and replaced on sync
-      applies_to: ['main_applicant', 'spouse', 'each_child', 'each_adult', 'each_person', 'case'],
-      level: ['required', 'optional'],
-      active: 'checkbox',
     },
   },
 });

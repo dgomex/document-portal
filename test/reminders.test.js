@@ -16,14 +16,13 @@ function firm({ reminderDays = '7', items } = {}) {
     Settings: [['key', 'value', 'description'], ['firm_name', 'Silva & Costa', ''], ['default_language', 'pt', ''],
       ['reminder_days', reminderDays, ''], ['portal_url', 'https://script.google.com/macros/s/X/exec', '']],
     Clients: [Config.SCHEMA.Clients, row(Config.SCHEMA.Clients, { client_id: 'CL-AAAAAA', name: 'Ana', email: 'ana@x.pt', language: 'en', active: true, provision_status: 'ACTIVE' })],
-    Cases: [Config.SCHEMA.Cases, row(Config.SCHEMA.Cases, { case_id: 'CS-111111', client_id: 'CL-AAAAAA', case_name: 'D7', status: 'open', provision_status: 'ACTIVE', folder_id: 'F', visa_type: 'PT-D7' })],
-    People: [Config.SCHEMA.People, row(Config.SCHEMA.People, { person_id: 'PE-AAAAAA', case_id: 'CS-111111', name: 'Ana', role: 'main_applicant' })],
+    Cases: [Config.SCHEMA.Cases, row(Config.SCHEMA.Cases, { case_id: 'CS-111111', client_id: 'CL-AAAAAA', case_name: 'D7', status: 'open', provision_status: 'ACTIVE', folder_id: 'F' })],
     Checklist: [Config.SCHEMA.Checklist, ...(items || [
-      { item_id: 'IT-AAAAAA', case_id: 'CS-111111', person_id: 'PE-AAAAAA', title: 'Passaporte', level: 'required', status: 'missing' },
-      { item_id: 'IT-BBBBBB', case_id: 'CS-111111', person_id: 'PE-AAAAAA', title: 'Registo criminal', level: 'required', status: 'rejected', reason: 'Too old' },
-      { item_id: 'IT-CCCCCC', case_id: 'CS-111111', person_id: 'PE-AAAAAA', title: 'Fotos', level: 'required', status: 'accepted' },
-      { item_id: 'IT-DDDDDD', case_id: 'CS-111111', person_id: 'PE-AAAAAA', title: 'CV', level: 'optional', status: 'missing' },
-      { item_id: 'IT-EEEEEE', case_id: 'CS-111111', person_id: '', title: 'Carta do senhorio', level: 'requested', status: 'missing', due_date: '2026-11-15' },
+      { item_id: 'IT-AAAAAA', case_id: 'CS-111111', section: 'Ana', title: 'Passaporte', level: 'required', status: 'missing' },
+      { item_id: 'IT-BBBBBB', case_id: 'CS-111111', section: 'Ana', title: 'Registo criminal', level: 'required', status: 'rejected', reason: 'Too old' },
+      { item_id: 'IT-CCCCCC', case_id: 'CS-111111', section: 'Ana', title: 'Fotos', level: 'required', status: 'accepted' },
+      { item_id: 'IT-DDDDDD', case_id: 'CS-111111', section: 'Ana', title: 'CV', level: 'optional', status: 'missing' },
+      { item_id: 'IT-EEEEEE', case_id: 'CS-111111', section: '', title: 'Carta do senhorio', level: 'requested', status: 'missing', due_date: '2026-11-15' },
     ]).map((r) => row(Config.SCHEMA.Checklist, r))],
     Events: [Config.SCHEMA.Events],
   });
@@ -31,7 +30,7 @@ function firm({ reminderDays = '7', items } = {}) {
   const ctx = { ss, props: new FakeProps(), script: { getOAuthToken: () => 'T' } };
   let now = Date.UTC(2026, 9, 31, 9);
   const run = () => lib.Reminders.run(ctx, { now, mail: { send: (t, m) => sent.push(m) }, token: 'T' });
-  return { ctx, sent, run, tick: (days) => { now += days * DAY; } };
+  return { ctx, ss, sent, run, tick: (days) => { now += days * DAY; } };
 }
 
 test('the first run only starts the clock; the reminder comes after reminder_days', () => {
@@ -60,10 +59,22 @@ test('lists missing and rejected required or requested items, in the client\'s l
 });
 
 test('nothing missing: no email', () => {
-  const f = firm({ items: [{ item_id: 'IT-AAAAAA', case_id: 'CS-111111', person_id: 'PE-AAAAAA', title: 'P', level: 'required', status: 'received' }] });
+  const f = firm({ items: [{ item_id: 'IT-AAAAAA', case_id: 'CS-111111', section: 'Ana', title: 'P', level: 'required', status: 'received' }] });
   f.run();
   f.tick(8);
   expect(f.run().sent).toBe(0);
+});
+
+test('a case without documents does not start its clock until the firm writes its list', () => {
+  const f = firm({ items: [{ item_id: 'IT-AAAAAA', case_id: 'CS-111111', title: 'P', level: 'waived', status: 'missing' }] });
+  f.run();
+  f.tick(30);
+  f.run();
+  expect(f.ctx.props.getProperty('REMINDERS')).toBe('{}');
+  lib.Table.open(f.ss, 'Checklist').append({ item_id: 'IT-BBBBBB', case_id: 'CS-111111', title: 'Passaporte', level: 'required', status: 'missing' });
+  expect(f.run().sent).toBe(0);  // first seen with documents: the clock starts now
+  f.tick(7);
+  expect(f.run().sent).toBe(1);
 });
 
 test('reminder_days 0 switches reminders off', () => {

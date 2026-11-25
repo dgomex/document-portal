@@ -45,10 +45,10 @@ const Upload = (function () {
       throw Errors.make('tooMany', 'Upload rate limit');
     }
 
-    // A checklist item: the file goes to that person's folder, named after the item.
+    // A requested document: the file goes to the case folder, named after the document.
     const token = opts.token || ctx.script.getOAuthToken();
     const item = input.itemId ? itemFor_(ctx.ss, c.case_id, String(input.itemId)) : null;
-    const parentId = item && item.person_id ? personFolder_(ctx, c, item.person_id, drive, token) : c.folder_id;
+    const parentId = c.folder_id;
     const label = item ? String(item.title || '').trim() : '';
     const stored = Sanitize.storedName(new Date(now), label ? label + ' - ' + name : name);
     const uri = drive.startResumable(token, {
@@ -57,7 +57,7 @@ const Upload = (function () {
     const uploadId = Ids.generate(Config.ID_PREFIX.UPLOAD, []);
     ctx.cache.put('up:' + uploadId, JSON.stringify({
       c: client.client_id, k: c.case_id, f: parentId, n: name, s: stored, m: mime, z: size, b: input.batchId,
-      i: item ? item.item_id : '', pp: item ? String(item.person_id || '') : '', t: now,
+      i: item ? item.item_id : '', t: now,
     }), Config.UPLOAD.PENDING_TTL_SECONDS);
     return { uploadId: uploadId, uri: uri, chunkBytes: Config.CHUNK_BYTES };
   }
@@ -102,6 +102,7 @@ const Upload = (function () {
       client_name: String(client.name || ''), case_id: p.k, case_name: String(c.case_name || ''),
       stored_name: p.s, original_name: p.n, mime_type: p.m, size_bytes: p.z, md5: meta.md5Checksum || '',
       drive_link: meta.webViewLink || '', uploader_email: client.sessionEmail || client.email || '', note: note, status: 'OK',
+      // pp: the person of an upload started before 0.6.0 (cached up to PENDING_TTL_SECONDS).
       item_id: p.i || '', person_id: p.pp || '',
     });
     if (p.i) markReceived_(ctx.ss, p.i, uploadId, opts.now);
@@ -109,34 +110,13 @@ const Upload = (function () {
     return { uploadId: uploadId, name: p.n, itemId: p.i || '' };
   }
 
-  /** The client's own checklist item in this case (not waived), or throws. */
+  /** A document requested in this case (not waived), or throws. */
   function itemFor_(ss, caseId, itemId) {
     const item = Ids.isValid(itemId, Config.ID_PREFIX.ITEM) && CaseChecklist.items(ss).filter(function (r) {
       return r.item_id === itemId && r.case_id === caseId && r.level !== Config.ITEM_LEVEL.WAIVED;
     })[0];
     if (!item) throw Errors.make('invalid', 'Unknown checklist item ' + itemId);
     return item;
-  }
-
-  /** The person's folder inside the case folder, created on their first upload. */
-  function personFolder_(ctx, theCase, personId, drive, token) {
-    const find = function () {
-      return CaseChecklist.people(ctx.ss).filter(function (p) { return p.person_id === personId && p.case_id === theCase.case_id; })[0];
-    };
-    let person = find();
-    if (!person) return theCase.folder_id;
-    if (String(person.folder_id || '').trim()) return String(person.folder_id).trim();
-    // Under the auth lock, so two uploads for the same person can't create two folders.
-    if (!ctx.authLock.tryLock(10000)) return theCase.folder_id;
-    try {
-      person = find();
-      if (String(person.folder_id || '').trim()) return String(person.folder_id).trim();
-      const folder = drive.createFolder(token, Sanitize.folderName(person.name, person.person_id), theCase.folder_id);
-      Table.open(ctx.ss, Config.TABS.PEOPLE).update(person._row, { folder_id: folder.id });
-      return folder.id;
-    } finally {
-      ctx.authLock.releaseLock();
-    }
   }
 
   /** A new file for an item means the lawyer has something to check again. */
@@ -177,9 +157,12 @@ const Upload = (function () {
     });
     const caseIds = new Set(open.map(function (c) { return c.case_id; }));
     const folders = open.map(function (c) { return { id: String(c.folder_id).trim(), caseId: c.case_id }; });
-    if (ctx.ss.getSheetByName(Config.TABS.PEOPLE)) {
-      CaseChecklist.people(ctx.ss).forEach(function (p) {
-        if (caseIds.has(p.case_id) && String(p.folder_id || '').trim()) folders.push({ id: String(p.folder_id).trim(), caseId: p.case_id });
+    // Before 0.6.0 a case's documents went into a folder per person (the People tab, hidden since).
+    const people = ctx.ss.getSheetByName('People');
+    if (people) {
+      Table.wrap(people).rows().forEach(function (p) {
+        const caseId = String(p.case_id || '').trim();
+        if (caseIds.has(caseId) && String(p.folder_id || '').trim()) folders.push({ id: String(p.folder_id).trim(), caseId: caseId });
       });
     }
     folders.forEach(function (f) {
@@ -285,13 +268,13 @@ const Upload = (function () {
     const ids = new Set(batch.ids);
     const rows = Table.open(ctx.ss, Config.TABS.UPLOADS).rows().filter(function (r) { return ids.has(String(r.upload_id)); });
     if (!rows.length) return 0;
-    // Name each file after its checklist item, so the lawyer sees what it is for.
+    // Name each file after the document it was sent for, so the lawyer sees what it is.
     if (ctx.ss.getSheetByName(Config.TABS.CHECKLIST)) {
       const itemsById = {};
       CaseChecklist.items(ctx.ss).forEach(function (i) { itemsById[i.item_id] = i; });
       rows.forEach(function (r) {
         const i = itemsById[String(r.item_id || '')];
-        if (i) r.label = String(i.title || '') + (i.person_name ? ' (' + i.person_name + ')' : '');
+        if (i) r.label = String(i.title || '') + (i.section ? ' (' + i.section + ')' : '');
       });
     }
     const fallback = Validate.normalizeEmail(settings.notification_email);

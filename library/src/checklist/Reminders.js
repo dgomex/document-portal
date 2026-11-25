@@ -1,9 +1,9 @@
 /**
  * Reminds clients of what's still missing: one email per case, at most every
- * Settings reminder_days days (0 = never), listing required and requested
- * items that are missing or were rejected (with the reason). A case's clock
- * starts the first time it is seen, so nobody is reminded right after their
- * list is built. Runs once a day from the 10-minute job.
+ * Settings reminder_days days (0 = never), listing required items that are
+ * missing or were rejected (with the reason). A case's clock starts the first
+ * time it is seen with documents, so nobody is reminded right after the firm
+ * writes their list. Runs once a day from the 10-minute job.
  */
 const Reminders = (function () {
   const KEY = 'REMINDERS';  // { caseId: last reminder (ms) }
@@ -13,10 +13,10 @@ const Reminders = (function () {
     return now - state[caseId] >= days * 86400000;
   }
 
-  /** What a case's client still has to send, in their language. */
-  function pending(ss, caseId, lang) {
+  /** What a case's client still has to send, in their language. rows: CaseChecklist.items(ss), if already read. */
+  function pending(ss, caseId, lang, rows) {
     const out = [];
-    CaseChecklist.view(ss, caseId, lang).forEach(function (g) {
+    CaseChecklist.view(ss, caseId, lang, rows).forEach(function (g) {
       g.items.forEach(function (i) {
         if (i.level === Config.ITEM_LEVEL.OPTIONAL) return;
         if (i.status !== Config.ITEM_STATUS.MISSING && i.status !== Config.ITEM_STATUS.REJECTED) return;
@@ -42,15 +42,21 @@ const Reminders = (function () {
     const clients = {};
     Clients.list(ss).forEach(function (c) { clients[c.client_id] = c; });
 
-    // Only open, provisioned cases with a visa (so with a checklist) are reminded.
+    // Only open, provisioned cases with documents the client can see are reminded: a case
+    // without any must not start its clock, or the client would be reminded as soon as
+    // the firm writes the list.
+    const rows = CaseChecklist.items(ss);
+    const listed = new Set(rows.filter(function (r) {
+      return r.item_id && r.level !== Config.ITEM_LEVEL.WAIVED;
+    }).map(function (r) { return r.case_id; }));
     Cases.list(ss).filter(function (c) {
-      return String(c.visa_type || '').trim() && c.status === Config.CASE_STATUS.OPEN && c.provision_status === Config.PROVISION.ACTIVE;
+      return listed.has(c.case_id) && c.status === Config.CASE_STATUS.OPEN && c.provision_status === Config.PROVISION.ACTIVE;
     }).forEach(function (c) {
       const client = clients[c.client_id];
       if (!client || !client.active || !Validate.isEmail(client.email)) return;
       if (!due_(ctx, c.case_id, now, days, state)) return;
       const lang = I18n.lang(String(client.language || settings.default_language || ''));
-      const items = pending(ss, c.case_id, lang);
+      const items = pending(ss, c.case_id, lang, rows);
       if (!items.length) { state[c.case_id] = now; return; }
       if (!MailBudget.take(ctx, 'digest', now)) { report.skipped++; return; }
       const msg = message(lang, { name: String(client.name || ''), firm: String(settings.firm_name || ''), caseName: String(c.case_name || ''), url: url, items: items });

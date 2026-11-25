@@ -264,50 +264,51 @@ describe('FileType', () => {
   });
 });
 
-describe('checklist items', () => {
+describe('requested documents', () => {
   const { FakeSheet } = require('./harness');
   function withChecklist() {
     const s = setup();
-    const folders = [];
-    s.drive.createFolder = (token, name, parentId) => { folders.push({ name, parentId }); return { id: 'F-PERSON-' + folders.length }; };
-    s.ss.sheets.push(new FakeSheet('People', [Config.SCHEMA.People,
-      row(Config.SCHEMA.People, { person_id: 'PE-AAAAAA', case_id: 'CS-111111', name: 'Ana', role: 'main_applicant' })]));
     s.ss.sheets.push(new FakeSheet('Checklist', [Config.SCHEMA.Checklist,
-      row(Config.SCHEMA.Checklist, { item_id: 'IT-AAAAAA', case_id: 'CS-111111', person_id: 'PE-AAAAAA', person_name: 'Ana', title: 'Passaporte', level: 'required', status: 'rejected', reason: 'Ilegível', key: 'PASSPORT|PE-AAAAAA', source: 'catalog' }),
-      row(Config.SCHEMA.Checklist, { item_id: 'IT-BBBBBB', case_id: 'CS-555555', person_id: '', title: 'Do Bruno', level: 'required', status: 'missing' }),
-      row(Config.SCHEMA.Checklist, { item_id: 'IT-CCCCCC', case_id: 'CS-111111', person_id: '', title: 'Dispensado', level: 'waived', status: 'missing' }),
+      row(Config.SCHEMA.Checklist, { item_id: 'IT-AAAAAA', case_id: 'CS-111111', section: 'Ana', title: 'Passaporte', level: 'required', status: 'rejected', reason: 'Ilegível' }),
+      row(Config.SCHEMA.Checklist, { item_id: 'IT-BBBBBB', case_id: 'CS-555555', title: 'Do Bruno', level: 'required', status: 'missing' }),
+      row(Config.SCHEMA.Checklist, { item_id: 'IT-CCCCCC', case_id: 'CS-111111', title: 'Dispensado', level: 'waived', status: 'missing' }),
     ]));
-    s.ctx.ss = s.ss;
-    return { s, folders };
+    return { s };
   }
 
-  test('goes to the person\'s folder (created once), named after the item, and marks it received', () => {
-    const { s, folders } = withChecklist();
+  test('goes to the case folder, named after the document, and marks it received', () => {
+    const { s } = withChecklist();
     const a = s.upload({ itemId: 'IT-AAAAAA', name: 'scan.pdf' });
-    s.upload({ itemId: 'IT-AAAAAA', name: 'scan2.pdf' });
-    expect(folders).toEqual([{ name: 'Ana [PE-AAAAAA]', parentId: 'F-DIV' }]);
-    expect(s.started[0]).toMatchObject({ parentId: 'F-PERSON-1', name: '2026-10-30_1405_Passaporte - scan.pdf' });
-    expect(s.started[1].parentId).toBe('F-PERSON-1');
+    expect(s.started[0]).toMatchObject({ parentId: 'F-DIV', name: '2026-10-30_1405_Passaporte - scan.pdf' });
     const out = lib.Upload.finish(s.ctx, s.ana(), { uploadId: a.start.uploadId, fileId: a.fileId }, s.opts());
     expect(out.itemId).toBe('IT-AAAAAA');
     const item = lib.CaseChecklist.items(s.ss).find((i) => i.item_id === 'IT-AAAAAA');
     expect(item).toMatchObject({ status: 'received', reason: '', upload_ids: a.start.uploadId });
-    expect(s.uploads()[0]).toMatchObject({ item_id: 'IT-AAAAAA', person_id: 'PE-AAAAAA' });
+    expect(s.uploads()[0]).toMatchObject({ item_id: 'IT-AAAAAA', person_id: '' });
   });
 
-  test('an item from another case, or a waived one, is refused', () => {
+  test('a document from another case, or a waived one, is refused', () => {
     const { s } = withChecklist();
     expect(() => s.upload({ itemId: 'IT-BBBBBB' })).toThrow(expect.objectContaining({ code: 'invalid' }));
     expect(() => s.upload({ itemId: 'IT-CCCCCC' })).toThrow(expect.objectContaining({ code: 'invalid' }));
     expect(s.started).toEqual([]);
   });
 
-  test('the lawyer\'s email names the item each file is for', () => {
+  test('the lawyer\'s email names the document and its section', () => {
     const { s } = withChecklist();
     const a = s.upload({ itemId: 'IT-AAAAAA', name: 'scan.pdf' });
     lib.Upload.finish(s.ctx, s.ana(), { uploadId: a.start.uploadId, fileId: a.fileId }, s.opts());
     lib.Upload.finishBatch(s.ctx, s.ana(), 'batch0001', s.opts());
     expect(s.sent[0].text).toContain('- Passaporte (Ana): scan.pdf');
+  });
+
+  test('an upload started before 0.6.0 into a person\'s folder still finishes', () => {
+    const { s } = withChecklist();
+    const a = s.upload({ itemId: 'IT-AAAAAA', name: 'scan.pdf' }, { parents: ['F-PERSON'] });
+    const key = 'up:' + a.start.uploadId;
+    s.ctx.cache.put(key, JSON.stringify({ ...JSON.parse(s.ctx.cache.get(key)), f: 'F-PERSON', pp: 'PE-AAAAAA' }));
+    lib.Upload.finish(s.ctx, s.ana(), { uploadId: a.start.uploadId, fileId: a.fileId }, s.opts());
+    expect(s.uploads()[0]).toMatchObject({ item_id: 'IT-AAAAAA', person_id: 'PE-AAAAAA' });
   });
 });
 
@@ -330,6 +331,19 @@ describe('abandoned uploads', () => {
     expect(s.trashed).not.toContain(closedCase.fileId);
     expect(s.trashed).not.toContain(young.fileId);
     expect(s.events()).toContain('upload_abandoned_trashed');
+  });
+
+  test('folders of people from before 0.6.0 (the retired People tab) are swept too', () => {
+    const { FakeSheet } = require('./harness');
+    const s = setup();
+    s.ss.sheets.push(new FakeSheet('People', [['person_id', 'case_id', 'name', 'role', 'folder_id'],
+      ['PE-AAAAAA', 'CS-111111', 'Ana', 'main_applicant', 'F-PERSON'], ['PE-BBBBBB', 'CS-333333', 'Old', 'main_applicant', 'F-GONE']]));
+    const abandoned = s.upload({}, { parents: ['F-PERSON'] });
+    const closed = s.upload({}, { parents: ['F-GONE'] });
+    s.tick(7 * 60);
+    lib.Upload.sweep(s.ctx, s.opts());
+    expect(s.trashed).toEqual([abandoned.fileId]);
+    expect(s.trashed).not.toContain(closed.fileId);
   });
 
   test('a registered file is kept even if its Drive link is missing (matched by stored name)', () => {

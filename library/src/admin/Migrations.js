@@ -6,60 +6,62 @@
  * need no step: Schema.ensure adds them on every run.
  */
 const Migrations = (function () {
+  // Tabs of the visa-checklist model (0.4 and 0.5), retired in 0.6.0.
+  const RETIRED_TABS = ['Visa types', 'Document lists', 'People', 'Adjustments', 'CatalogData'];
+
   const STEPS = {
     // 2: one shared daily email budget replaced the separate counters.
     2: function (ctx) {
       ctx.props.deleteProperty('OTP_DAILY');
       ctx.props.deleteProperty('DIGEST_DAILY');
     },
-    // 3: People, Checklist and Adjustments tabs, and new columns in Cases and
-    // Uploads (visa checklists). All additive: Schema.ensure adds them.
+    // 3 and 4 built the visa checklists (0.4) and the firm's own lists (0.5).
+    // Both models are gone since 0.6.0, and step 5 retires their tabs.
     3: function () {},
-    // 4: the firm's own lists (Visa types and Document lists tabs). The
-    // portal ships no catalog any more: a new sheet starts with empty tabs.
-    // A sheet that ran 0.4.x gets its own stored lists (its CatalogData tab,
-    // changed by its Adjustments) copied in, then every built case moves to
-    // checklist_version = list hash | case hash without changing a single
-    // Checklist row. Safe to repeat.
-    4: function (ctx) {
+    4: function () {},
+    // 5: each case has its own list of documents, written by the firm
+    // (docs/PER-CASE-DOCUMENTS.md). Existing Checklist rows are each case's
+    // list already: they only get a section. Nothing with data is deleted.
+    5: function (ctx) {
       const ss = ctx.ss;
-      const stored = LegacyLists.read(ss);
-      if (!stored) {
-        // A new sheet: empty lists. A 0.4.x sheet with built cases but no stored lists can't be
-        // copied: its cases keep their rows (shown as they are); log it so it can be looked at.
-        const built = ss.getSheetByName(Config.TABS.CASES) && Cases.list(ss).some(function (c) { return String(c.checklist_version || '').split('|').length === 3; });
-        if (built && ss.getSheetByName(Config.TABS.EVENTS)) Events.log(ss, 'lists_migration_no_stored_lists', '', '');
-        return;
+      const lang = Settings.language(ss);
+      // 1. The person a row was for becomes its section (rows with a section are left alone).
+      const checklist = ss.getSheetByName(Config.TABS.CHECKLIST);
+      if (checklist) {
+        const t = Table.wrap(checklist);
+        const n = checklist.getLastRow() - 1;
+        if (t.column('person_name') && t.column('section') && n > 0) {
+          // One read and one write per column: a firm may have thousands of rows.
+          const people = checklist.getRange(2, t.column('person_name'), n, 1).getValues();
+          const range = checklist.getRange(2, t.column('section'), n, 1);
+          const sections = range.getValues();
+          let changed = false;
+          sections.forEach(function (s, i) {
+            const person = String(people[i][0] || '').trim();
+            if (person && !String(s[0] || '').trim()) { s[0] = Sanitize.cell(person); changed = true; }
+          });
+          if (changed) range.setValues(sections);
+        }
       }
-      const adjustments = ss.getSheetByName(Config.TABS.ADJUSTMENTS) ? Table.open(ss, Config.TABS.ADJUSTMENTS).rows() : [];
-      const countries = String(Settings.get(ss, 'countries') || 'PT').split(/[\s,;]+/).map(function (c) { return c.trim().toUpperCase(); }).filter(String);
-      FirmLists.seed(ss, LegacyLists.seedRows(stored, countries, adjustments, Settings.language(ss)));
-      const model = FirmLists.check(ss).model;
-      if (ss.getSheetByName(Config.TABS.PEOPLE) && ss.getSheetByName(Config.TABS.CASES)) {
-        const people = CaseChecklist.people(ss);
-        const cases = Cases.table(ss);
-        cases.rows().forEach(function (c) {
-          const current = String(c.checklist_version || '').trim();
-          const visaId = String(c.visa_type || '').trim();
-          if (!current || !visaId || current.split('|').length !== 3) return;  // not built, or already migrated
-          const casePeople = people.filter(function (p) { return p.case_id === String(c.case_id || '').trim() && p.person_id; });
-          const visa = FirmLists.visa(model, visaId);
-          const upToDate = visa && current === LegacyLists.version(stored, visaId, c.facts, casePeople, adjustments);
-          // Current cases match the copied list; any other keeps its old case
-          // hash, so a stale case shows "older list" and a pending rebuild still runs.
-          cases.update(c._row, { checklist_version: upToDate
-            ? visa.listHash + '|' + CaseChecklist.caseHash(visaId, c.facts, casePeople) : 'legacy|' + current.split('|')[2] });
-        });
-      }
-      // Kept, hidden (nothing is deleted), but no longer used: Document lists has their rows now.
-      [Config.TABS.ADJUSTMENTS, LegacyLists.TAB].forEach(function (name) {
+      // 2. Retired tabs: deleted when they hold no rows (e.g. a new copy of an
+      // older template), otherwise hidden with a note.
+      RETIRED_TABS.forEach(function (name) {
         const sheet = ss.getSheetByName(name);
-        if (!sheet || typeof sheet.hideSheet !== 'function') return;
+        if (!sheet) return;
+        if (!Table.wrap(sheet).rows().length && ss.getSheets().length > 1) {
+          ss.deleteSheet(sheet);
+          return;
+        }
         const a1 = sheet.getRange(1, 1);
-        if (a1.setNote) a1.setNote(I18n.t(Settings.language(ss), 'lists.legacyReplaced', {
+        if (a1.setNote) a1.setNote(I18n.t(lang, 'update.retiredTab', {
           date: Utilities.formatDate(new Date(), Config.TIME_ZONE, 'yyyy-MM-dd') }));
-        if (!sheet.isSheetHidden()) sheet.hideSheet();
+        if (typeof sheet.hideSheet === 'function' && !sheet.isSheetHidden()) sheet.hideSheet();
       });
+      // 3. The visa dropdown's cache key, and the dropdown itself on Cases.
+      ctx.props.deleteProperty('LISTS_DROPDOWN');
+      const cases = ss.getSheetByName(Config.TABS.CASES);
+      const col = cases ? Table.wrap(cases).column('visa_type') : 0;
+      if (col) cases.getRange(2, col, Math.max(cases.getMaxRows() - 1, 1), 1).clearDataValidations();
     },
   };
 
@@ -89,5 +91,5 @@ const Migrations = (function () {
     }
   }
 
-  return { run: run, needed: needed, STEPS: STEPS };
+  return { run: run, needed: needed, STEPS: STEPS, RETIRED_TABS: RETIRED_TABS };
 })();
